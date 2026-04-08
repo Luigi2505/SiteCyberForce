@@ -1,31 +1,667 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CYBERFORCE — Ultra Gym</title>
+<link href="https://fonts.googleapis.com/css2?family=Michroma&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/logbook.css">
+<link rel="stylesheet" href="css/store.css">
+<link rel="stylesheet" href="css/schedule.css">
+<script src="js/script.js"></script>
+
 </head>
 <body>
-   <div class="top-side">
-        <header>
-            <div class="menu">
-                <img src="images/menu-icon.png" alt="Menu" id="menu-icon">
-            </div>
-            <div class="logo"><span class="logo-text">CYBERFORCE</span></div>
-            <div class="login">
-                <img src="images/user-icon.png" alt="Área Usuário" id="user-icon">
-            </div>
-        </header>
-        <div class="neon-line"></div>
+
+<div class="scanline"></div>
+<div class="overlay" id="overlay" onclick="closeMenu()"></div>
+
+<!-- HEADER -->
+<header>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="logo glitch" data-text="CYBERFORCE" onclick="showSection('home')">CYBERFORCE</div>
+  <div class="user-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <defs>
+        <linearGradient id="iconGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#a020f0"/>
+          <stop offset="100%" style="stop-color:#00d4ff"/>
+        </linearGradient>
+      </defs>
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="url(#iconGrad)"/>
+      <circle cx="12" cy="7" r="4" stroke="url(#iconGrad)"/>
+    </svg>
+  </div>
+</header>
+<div class="header-line"></div>
+
+<!-- NAV DRAWER -->
+<nav class="nav-drawer" id="navDrawer">
+  <div class="nav-label">// NAVIGATION_SYSTEM</div>
+  <div class="nav-item active" onclick="showSection('home'); closeMenu()">HOME</div>
+  <div class="nav-item" onclick="showSection('logbook'); closeMenu()">LOG BOOK</div>
+  <div class="nav-item" onclick="showSection('store'); closeMenu()">ESTOQUE</div>
+  <div class="nav-item" onclick="showSection('schedule'); closeMenu()">PROGRAMAÇÃO</div>
+  <br>
+  <div class="nav-label" style="margin-top:2rem">// STATUS</div>
+  <div style="font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:#333;padding:0.5rem 1.2rem;letter-spacing:0.2em">
+    SYS_STATUS: <span style="color:var(--neon-green);text-shadow:0 0 8px var(--neon-green)">ONLINE</span><br>
+    USERS: <span style="color:var(--cyan)">247</span> ACTIVE<br>
+    UPTIME: <span style="color:var(--cyan)">99.9%</span>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main>
+
+  <!-- ══════════════════ HOME ══════════════════ -->
+  <section id="home" class="active">
+
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-tag">// SISTEMA_ATIVADO — CYBERFORCE.GYM v2.0</div>
+      <h1 class="hero-title">CYBERFORCE</h1>
+      <p class="hero-sub">A academia do futuro. Tecnologia neural integrada ao treino de alta performance. Supere os limites da carne e do aço.</p>
+      <button class="cta-btn" onclick="showSection('logbook')">INICIAR PROTOCOLO</button>
     </div>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="stat-item">
+        <span class="stat-num">247</span>
+        <span class="stat-label">// Membros Ativos</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">48</span>
+        <span class="stat-label">// Equipamentos</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">24/7</span>
+        <span class="stat-label">// Funcionamento</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">∞</span>
+        <span class="stat-label">// Potencial</span>
+      </div>
+    </div>
+
+    <!-- Equipment Gallery -->
+    <div class="section-header">
+      <span class="section-tag">// EQ.SYS</span>
+      <h2 class="section-title">EQUIPAMENTOS</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="equipment-grid">
+      <div class="eq-card">
+        <div class="eq-border"></div>
+        <div class="eq-icon">⚡</div>
+        <div class="eq-name">SMITH MACHINE X-9</div>
+        <div class="eq-spec">
+          Capacidade: 450kg<br>
+          Sensores biométricos integrados<br>
+          Rastreio angular em tempo real
+        </div>
+        <span class="eq-tag">FORÇA_COMPOUND</span>
+      </div>
+      <div class="eq-card">
+        <div class="eq-border"></div>
+        <div class="eq-icon">🔩</div>
+        <div class="eq-name">LEG PRESS ULTRA</div>
+        <div class="eq-spec">
+          Ângulo ajustável: 20°–75°<br>
+          Peso máx: 600kg<br>
+          Display de força vetorial
+        </div>
+        <span class="eq-tag">FORÇA_MEMBROS_INF</span>
+      </div>
+      <div class="eq-card">
+        <div class="eq-border"></div>
+        <div class="eq-icon">🤖</div>
+        <div class="eq-name">CABO FUNCIONAL NeuroLink</div>
+        <div class="eq-spec">
+          Sistema de polia dupla<br>
+          Resistência adaptativa por IA<br>
+          1800+ variações de exercício
+        </div>
+        <span class="eq-tag">FUNCIONAL_AI</span>
+      </div>
+      <div class="eq-card">
+        <div class="eq-border"></div>
+        <div class="eq-icon">💠</div>
+        <div class="eq-name">ESTEIRA QUANTUM 3.0</div>
+        <div class="eq-spec">
+          Velocidade: 0.5 – 32 km/h<br>
+          Inclinação inteligente: −5% a +30%<br>
+          Monitor cardíaco sem fio
+        </div>
+        <span class="eq-tag">CARDIO_AVANÇADO</span>
+      </div>
+      <div class="eq-card">
+        <div class="eq-border"></div>
+        <div class="eq-icon">🏋️</div>
+        <div class="eq-name">BANCO MÍSSIL PRO</div>
+        <div class="eq-spec">
+          Inclinação: −15° a +85°<br>
+          Aço carbono V5<br>
+          Análise de postura em tempo real
+        </div>
+        <span class="eq-tag">FORÇA_SUPINO</span>
+      </div>
+      <div class="eq-card">
+        <div class="eq-border"></div>
+        <div class="eq-icon">🌀</div>
+        <div class="eq-name">REMO CYBERTANK</div>
+        <div class="eq-spec">
+          Resistência magnética: 20 níveis<br>
+          Sync com app mobile<br>
+          Modo competição em rede
+        </div>
+        <span class="eq-tag">CARDIO_ROWING</span>
+      </div>
+    </div>
+
+    <!-- About -->
+    <div class="about-section">
+      <div class="about-visual">
+        <div class="about-ring"></div>
+        <div class="about-ring about-ring2"></div>
+        <div class="about-circle">⚡</div>
+      </div>
+      <div class="about-text">
+        <span class="label">// SOBRE_NÓS — MANIFESTO</span>
+        <h2>A CONVERGÊNCIA ENTRE HUMANO E MÁQUINA</h2>
+        <p>CYBERFORCE não é uma academia. É um sistema de evolução física acelerada. Cada equipamento é uma interface entre a sua vontade e o resultado que você merece.</p>
+        <p>Nossa tecnologia neural rastreia cada repetição, analisa cada padrão de movimento e otimiza o protocolo de treino em tempo real. Aqui, o limite é um parâmetro — e parâmetros podem ser reconfigurados.</p>
+        <p style="color:var(--cyan);text-shadow:0 0 8px rgba(0,212,255,0.3)">Não treine. Execute.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ══════════════════ LOG BOOK ══════════════════ -->
+  <section id="logbook">
+    <div class="logbook-section">
+      <div class="section-header" style="padding:0 0 2rem">
+        <span class="section-tag">// DIÁRIO_DE_TREINO</span>
+        <h2 class="section-title">LOG BOOK</h2>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="log-tabs">
+        <button class="log-tab push active" onclick="switchLogTab('push')">PUSH</button>
+        <button class="log-tab pull" onclick="switchLogTab('pull')">PULL</button>
+        <button class="log-tab legs" onclick="switchLogTab('legs')">LEGS</button>
+      </div>
+
+      <!-- PUSH -->
+      <div class="log-panel active" id="panel-push">
+        <div class="log-date-header">
+          <span class="log-date" id="log-date">// 2026.04.01 — TERÇA-FEIRA</span>
+          <span class="log-category-badge badge-push">PUSH</span>
+        </div>
+        <table class="exercise-table">
+          <thead>
+            <tr>
+              <th>EXERCÍCIO</th>
+              <th>SÉRIES</th>
+              <th>REPS</th>
+              <th>CARGA (kg)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="ex-name">SUPINO RETO</td>
+              <td><input type="number" class="log-input" value="4" min="1"></td>
+              <td><input type="number" class="log-input" value="8" min="1"></td>
+              <td><input type="number" class="log-input weight" value="80" step="2.5"></td>
+            </tr>
+            <tr>
+              <td class="ex-name">SUPINO INCLINADO</td>
+              <td><input type="number" class="log-input" value="3" min="1"></td>
+              <td><input type="number" class="log-input" value="10" min="1"></td>
+              <td><input type="number" class="log-input weight" value="65" step="2.5"></td>
+            </tr>
+            <tr>
+              <td class="ex-name">DESENVOLVIMENTO MILITAR</td>
+              <td><input type="number" class="log-input" value="4" min="1"></td>
+              <td><input type="number" class="log-input" value="8" min="1"></td>
+              <td><input type="number" class="log-input weight" value="50" step="2.5"></td>
+            </tr>
+            <tr>
+              <td class="ex-name">ELEVAÇÃO LATERAL</td>
+              <td><input type="number" class="log-input" value="3" min="1"></td>
+              <td><input type="number" class="log-input" value="15" min="1"></td>
+              <td><input type="number" class="log-input weight" value="16" step="1"></td>
+            </tr>
+            <tr>
+              <td class="ex-name">TRÍCEPS PULLEY</td>
+              <td><input type="number" class="log-input" value="3" min="1"></td>
+              <td><input type="number" class="log-input" value="12" min="1"></td>
+              <td><input type="number" class="log-input weight" value="30" step="2.5"></td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="add-exercise-btn">+ ADICIONAR_EXERCÍCIO</button>
+        <div class="volume-summary">
+          <div class="vol-item"><span class="vol-num">17</span><span class="vol-label">// SÉRIES TOTAL</span></div>
+          <div class="vol-item"><span class="vol-num">241</span><span class="vol-label">// REPS TOTAL</span></div>
+          <div class="vol-item"><span class="vol-num">9,240</span><span class="vol-label">// VOL. (kg)</span></div>
+        </div>
+      </div>
+
+      <!-- PULL -->
+      <div class="log-panel" id="panel-pull">
+        <div class="log-date-header">
+          <span class="log-date">// 2026.04.01 — TERÇA-FEIRA</span>
+          <span class="log-category-badge badge-pull">PULL</span>
+        </div>
+        <table class="exercise-table">
+          <thead>
+            <tr>
+              <th>EXERCÍCIO</th>
+              <th>SÉRIES</th>
+              <th>REPS</th>
+              <th>CARGA (kg)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="ex-name">BARRA FIXA</td>
+              <td><input type="number" class="log-input" value="4" min="1"></td>
+              <td><input type="number" class="log-input" value="8" min="1"></td>
+              <td><input type="number" class="log-input weight" value="0" step="2.5"></td>
+            </tr>
+            <tr>
+              <td class="ex-name">REMADA CURVADA</td>
+              <td><input type="number" class="log-input" value="4" min="1"></td>
+              <td><input type="number" class="log-input" value="8" min="1"></td>
+              <td><input type="number" class="log-input weight" value="70" step="2.5"></td>
+            </tr>
+            <tr>
+              <td class="ex-name">PUXADA FRENTE</td>
+              <td><input type="number" class="log-input" value="3" min="1"></td>
+              <td><input type="number" class="log-input" value="10" min="1"></td>
+              <td><input type="number" class="log-input weight" value="55" step="2.5"></td>
+            </tr>
+            <tr>
+              <td class="ex-name">ROSCA DIRETA</td>
+              <td><input type="number" class="log-input" value="3" min="1"></td>
+              <td><input type="number" class="log-input" value="12" min="1"></td>
+              <td><input type="number" class="log-input weight" value="30" step="2.5"></td>
+            </tr>
+            <tr>
+              <td class="ex-name">ROSCA MARTELO</td>
+              <td><input type="number" class="log-input" value="3" min="1"></td>
+              <td><input type="number" class="log-input" value="12" min="1"></td>
+              <td><input type="number" class="log-input weight" value="24" step="1"></td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="add-exercise-btn">+ ADICIONAR_EXERCÍCIO</button>
+        <div class="volume-summary">
+          <div class="vol-item"><span class="vol-num">17</span><span class="vol-label">// SÉRIES TOTAL</span></div>
+          <div class="vol-item"><span class="vol-num">210</span><span class="vol-label">// REPS TOTAL</span></div>
+          <div class="vol-item"><span class="vol-num">8,160</span><span class="vol-label">// VOL. (kg)</span></div>
+        </div>
+      </div>
+
+      <!-- LEGS -->
+      <div class="log-panel" id="panel-legs">
+        <div class="log-date-header">
+          <span class="log-date">// 2026.04.01 — TERÇA-FEIRA</span>
+          <span class="log-category-badge badge-legs">LEGS</span>
+        </div>
+        <table class="exercise-table">
+          <thead>
+            <tr>
+              <th>EXERCÍCIO</th>
+              <th>SÉRIES</th>
+              <th>REPS</th>
+              <th>CARGA (kg)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="ex-name">AGACHAMENTO LIVRE</td>
+              <td><input type="number" class="log-input" value="4" min="1"></td>
+              <td><input type="number" class="log-input" value="8" min="1"></td>
+              <td><input type="number" class="log-input weight" value="100" step="5"></td>
+            </tr>
+            <tr>
+              <td class="ex-name">LEG PRESS 45°</td>
+              <td><input type="number" class="log-input" value="4" min="1"></td>
+              <td><input type="number" class="log-input" value="12" min="1"></td>
+              <td><input type="number" class="log-input weight" value="200" step="5"></td>
+            </tr>
+            <tr>
+              <td class="ex-name">EXTENSORA</td>
+              <td><input type="number" class="log-input" value="3" min="1"></td>
+              <td><input type="number" class="log-input" value="15" min="1"></td>
+              <td><input type="number" class="log-input weight" value="45" step="2.5"></td>
+            </tr>
+            <tr>
+              <td class="ex-name">FLEXORA</td>
+              <td><input type="number" class="log-input" value="3" min="1"></td>
+              <td><input type="number" class="log-input" value="12" min="1"></td>
+              <td><input type="number" class="log-input weight" value="35" step="2.5"></td>
+            </tr>
+            <tr>
+              <td class="ex-name">PANTURRILHA EM PÉ</td>
+              <td><input type="number" class="log-input" value="4" min="1"></td>
+              <td><input type="number" class="log-input" value="20" min="1"></td>
+              <td><input type="number" class="log-input weight" value="80" step="5"></td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="add-exercise-btn">+ ADICIONAR_EXERCÍCIO</button>
+        <div class="volume-summary">
+          <div class="vol-item"><span class="vol-num">18</span><span class="vol-label">// SÉRIES TOTAL</span></div>
+          <div class="vol-item"><span class="vol-num">335</span><span class="vol-label">// REPS TOTAL</span></div>
+          <div class="vol-item"><span class="vol-num">22,450</span><span class="vol-label">// VOL. (kg)</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ STORE ══════════════════ -->
+  <section id="store">
+    <div class="store-section">
+      <div class="section-header" style="padding:0 0 2rem">
+        <span class="section-tag">// ESTOQUE_FÍSICO</span>
+        <h2 class="section-title">SUPLEMENTOS</h2>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterProducts('all', this)">TODOS</button>
+        <button class="filter-btn" onclick="filterProducts('proteina', this)">PROTEÍNA</button>
+        <button class="filter-btn" onclick="filterProducts('creatina', this)">CREATINA</button>
+        <button class="filter-btn" onclick="filterProducts('pre', this)">PRÉ-TREINO</button>
+        <button class="filter-btn" onclick="filterProducts('aminoacido', this)">AMINOÁCIDO</button>
+        <button class="filter-btn" onclick="filterProducts('vitamina', this)">VITAMINA</button>
+      </div>
+
+      <div class="product-grid" id="productGrid">
+        <!-- Whey -->
+        <div class="product-card" data-cat="proteina">
+          <span class="product-status status-available">DISPONÍVEL</span>
+          <span class="product-img">🥛</span>
+          <div class="product-name">WHEY PROTEIN ISOLADO</div>
+          <div class="product-brand">QUANTUM NUTRITION — 900g</div>
+          <span class="product-cat-tag">PROTEÍNA</span>
+          <span class="product-price">R$ 189,90</span>
+        </div>
+        <div class="product-card out" data-cat="proteina">
+          <span class="product-status status-out">ESGOTADO</span>
+          <span class="product-img">🥤</span>
+          <div class="product-name">WHEY CONCENTRADO</div>
+          <div class="product-brand">CYBERFORCE LAB — 2kg</div>
+          <span class="product-cat-tag">PROTEÍNA</span>
+          <span class="product-price">R$ 149,90</span>
+        </div>
+        <div class="product-card" data-cat="proteina">
+          <span class="product-status status-available">DISPONÍVEL</span>
+          <span class="product-img">🧬</span>
+          <div class="product-name">PROTEÍNA VEGANA</div>
+          <div class="product-brand">BIO MATRIX — 800g</div>
+          <span class="product-cat-tag">PROTEÍNA</span>
+          <span class="product-price">R$ 169,90</span>
+        </div>
+        <!-- Creatina -->
+        <div class="product-card" data-cat="creatina">
+          <span class="product-status status-available">DISPONÍVEL</span>
+          <span class="product-img">💊</span>
+          <div class="product-name">CREATINA MONOHIDRATADA</div>
+          <div class="product-brand">PURE FORCE — 300g</div>
+          <span class="product-cat-tag">CREATINA</span>
+          <span class="product-price">R$ 79,90</span>
+        </div>
+        <div class="product-card" data-cat="creatina">
+          <span class="product-status status-available">DISPONÍVEL</span>
+          <span class="product-img">⚗️</span>
+          <div class="product-name">CREATINA ALCALINA</div>
+          <div class="product-brand">NEXUS LABS — 240 caps</div>
+          <span class="product-cat-tag">CREATINA</span>
+          <span class="product-price">R$ 109,90</span>
+        </div>
+        <!-- Pré-treino -->
+        <div class="product-card out" data-cat="pre">
+          <span class="product-status status-out">ESGOTADO</span>
+          <span class="product-img">⚡</span>
+          <div class="product-name">DARK MATTER PRE-WORKOUT</div>
+          <div class="product-brand">CYBERFORCE LAB — 300g</div>
+          <span class="product-cat-tag">PRÉ-TREINO</span>
+          <span class="product-price">R$ 139,90</span>
+        </div>
+        <div class="product-card" data-cat="pre">
+          <span class="product-status status-available">DISPONÍVEL</span>
+          <span class="product-img">🔋</span>
+          <div class="product-name">PULSE STIM-FREE</div>
+          <div class="product-brand">CLEAN ENERGY — 360g</div>
+          <span class="product-cat-tag">PRÉ-TREINO</span>
+          <span class="product-price">R$ 119,90</span>
+        </div>
+        <!-- Aminoácidos -->
+        <div class="product-card" data-cat="aminoacido">
+          <span class="product-status status-available">DISPONÍVEL</span>
+          <span class="product-img">🔬</span>
+          <div class="product-name">BCAA 2:1:1</div>
+          <div class="product-brand">AMINO MATRIX — 400g</div>
+          <span class="product-cat-tag">AMINOÁCIDO</span>
+          <span class="product-price">R$ 89,90</span>
+        </div>
+        <div class="product-card" data-cat="aminoacido">
+          <span class="product-status status-available">DISPONÍVEL</span>
+          <span class="product-img">🧪</span>
+          <div class="product-name">GLUTAMINA PURA</div>
+          <div class="product-brand">RECOVER PRO — 300g</div>
+          <span class="product-cat-tag">AMINOÁCIDO</span>
+          <span class="product-price">R$ 69,90</span>
+        </div>
+        <!-- Vitaminas -->
+        <div class="product-card" data-cat="vitamina">
+          <span class="product-status status-available">DISPONÍVEL</span>
+          <span class="product-img">💉</span>
+          <div class="product-name">VITAMINA D3 + K2</div>
+          <div class="product-brand">VITAL CORE — 120 caps</div>
+          <span class="product-cat-tag">VITAMINA</span>
+          <span class="product-price">R$ 54,90</span>
+        </div>
+        <div class="product-card out" data-cat="vitamina">
+          <span class="product-status status-out">ESGOTADO</span>
+          <span class="product-img">🌿</span>
+          <div class="product-name">MULTIVITAMÍNICO PRO</div>
+          <div class="product-brand">CYBER HEALTH — 90 caps</div>
+          <span class="product-cat-tag">VITAMINA</span>
+          <span class="product-price">R$ 74,90</span>
+        </div>
+        <div class="product-card" data-cat="vitamina">
+          <span class="product-status status-available">DISPONÍVEL</span>
+          <span class="product-img">🫐</span>
+          <div class="product-name">ÔMEGA 3 ULTRA</div>
+          <div class="product-brand">DEEP OCEAN — 180 softgels</div>
+          <span class="product-cat-tag">VITAMINA</span>
+          <span class="product-price">R$ 84,90</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ SCHEDULE ══════════════════ -->
+  <section id="schedule">
+    <div class="schedule-section">
+      <div class="section-header" style="padding:0 0 2rem">
+        <span class="section-tag">// CALENDÁRIO_SEMANAL</span>
+        <h2 class="section-title">PROGRAMAÇÃO</h2>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="week-grid">
+        <!-- SEG -->
+        <div class="day-col">
+          <div class="day-header">SEG</div>
+          <div class="class-card">
+            <span class="class-time">06:00</span>
+            <span class="class-name">BOXE</span>
+            <span class="class-instructor">Instr: MARCOS.exe</span>
+            <span class="class-slots slots-ok">12 VAGAS</span>
+          </div>
+          <div class="class-card">
+            <span class="class-time">09:00</span>
+            <span class="class-name">YOGA CYBER</span>
+            <span class="class-instructor">Instr: ALINE.exe</span>
+            <span class="class-slots slots-ok">8 VAGAS</span>
+          </div>
+          <div class="class-card">
+            <span class="class-time">19:00</span>
+            <span class="class-name">CROSSFIT</span>
+            <span class="class-instructor">Instr: DIEGO.exe</span>
+            <span class="class-slots slots-full">SALA CHEIA</span>
+          </div>
+        </div>
+        <!-- TER -->
+        <div class="day-col">
+          <div class="day-header today">TER ★</div>
+          <div class="class-card">
+            <span class="class-time">07:00</span>
+            <span class="class-name">ZUMBA</span>
+            <span class="class-instructor">Instr: CAROL.exe</span>
+            <span class="class-slots slots-ok">15 VAGAS</span>
+          </div>
+          <div class="class-card">
+            <span class="class-time">12:00</span>
+            <span class="class-name">HIIT EXTREME</span>
+            <span class="class-instructor">Instr: LUCAS.exe</span>
+            <span class="class-slots slots-low">3 VAGAS</span>
+          </div>
+          <div class="class-card">
+            <span class="class-time">20:00</span>
+            <span class="class-name">BOXE</span>
+            <span class="class-instructor">Instr: MARCOS.exe</span>
+            <span class="class-slots slots-ok">10 VAGAS</span>
+          </div>
+        </div>
+        <!-- QUA -->
+        <div class="day-col">
+          <div class="day-header">QUA</div>
+          <div class="class-card">
+            <span class="class-time">06:30</span>
+            <span class="class-name">PILATES</span>
+            <span class="class-instructor">Instr: FERNANDA.exe</span>
+            <span class="class-slots slots-ok">6 VAGAS</span>
+          </div>
+          <div class="class-card">
+            <span class="class-time">18:00</span>
+            <span class="class-name">CROSSFIT</span>
+            <span class="class-instructor">Instr: DIEGO.exe</span>
+            <span class="class-slots slots-low">2 VAGAS</span>
+          </div>
+          <div class="class-card">
+            <span class="class-time">21:00</span>
+            <span class="class-name">SPINNING</span>
+            <span class="class-instructor">Instr: RODRIGO.exe</span>
+            <span class="class-slots slots-full">SALA CHEIA</span>
+          </div>
+        </div>
+        <!-- QUI -->
+        <div class="day-col">
+          <div class="day-header">QUI</div>
+          <div class="class-card">
+            <span class="class-time">07:00</span>
+            <span class="class-name">ZUMBA</span>
+            <span class="class-instructor">Instr: CAROL.exe</span>
+            <span class="class-slots slots-ok">15 VAGAS</span>
+          </div>
+          <div class="class-card">
+            <span class="class-time">10:00</span>
+            <span class="class-name">YOGA CYBER</span>
+            <span class="class-instructor">Instr: ALINE.exe</span>
+            <span class="class-slots slots-ok">9 VAGAS</span>
+          </div>
+          <div class="class-card">
+            <span class="class-time">19:30</span>
+            <span class="class-name">HIIT EXTREME</span>
+            <span class="class-instructor">Instr: LUCAS.exe</span>
+            <span class="class-slots slots-full">SALA CHEIA</span>
+          </div>
+        </div>
+        <!-- SEX -->
+        <div class="day-col">
+          <div class="day-header">SEX</div>
+          <div class="class-card">
+            <span class="class-time">06:00</span>
+            <span class="class-name">BOXE</span>
+            <span class="class-instructor">Instr: MARCOS.exe</span>
+            <span class="class-slots slots-ok">7 VAGAS</span>
+          </div>
+          <div class="class-card">
+            <span class="class-time">08:30</span>
+            <span class="class-name">PILATES</span>
+            <span class="class-instructor">Instr: FERNANDA.exe</span>
+            <span class="class-slots slots-low">1 VAGA</span>
+          </div>
+          <div class="class-card">
+            <span class="class-time">18:00</span>
+            <span class="class-name">CROSSFIT</span>
+            <span class="class-instructor">Instr: DIEGO.exe</span>
+            <span class="class-slots slots-ok">5 VAGAS</span>
+          </div>
+        </div>
+        <!-- SAB -->
+        <div class="day-col">
+          <div class="day-header">SAB</div>
+          <div class="class-card">
+            <span class="class-time">08:00</span>
+            <span class="class-name">SPINNING</span>
+            <span class="class-instructor">Instr: RODRIGO.exe</span>
+            <span class="class-slots slots-low">4 VAGAS</span>
+          </div>
+          <div class="class-card">
+            <span class="class-time">09:30</span>
+            <span class="class-name">ZUMBA</span>
+            <span class="class-instructor">Instr: CAROL.exe</span>
+            <span class="class-slots slots-ok">12 VAGAS</span>
+          </div>
+          <div class="class-card">
+            <span class="class-time">11:00</span>
+            <span class="class-name">HIIT EXTREME</span>
+            <span class="class-instructor">Instr: LUCAS.exe</span>
+            <span class="class-slots slots-ok">8 VAGAS</span>
+          </div>
+        </div>
+        <!-- DOM -->
+        <div class="day-col">
+          <div class="day-header">DOM</div>
+          <div class="class-card">
+            <span class="class-time">09:00</span>
+            <span class="class-name">YOGA CYBER</span>
+            <span class="class-instructor">Instr: ALINE.exe</span>
+            <span class="class-slots slots-ok">10 VAGAS</span>
+          </div>
+          <div class="class-card">
+            <span class="class-time">10:30</span>
+            <span class="class-name">PILATES</span>
+            <span class="class-instructor">Instr: FERNANDA.exe</span>
+            <span class="class-slots slots-ok">5 VAGAS</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span>CYBERFORCE</span> — SISTEMA NEURAL v2.0 — CURITIBA, PR — 24/7 ONLINE<br>
+  <span style="font-size:0.5rem;color:#222;letter-spacing:0.5em;margin-top:0.5rem;display:block">// UNAUTHORIZED_ACCESS_PROHIBITED — ALL_RIGHTS_RESERVED</span>
+</footer>
+
+
 </body>
 </html>
-
-
-
-
-
