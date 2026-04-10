@@ -54,12 +54,12 @@
             
             <div class="field-row">
                 <div class="field-group">
-                    <label class="field-label">// CPF *</label>
-                    <input type="text" class="field-input" id="cad-cpf" placeholder="00000000000">
+                   <label class="field-label">// CPF *</label>
+                    <input type="text" class="field-input" id="cad-cpf" placeholder="000.000.000-00" maxlength="14" oninput="this.value = mascaraCPF(this.value)">
                 </div>
                 <div class="field-group">
                     <label class="field-label">// NASCIMENTO *</label>
-                    <input type="text" class="field-input" id="cad-nasc" placeholder="DD/MM/AAAA">
+                    <input type="text" class="field-input" id="cad-nasc" placeholder="DD/MM/AAAA" maxlength="10" oninput="this.value = mascaraData(this.value)">
                 </div>
             </div>
 

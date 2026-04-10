@@ -155,3 +155,25 @@ async function fazerLogin() {
         mostrarMensagem("// FALHA DE CONEXÃO", "error");
     }
 }
+// ─── MÁSCARAS DE ENTRADA (NOVO) ───
+
+// Formata o CPF como: 000.000.000-00
+function mascaraCPF(valor) {
+    let v = valor.replace(/\D/g, ""); // Remove tudo o que não for número
+    if (v.length > 11) v = v.substring(0, 11); // Limita a 11 números reais
+    
+    v = v.replace(/(\d{3})(\d)/, "$1.$2"); // Coloca o primeiro ponto
+    v = v.replace(/(\d{3})(\d)/, "$1.$2"); // Coloca o segundo ponto
+    v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2"); // Coloca o traço
+    return v;
+}
+
+// Formata a Data como: DD/MM/AAAA
+function mascaraData(valor) {
+    let v = valor.replace(/\D/g, ""); // Remove tudo o que não for número
+    if (v.length > 8) v = v.substring(0, 8); // Limita a 8 números reais
+    
+    v = v.replace(/(\d{2})(\d)/, "$1/$2"); // Coloca a primeira barra
+    v = v.replace(/(\d{2})(\d)/, "$1/$2"); // Coloca a segunda barra
+    return v;
+}
