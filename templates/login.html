@@ -14,10 +14,18 @@
 <header>
     <div class="logo glitch" data-text="CYBERFORCE" onclick="window.location.href='/'">CYBERFORCE</div>
 </header>
-<div class="header-line"></div>
+<div class="scanline"></div>
 
 <div class="login-wrapper">
     <div class="login-box">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+
+        <span class="login-tag">// AUTH_SYSTEM — v2.0</span>
+        <div class="login-title">ACESSO</div>
+        
         <div class="auth-tabs">
             <button class="auth-tab active" onclick="switchTab('login')">LOGIN</button>
             <button class="auth-tab" onclick="switchTab('cadastro')">CADASTRO</button>
@@ -37,48 +45,31 @@
         </div>
 
         <div class="auth-panel" id="panel-cadastro">
-            <div class="form-section-label">// DADOS_PESSOAIS</div>
+            <div class="form-section-label">// IDENTIFICAÇÃO_NEURAL</div>
+            
             <div class="field-group">
-                <label class="field-label">// NOME_COMPLETO</label>
+                <label class="field-label">// NOME_COMPLETO *</label>
                 <input type="text" class="field-input" id="cad-nome">
             </div>
+            
             <div class="field-row">
                 <div class="field-group">
-                    <label class="field-label">// CPF</label>
-                    <input type="text" class="field-input" id="cad-cpf" placeholder="000.000.000-00">
+                    <label class="field-label">// CPF *</label>
+                    <input type="text" class="field-input" id="cad-cpf" placeholder="00000000000">
                 </div>
                 <div class="field-group">
-                    <label class="field-label">// NASCIMENTO</label>
+                    <label class="field-label">// NASCIMENTO *</label>
                     <input type="text" class="field-input" id="cad-nasc" placeholder="DD/MM/AAAA">
                 </div>
             </div>
-            
-            <div class="form-section-label">// ENDEREÇO</div>
 
-            <div class="field-row">
-              <div class="field-group">
-                <label class="field-label">// CEP *</label>
-                <input type="text" class="field-input" id="cad-cep" placeholder="00000-000" onblur="buscarCEP(this)">
-                <div class="field-hint" id="hint-cep"></div>
-              </div>
-              <div class="field-group">
-                <label class="field-label">// UF</label>
-                <input type="text" class="field-input" id="cad-uf" placeholder="PR" maxlength="2" readonly>
-              </div>
-            </div>
-
+            <div class="form-section-label">// CREDENCIAIS_DE_ACESSO</div>
             <div class="field-group">
-                <label class="field-label">// RUA / ENDEREÇO</label>
-                <input type="text" class="field-input" id="cad-logradouro" placeholder="Aguardando CEP...">
-            </div>
-
-            <div class="form-section-label">// ACESSO</div>
-            <div class="field-group">
-                <label class="field-label">// EMAIL</label>
+                <label class="field-label">// EMAIL *</label>
                 <input type="email" class="field-input" id="cad-email">
             </div>
             <div class="field-group">
-                <label class="field-label">// SENHA</label>
+                <label class="field-label">// SENHA *</label>
                 <input type="password" class="field-input" id="cad-senha">
             </div>
 
@@ -88,6 +79,6 @@
     </div>
 </div>
 
-<script src="{{ url_for('static', filename='js/login.js') }}"></script>
+<script src="{{ url_for('static', filename='js/login.js') }}?v=2"></script>
 </body>
 </html>

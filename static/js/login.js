@@ -1,73 +1,95 @@
-// ─── NAVEGAÇÃO ENTRE ABAS ───
+// ─── ALTERNAR ABAS LOGIN/CADASTRO ───
 function switchTab(tab) {
-    const panelLogin = document.getElementById('panel-login');
-    const panelCad = document.getElementById('panel-cadastro');
+    const loginPanel = document.getElementById('panel-login');
+    const cadPanel = document.getElementById('panel-cadastro');
     const tabs = document.querySelectorAll('.auth-tab');
 
     if (tab === 'login') {
-        panelLogin.classList.add('active');
-        panelCad.classList.remove('active');
+        loginPanel.classList.add('active');
+        cadPanel.classList.remove('active');
         tabs[0].classList.add('active');
         tabs[1].classList.remove('active');
     } else {
-        panelLogin.classList.remove('active');
-        panelCad.classList.add('active');
+        loginPanel.classList.remove('active');
+        cadPanel.classList.add('active');
         tabs[0].classList.remove('active');
         tabs[1].classList.add('active');
     }
 }
 
-// ─── BUSCA DE CEP ───
-async function buscarCEP(input) {
-    const cep = input.value.replace(/\D/g, '');
-    const hint = document.getElementById('hint-cep');
-    if (cep.length === 8) {
-        try {
-            const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-            const data = await res.json();
-            if (!data.erro) {
-                document.getElementById('cad-logradouro').value = data.logradouro;
-                document.getElementById('cad-bairro').value = data.bairro;
-                document.getElementById('cad-cidade').value = data.localidade;
-                document.getElementById('cad-uf').value = data.uf;
-                hint.className = "field-hint ok show";
-                hint.innerText = "// SISTEMA_LOCALIZADO";
-            } else {
-                hint.className = "field-hint err show";
-                hint.innerText = "// CEP_INVÁLIDO";
-            }
-        } catch (e) { console.error("Erro ViaCEP"); }
-    }
+// ─── FUNÇÕES DE VALIDAÇÃO ───
+
+// Valida se o email tem o formato correto (ex: nome@dominio.com)
+function validarEmail(email) {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
 }
 
-// ─── FUNÇÃO DE CADASTRO ÚNICA ───
-async function fazerCadastro() {
+// Validação matemática do CPF
+function validarCPF(cpf) {
+    cpf = cpf.replace(/[^\d]+/g,'');
+    if(cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+    let add = 0;
+    for (let i=0; i < 9; i++) add += parseInt(cpf.charAt(i)) * (10 - i);
+    let rev = 11 - (add % 11);
+    if (rev == 10 || rev == 11) rev = 0;
+    if (rev != parseInt(cpf.charAt(9))) return false;
+    add = 0;
+    for (let i = 0; i < 10; i++) add += parseInt(cpf.charAt(i)) * (11 - i);
+    rev = 11 - (add % 11);
+    if (rev == 10 || rev == 11) rev = 0;
+    return rev == parseInt(cpf.charAt(10));
+}
+
+// Função auxiliar para exibir mensagens de erro/sucesso
+function mostrarMensagem(texto, tipo) {
     const msgBox = document.getElementById('msg-cadastro');
-    msgBox.style.display = "none"; // Garante que a caixa de erro apareça se necessário
+    msgBox.className = "msg-box " + tipo; // 'error' ou 'success' baseado no seu CSS
+    msgBox.innerText = texto;
+    msgBox.style.display = "block"; // Força a mensagem a aparecer
+}
 
-    // Coleta dos dados usando os IDs exatos do seu formulário
-    const payload = {
-        nome:            document.getElementById('cad-nome').value,
-        email:           document.getElementById('cad-email').value,
-        senha:           document.getElementById('cad-senha').value,
-        cpf:             document.getElementById('cad-cpf').value,
-        data_nascimento: document.getElementById('cad-nasc').value, // ID do seu HTML
-        celular:         document.getElementById('cad-cel').value,  // ID do seu HTML
-        cep:             document.getElementById('cad-cep').value,
-        logradouro:      document.getElementById('cad-logradouro').value,
-        bairro:          document.getElementById('cad-bairro').value,
-        cidade:          document.getElementById('cad-cidade').value,
-        uf:              document.getElementById('cad-uf').value
-    };
 
-    // Validação básica antes de enviar
-    if (!payload.nome || !payload.email || !payload.senha) {
-        msgBox.className = "msg-box error";
-        msgBox.innerText = "// ERRO: CAMPOS_OBRIGATÓRIOS_AUSENTES";
-        msgBox.style.display = "block";
+// ─── PROTOCOLO DE CADASTRO ───
+async function fazerCadastro() {
+    // Esconde a mensagem anterior antes de tentar novamente
+    document.getElementById('msg-cadastro').style.display = "none";
+
+    // 1. Coleta e limpeza dos dados (.trim() remove espaços em branco acidentais)
+    const nome = document.getElementById('cad-nome').value.trim();
+    const cpf = document.getElementById('cad-cpf').value.trim();
+    const data_nascimento = document.getElementById('cad-nasc').value.trim();
+    const email = document.getElementById('cad-email').value.trim();
+    const senha = document.getElementById('cad-senha').value; 
+
+    // 2. Validação: Algum campo está vazio?
+    if (!nome || !cpf || !data_nascimento || !email || !senha) {
+        mostrarMensagem("// ERRO: TODOS OS CAMPOS DEVEM SER PREENCHIDOS", "error");
+        return; // Para a execução aqui, não envia para o servidor
+    }
+
+    // 3. Validação: O Email é válido?
+    if (!validarEmail(email)) {
+        mostrarMensagem("// ERRO: FORMATO DE E-MAIL INVÁLIDO", "error");
         return;
     }
 
+    // 4. Validação: O CPF é válido?
+    if (!validarCPF(cpf)) {
+        mostrarMensagem("// ERRO: CPF MATEMATICAMENTE INVÁLIDO", "error");
+        return;
+    }
+
+    // Se passou em todas as verificações, monta o objeto para enviar
+    const payload = {
+        nome: nome,
+        cpf: cpf,
+        data_nascimento: data_nascimento,
+        email: email,
+        senha: senha
+    };
+
+    // Envia para o Flask
     try {
         const response = await fetch('/cadastro', {
             method: 'POST',
@@ -76,19 +98,60 @@ async function fazerCadastro() {
         });
 
         const result = await response.json();
-        msgBox.style.display = "block";
 
         if (result.sucesso) {
-            msgBox.className = "msg-box success";
-            msgBox.innerText = "// ACESSO_GERADO_COM_SUCESSO";
+            mostrarMensagem("// ACESSO_GERADO_COM_SUCESSO", "success");
+            // Espera 2 segundos e joga o usuário para a aba de login
             setTimeout(() => switchTab('login'), 2000);
         } else {
-            msgBox.className = "msg-box error";
-            msgBox.innerText = "// ERRO: " + result.mensagem;
+            // Mostra o erro retornado pelo Python (ex: Email já existe)
+            mostrarMensagem("// ERRO_SISTEMA: " + result.mensagem, "error");
         }
-    } catch (error) {
-        msgBox.style.display = "block";
-        msgBox.className = "msg-box error";
-        msgBox.innerText = "// FALHA_DE_COMUNICAÇÃO_COM_SERVIDOR";
+    } catch (e) {
+        mostrarMensagem("// FALHA_DE_CONEXÃO_COM_SERVIDOR", "error");
+    }
+}
+// Função auxiliar para exibir mensagens de erro/sucesso
+function mostrarMensagem(texto, tipo) {
+    const msgBox = document.getElementById('msg-cadastro');
+    if (msgBox) {
+        msgBox.className = "msg-box " + tipo; // 'error' ou 'success'
+        msgBox.innerText = texto;
+        msgBox.style.display = "block"; // Força a exibição
+    } else {
+        console.error("A div 'msg-cadastro' não foi encontrada no HTML!");
+    }
+}
+// Adicione isto no final do seu login.js
+async function fazerLogin() {
+    const msgBox = document.getElementById('msg-login');
+    if (msgBox) msgBox.style.display = "none";
+
+    const email = document.getElementById('login-email').value.trim();
+    const senha = document.getElementById('login-senha').value;
+
+    if (!email || !senha) {
+        mostrarMensagem("// ERRO: PREENCHA EMAIL E SENHA", "error");
+        return;
+    }
+
+    try {
+        const response = await fetch('/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, senha: senha })
+        });
+
+        const result = await response.json();
+
+        if (result.sucesso) {
+            // LOGIN APROVADO! Redireciona para a página principal (index)
+            window.location.href = '/'; 
+        } else {
+            // Mostra o erro (Ex: Senha incorreta)
+            mostrarMensagem("// ACESSO NEGADO: " + result.mensagem, "error");
+        }
+    } catch (e) {
+        mostrarMensagem("// FALHA DE CONEXÃO", "error");
     }
 }
