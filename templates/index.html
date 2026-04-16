@@ -43,10 +43,14 @@
 <!-- NAV DRAWER -->
 <nav class="nav-drawer" id="navDrawer">
   <div class="nav-label">// NAVIGATION_SYSTEM</div>
-  <div class="nav-item active" onclick="showSection('home'); closeMenu()">HOME</div>
-  <div class="nav-item" onclick="showSection('logbook'); closeMenu()">LOG BOOK</div>
-  <div class="nav-item" onclick="showSection('store'); closeMenu()">ESTOQUE</div>
-  <div class="nav-item" onclick="showSection('schedule'); closeMenu()">PROGRAMAÇÃO</div>
+<div class="nav-item active" onclick="showSection('home'); closeMenu()">HOME</div>
+<div class="nav-item" onclick="showSection('logbook'); closeMenu()">LOG BOOK</div>
+
+<div class="nav-item" id="menu-professor" style="display: none;" onclick="showSection('painel-professor'); closeMenu()">PAINEL DO PROFESSOR</div>
+
+<div class="nav-item" onclick="showSection('store'); closeMenu()">ESTOQUE</div>
+<div class="nav-item" onclick="showSection('schedule'); closeMenu()">PROGRAMAÇÃO</div>
+  
   <br>
   <div class="nav-label" style="margin-top:2rem">// STATUS</div>
   <div style="font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:#333;padding:0.5rem 1.2rem;letter-spacing:0.2em">

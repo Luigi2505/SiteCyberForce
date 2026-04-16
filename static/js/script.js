@@ -53,3 +53,63 @@
 
   // Logo nav
   document.querySelector('.logo').onclick = () => showSection('home');
+
+async function carregarTreinoDoBanco(categoria) {
+  try {
+    // Chama a rota do Flask
+    const resposta = await fetch(`/api/aluno/meu_treino/${categoria}`);
+    const dados = await resposta.json();
+    
+    if (resposta.ok) {
+      renderizarTabela(categoria, dados.exercicios);
+    } else {
+      console.log("Treino não encontrado ou erro:", dados.mensagem);
+      // Mostrar mensagem no HTML: "Seu professor ainda não enviou este treino."
+    }
+  } catch (erro) {
+    console.error("Erro de conexão", erro);
+  }
+}
+
+function renderizarTabela(categoria, exercicios) {
+  const tbody = document.querySelector(`#panel-${categoria} tbody`);
+  tbody.innerHTML = ''; // Limpa a tabela estática atual
+  
+  exercicios.forEach(ex => {
+    // Cria as linhas usando as classes CSS do seu projeto (ex-name, log-input)
+    const tr = `
+      <tr>
+        <td class="ex-name">${ex.nome}</td>
+        <td><input type="number" class="log-input" value="${ex.series}" readonly></td>
+        <td><input type="number" class="log-input" value="${ex.reps}" readonly></td>
+        <td><input type="number" class="log-input weight" value="${ex.carga}"></td>
+      </tr>
+    `;
+    tbody.innerHTML += tr;
+  });
+}
+
+// Modifique sua função original para carregar os dados
+function switchLogTab(cat) {
+  document.querySelectorAll('.log-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.log-panel').forEach(p => p.classList.remove('active'));
+  
+  document.querySelector(`.log-tab.${cat}`).classList.add('active');
+  document.getElementById(`panel-${cat}`).classList.add('active');
+  
+  // NOVA LINHA: Carrega os dados do banco dinamicamente
+  carregarTreinoDoBanco(cat);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Recupera o tipo de conta que salvamos no login
+    const userType = localStorage.getItem('cyberforce_user_type');
+    const menuProfessor = document.getElementById('menu-professor');
+    
+    // Se o tipo for 2 (Professor), exibe o item de menu
+    // Usamos == em vez de === porque o localStorage salva tudo como texto ("2")
+    if (userType == "treinador" && menuProfessor) {
+        menuProfessor.style.display = 'block';
+    }
+});
+

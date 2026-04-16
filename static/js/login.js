@@ -177,3 +177,40 @@ function mascaraData(valor) {
     v = v.replace(/(\d{2})(\d)/, "$1/$2"); // Coloca a segunda barra
     return v;
 }
+async function fazerLogin() {
+    const msgBox = document.getElementById('msg-login');
+    if (msgBox) msgBox.style.display = "none";
+
+    const email = document.getElementById('login-email').value.trim();
+    const senha = document.getElementById('login-senha').value;
+
+    if (!email || !senha) {
+        mostrarMensagem("// ERRO: PREENCHA EMAIL E SENHA", "error");
+        return;
+    }
+
+    try {
+        const response = await fetch('/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, senha: senha })
+        });
+
+        const result = await response.json();
+
+        if (result.sucesso) {
+            // SALVA O TIPO DE CONTA (Ex: 2 para Professor, 3 para Aluno)
+            // O seu backend Flask deve enviar 'tipo_conta' no JSON de resposta
+            localStorage.setItem('cyberforce_user_type', result.tipo_conta);
+            localStorage.setItem('cyberforce_user_name', result.nome);
+
+            // LOGIN APROVADO! Redireciona para a página principal
+            window.location.href = '/'; 
+        } else {
+            mostrarMensagem("// ACESSO NEGADO: " + result.mensagem, "error");
+        }
+    } catch (e) {
+        mostrarMensagem("// FALHA DE CONEXÃO", "error");
+    }
+}
+

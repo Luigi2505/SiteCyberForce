@@ -51,11 +51,19 @@ def login():
         usuario = Usuario.query.filter_by(email=data.get('email')).first()
         
         if usuario and check_password_hash(usuario.senha, data.get('senha')):
+            # Salva na sessão do servidor (Segurança)
             session['usuario_id'] = usuario.id_usuario
             session['perfil'] = usuario.perfil
-            return jsonify({'sucesso': True})
+            
+            # Envia os dados de volta para o JavaScript usar no front-end
+            return jsonify({
+                'sucesso': True,
+                'nome': usuario.nome,
+                'perfil': usuario.perfil
+            })
             
         return jsonify({'sucesso': False, 'mensagem': 'CREDENCIAIS_INVÁLIDAS'}), 401
+        
     return render_template('login.html')
 
 @app.route('/cadastro', methods=['POST'])
@@ -109,3 +117,77 @@ def cadastro():
 
 if __name__ == '__main__':
     app.run(debug=True)
+    
+# ROTA PARA O PROFESSOR VER SEUS ALUNOS E CRIAR TREINOS
+@app.route('/api/professor/alunos', methods=['GET'])
+def listar_alunos_do_professor():
+    # Verifica se quem está logado é professor (tipo 2)
+    if session.get('tipo_conta') != 2:
+        return jsonify({"erro": "Acesso negado. Apenas professores."}), 403
+        
+    professor_id = session.get('usuario_id')
+    alunos = Usuario.query.filter_by(professor_id=professor_id).all()
+    
+    resultado = [{"id": a.id, "nome": a.nome, "email": a.email} for a in alunos]
+    return jsonify(resultado)
+
+@app.route('/api/professor/criar_treino', methods=['POST'])
+def criar_treino():
+    if session.get('tipo_conta') != 2:
+        return jsonify({"erro": "Acesso negado."}), 403
+        
+    dados = request.json
+    aluno_id = dados.get('aluno_id')
+    # Cria o "Cabeçalho" do Treino (Ex: PUSH)
+    novo_treino = Treino(nome_treino=dados.get('nome_treino'), aluno_id=aluno_id)
+    db.session.add(novo_treino)
+    db.session.commit()
+    
+    # Adiciona os exercícios dentro desse treino
+    for ex in dados.get('exercicios'):
+        novo_ex = ExercicioTreino(
+            treino_id=novo_treino.id,
+            nome_exercicio=ex['nome'],
+            series=ex['series'],
+            reps=ex['reps'],
+            carga_recomendada=ex['carga']
+        )
+        db.session.add(novo_ex)
+    
+    db.session.commit()
+    return jsonify({"mensagem": "Treino atribuído ao aluno com sucesso!"})
+
+# ROTA PARA O ALUNO VER SEU PRÓPRIO TREINO
+@app.route('/api/aluno/meu_treino/<categoria>', methods=['GET'])
+def meu_treino(categoria):
+    # Verifica se é aluno (tipo 3)
+    if session.get('tipo_conta') != 3:
+        return jsonify({"erro": "Acesso negado."}), 403
+        
+    aluno_id = session.get('usuario_id')
+    # Busca o treino do aluno pela categoria (PUSH, PULL, LEGS)
+    treino = Treino.query.filter_by(aluno_id=aluno_id, nome_treino=categoria.upper()).first()
+    
+    if not treino:
+        return jsonify({"mensagem": "Nenhum treino encontrado para esta categoria."}), 404
+        
+    exercicios = [{"nome": e.nome_exercicio, "series": e.series, "reps": e.reps, "carga": e.carga_recomendada} for e in treino.exercicios]
+    
+    return jsonify({
+        "treino_id": treino.id,
+        "categoria": treino.nome_treino,
+        "exercicios": exercicios
+    })
+
+@app.route('/admin/promover/<int:usuario_id>', methods=['POST'])
+def promover_para_professor(usuario_id):
+    # Verifica se quem está logado é ADMIN (tipo 1)
+    if session.get('tipo_conta') != 1:
+        return "Acesso negado", 403
+        
+    usuario = Usuario.query.get(usuario_id)
+    if usuario:
+        usuario.tipo_conta = 2
+        db.session.commit()
+        return f"Usuário {usuario.nome} agora é Professor!"
+    return "Usuário não encontrado", 404
