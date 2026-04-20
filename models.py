@@ -24,7 +24,7 @@ class Treino(db.Model):
     __tablename__ = 'treinos'
     
     id = db.Column(db.Integer, primary_key=True)
-    nome_treino = db.Column(db.String(50), nullable=False) # Ex: "PUSH", "PULL", "LEGS"
+    nome_treino = db.Column(db.String(50), nullable=False) 
     data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Vincula o treino a um aluno específico
@@ -37,7 +37,7 @@ class ExercicioTreino(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     treino_id = db.Column(db.Integer, db.ForeignKey('treinos.id'), nullable=False)
     
-    nome_exercicio = db.Column(db.String(100), nullable=False) # Ex: SUPINO RETO
+    nome_exercicio = db.Column(db.String(100), nullable=False) 
     series = db.Column(db.Integer, nullable=False)
     reps = db.Column(db.Integer, nullable=False)
     carga_recomendada = db.Column(db.Float, nullable=False)
