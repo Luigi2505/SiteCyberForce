@@ -6,15 +6,92 @@
   if(document.getElementById('log-date')) document.getElementById('log-date').textContent = dateStr;
 
   // Section navigation
-  function showSection(id) {
+let alunoSelecionadoId = null;
+
+function showSection(id) {
     document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    const map = {home:0,logbook:1,store:2,schedule:3};
-    document.querySelectorAll('.nav-item')[map[id]]?.classList.add('active');
-    window.scrollTo({top:0,behavior:'smooth'});
-  }
+    
+    if (id === 'painel-professor') {
+        carregarAlunosDoProfessor();
+    }
+}
 
+async function carregarAlunosDoProfessor() {
+    const grid = document.getElementById('grid-alunos');
+    grid.innerHTML = '<p class="log-date">// ACESSANDO BANCO DE DADOS...</p>';
+    
+    const res = await fetch('/api/professor/meus_alunos');
+    const alunos = await res.json();
+    
+    grid.innerHTML = '';
+    alunos.forEach(a => {
+        grid.innerHTML += `
+            <div class="eq-card" onclick="abrirCriadorTreino(${a.id_aluno}, '${a.nome}')">
+                <div class="eq-name">${a.nome}</div>
+                <div class="eq-tag">ALUNO_ID: ${a.id_aluno}</div>
+            </div>
+        `;
+    });
+}
+
+function abrirCriadorTreino(id, nome) {
+    alunoSelecionadoId = id;
+    document.getElementById('lista-alunos-container').style.display = 'none';
+    document.getElementById('form-treino').style.display = 'block';
+    document.getElementById('nome-aluno-selecionado').textContent = `ALUNO: ${nome}`;
+    document.getElementById('corpo-treino-novo').innerHTML = ''; // Limpa anterior
+    adicionarLinhaExercicio(); // Começa com uma linha vazia
+}
+
+function fecharCriadorTreino() {
+    document.getElementById('lista-alunos-container').style.display = 'block';
+    document.getElementById('form-treino').style.display = 'none';
+}
+
+function adicionarLinhaExercicio() {
+    const tbody = document.getElementById('corpo-treino-novo');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td><input type="text" class="field-input ex-nome-input" placeholder="Ex: Supino"></td>
+        <td><input type="number" class="log-input ex-series" value="3"></td>
+        <td><input type="number" class="log-input ex-reps" value="12"></td>
+        <td><input type="number" class="log-input weight ex-carga" value="0"></td>
+        <td><button onclick="this.parentElement.parentElement.remove()" style="background:none; border:none; color:var(--neon-red); cursor:pointer;">X</button></td>
+    `;
+    tbody.appendChild(tr);
+}
+
+async function salvarTreinoCompleto() {
+    const linhas = document.querySelectorAll('#corpo-treino-novo tr');
+    const exercicios = [];
+    
+    linhas.forEach(linha => {
+        exercicios.push({
+            nome: linha.querySelector('.ex-nome-input').value,
+            series: linha.querySelector('.ex-series').value,
+            reps: linha.querySelector('.ex-reps').value,
+            carga: linha.querySelector('.ex-carga').value
+        });
+    });
+
+    const payload = {
+        id_aluno: alunoSelecionadoId,
+        categoria: document.getElementById('treino-categoria').value,
+        exercicios: exercicios
+    };
+
+    const res = await fetch('/api/professor/salvar_treino', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+        alert("PROTOCOLO DE TREINO ENVIADO COM SUCESSO!");
+        fecharCriadorTreino();
+    }
+}
   // Menu toggle
   function toggleMenu() {
     const ham = document.getElementById('hamburger');
@@ -96,20 +173,67 @@ function switchLogTab(cat) {
   
   document.querySelector(`.log-tab.${cat}`).classList.add('active');
   document.getElementById(`panel-${cat}`).classList.add('active');
-  
+
   // NOVA LINHA: Carrega os dados do banco dinamicamente
   carregarTreinoDoBanco(cat);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Recupera o tipo de conta que salvamos no login
+    // Recupera os dados que salvamos no login
     const userType = localStorage.getItem('cyberforce_user_type');
-    const menuProfessor = document.getElementById('menu-professor');
+    const userName = localStorage.getItem('cyberforce_user_name');
+    const userEmail = localStorage.getItem('cyberforce_user_email');
     
-    // Se o tipo for 2 (Professor), exibe o item de menu
-    // Usamos == em vez de === porque o localStorage salva tudo como texto ("2")
-    if (userType == "treinador" && menuProfessor) {
+    const menuProfessor = document.getElementById('menu-professor');
+    const btnLoginIcon = document.getElementById('btn-login-icon');
+    const userProfileDisplay = document.getElementById('user-profile-display');
+    
+    // 1. Mostrar o Menu do Professor se o usuário for "treinador"
+    if (userType === "treinador" && menuProfessor) {
         menuProfessor.style.display = 'block';
+    }
+
+    // 2. Controlar exibição no cabeçalho (Logado vs Deslogado)
+    if (userName) {
+        if (btnLoginIcon) btnLoginIcon.style.display = 'none';
+        if (userProfileDisplay) {
+            userProfileDisplay.style.display = 'flex';
+            document.getElementById('user-display-name').textContent = userName;
+            if(userEmail) document.getElementById('user-display-email').textContent = userEmail;
+        }
     }
 });
 
+// Função para abrir/fechar a caixinha de Sair
+function toggleDropdown() {
+    const dropdown = document.getElementById('user-dropdown');
+    if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+        dropdown.style.display = 'block';
+    } else {
+        dropdown.style.display = 'none';
+    }
+}
+
+// Função para fazer Logout
+function fazerLogout() {
+    // Limpa a memória do navegador
+    localStorage.removeItem('cyberforce_user_type');
+    localStorage.removeItem('cyberforce_user_name');
+    localStorage.removeItem('cyberforce_user_email');
+    
+    // Comunica ao Python para limpar a sessão
+    fetch('/logout').then(() => {
+        // Redireciona para atualizar a página e mostrar o botão de login novamente
+        window.location.href = '/';
+    });
+}
+
+// Abre/Fecha a caixinha de Sair no cabeçalho
+function toggleDropdown() {
+    const dropdown = document.getElementById('user-dropdown');
+    if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+        dropdown.style.display = 'block';
+    } else {
+        dropdown.style.display = 'none';
+    }
+}

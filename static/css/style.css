@@ -52,7 +52,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 4vw;
-    z-index: 1000;
+    z-index: 1001;
   }
   .header-line {
     position: fixed;
@@ -554,4 +554,27 @@
     0%,94%,100% { opacity: 0; }
     95% { opacity: 1; transform: translateX(-4px); }
     97% { opacity: 1; transform: translateX(4px); }
+  }
+
+/* ─── BOTÃO DE SAIR ─── */
+  .btn-sair {
+    display: block;
+    width: 100%;
+    font-family: 'Michroma', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--neon-red);
+    background: rgba(255, 34, 68, 0.05);
+    border: 1px solid var(--neon-red);
+    padding: 0.7rem;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.3s;
+    box-shadow: inset 0 0 10px rgba(255, 34, 68, 0.1);
+  }
+  .btn-sair:hover {
+    background: rgba(255, 34, 68, 0.15);
+    color: #fff;
+    text-shadow: 0 0 10px var(--neon-red);
+    box-shadow: 0 0 15px rgba(255, 34, 68, 0.4), inset 0 0 15px rgba(255, 34, 68, 0.2);
   }
