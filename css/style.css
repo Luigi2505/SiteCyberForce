@@ -373,6 +373,12 @@
   .eq-card:hover::after { opacity: 1; }
   .eq-card:hover .eq-border { opacity: 1; }
 
+  .eq-card-img {
+    width: 100%;
+    height: 70%;
+    object-fit: contain;
+  }
+
   .eq-border {
     position: absolute;
     inset: 1px;
