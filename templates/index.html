@@ -212,7 +212,7 @@
         <span id="categoria-badge" class="log-category-badge badge-push">PUSH</span>
       </div>
 
-      <table class="exercise-table">
+      <div class="table-wrapper"><table class="exercise-table">
         <thead>
           <tr>
             <th>EXERCÍCIO</th>
@@ -223,7 +223,7 @@
         </thead>
         <tbody id="logbook-tbody">
           </tbody>
-      </table>
+      </table></div>
 
       {% if session.get('perfil') == 'treinador' %}
       <button class="add-exercise-btn" onclick="showSection('painel-professor')">⚙️ EDITAR TREINO NO PAINEL</button>
