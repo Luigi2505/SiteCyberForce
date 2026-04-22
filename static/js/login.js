@@ -38,11 +38,48 @@ function mascaraData(valor) {
 }
 
 // ─── FUNÇÕES DE VALIDAÇÃO ───
+
+// 1. Validar Nome (Só letras e espaços, com acentos)
+function validarNome(nome) {
+    const regex = /^[a-zA-ZÀ-ÿ\s]+$/;
+    return regex.test(nome);
+}
+
+// 2. Validar Data (Não pode ser no futuro)
+function validarDataNascimento(dataTexto) {
+    const partes = dataTexto.split('/');
+    if (partes.length !== 3) return false;
+
+    const dia = parseInt(partes[0], 10);
+    const mes = parseInt(partes[1], 10) - 1; // Meses no JS começam em 0
+    const ano = parseInt(partes[2], 10);
+
+    const dataInserida = new Date(ano, mes, dia);
+    const hoje = new Date();
+
+    if (isNaN(dataInserida.getTime())) return false;
+    if (dataInserida > hoje) return false;
+
+    return true;
+}
+
+// 3. Validar Senha (Mínimo 8 caracteres, Maiúscula, Número e Caractere Especial)
+function validarSenha(senha) {
+    const temTamanhoSuficiente = senha.length >= 8;
+    const temMaiuscula = /[A-Z]/.test(senha);
+    const temNumero = /[0-9]/.test(senha);
+    const temEspecial = /[^A-Za-z0-9]/.test(senha);
+
+    return temTamanhoSuficiente && temMaiuscula && temNumero && temEspecial;
+}
+
+// 4. Validar Email
 function validarEmail(email) {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
 }
 
+// 5. Validar CPF Matemático
 function validarCPF(cpf) {
     cpf = cpf.replace(/[^\d]+/g,'');
     if(cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
@@ -59,7 +96,6 @@ function validarCPF(cpf) {
 }
 
 // ─── EXIBIR MENSAGENS DE ERRO/SUCESSO ───
-// Adicionei o parâmetro 'isLogin' para a mensagem aparecer no lugar certo
 function mostrarMensagem(texto, tipo, isLogin = false) {
     const idCaixa = isLogin ? 'msg-login' : 'msg-cadastro';
     const msgBox = document.getElementById(idCaixa);
@@ -79,11 +115,35 @@ async function fazerCadastro() {
     const cpf = document.getElementById('cad-cpf').value.trim();
     const data_nascimento = document.getElementById('cad-nasc').value.trim();
     const email = document.getElementById('cad-email').value.trim();
-    const senha = document.getElementById('cad-senha').value; 
+    const senha = document.getElementById('cad-senha').value;
+    const senhaConfirma = document.getElementById('cad-senha-confirma').value; 
 
-    if (!nome || !cpf || !data_nascimento || !email || !senha) {
+    // 1. Verificação de campos vazios
+    if (!nome || !cpf || !data_nascimento || !email || !senha || !senhaConfirma) {
         mostrarMensagem("// ERRO: TODOS OS CAMPOS DEVEM SER PREENCHIDOS", "error", false);
         return; 
+    }
+
+    // 2. Verificação de Coincidência de Senhas
+    if (senha !== senhaConfirma) {
+        mostrarMensagem("// ERRO: AS SENHAS NÃO COINCIDEM", "error", false);
+        return;
+    }
+
+    // 3. Verificações de Formato
+    if (!validarNome(nome)) {
+        mostrarMensagem("// ERRO: NOME DEVE CONTER APENAS LETRAS", "error", false);
+        return;
+    }
+
+    if (!validarDataNascimento(data_nascimento)) {
+        mostrarMensagem("// ERRO: DATA DE NASCIMENTO INVÁLIDA OU NO FUTURO", "error", false);
+        return;
+    }
+
+    if (!validarSenha(senha)) {
+        mostrarMensagem("// ERRO: SENHA DEVE TER NO MÍNIMO 8 CARACTERES, 1 MAIÚSCULA, 1 NÚMERO E 1 SÍMBOLO", "error", false);
+        return;
     }
 
     if (!validarEmail(email)) {
@@ -96,6 +156,7 @@ async function fazerCadastro() {
         return;
     }
 
+    // Se tudo passar, monta o pacote e envia
     const payload = {
         nome: nome,
         cpf: cpf,
@@ -115,6 +176,7 @@ async function fazerCadastro() {
 
         if (result.sucesso) {
             mostrarMensagem("// ACESSO_GERADO_COM_SUCESSO", "success", false);
+            // Aguarda 2 segundos e manda pra aba de login
             setTimeout(() => switchTab('login'), 2000);
         } else {
             mostrarMensagem("// ERRO_SISTEMA: " + result.mensagem, "error", false);
@@ -133,7 +195,6 @@ async function fazerLogin() {
     const senha = document.getElementById('login-senha').value;
 
     if (!email || !senha) {
-        // Agora passa 'true' no final para a mensagem aparecer na aba de login
         mostrarMensagem("// ERRO: PREENCHA EMAIL E SENHA", "error", true);
         return;
     }
@@ -148,7 +209,7 @@ async function fazerLogin() {
         const result = await response.json();
 
         if (result.sucesso) {
-            // Salva as informações recebidas do Python
+            // Salva as informações de apoio (o Flask já salvou a sessão segura no servidor)
             localStorage.setItem('cyberforce_user_type', result.perfil);
             localStorage.setItem('cyberforce_user_name', result.nome);
             localStorage.setItem('cyberforce_user_email', result.email);

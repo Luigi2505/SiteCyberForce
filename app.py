@@ -110,7 +110,7 @@ def cadastro():
         )
         db.session.add(novo_aluno)
         
-        # Confirma tudo no banco
+        # Confirma tudo no 
         db.session.commit()
         return jsonify({'sucesso': True})
         
@@ -127,8 +127,6 @@ def cadastro():
         # E vai enviar um pedaço do erro para a tela vermelha do site pra facilitar
         return jsonify({'sucesso': False, 'mensagem': f'ERRO NO BANCO: {str(e)}'}), 500
 
-if __name__ == '__main__':
-    app.run(debug=True)
     
 # ROTA PARA O PROFESSOR VER SEUS ALUNOS E CRIAR TREINOS
 @app.route('/api/professor/alunos', methods=['GET'])
@@ -259,3 +257,88 @@ def salvar_treino():
     
     db.session.commit()
     return jsonify({"sucesso": True})
+
+# ─── CRUD DE USUÁRIO: BUSCAR, ATUALIZAR E EXCLUIR ───
+
+# 1. READ: Buscar os dados para preencher a tela
+@app.route('/api/usuario/perfil', methods=['GET'])
+def buscar_perfil():
+    if 'usuario_id' not in session:
+        return jsonify({"erro": "Não autorizado"}), 401
+    
+    usuario = Usuario.query.get(session['usuario_id'])
+    
+    # Busca o aluno (se existir) para pegar o objetivo
+    aluno = Aluno.query.filter_by(id_usuario=usuario.id_usuario).first()
+            
+    return jsonify({
+        "nome": usuario.nome,
+        "email": usuario.email,
+        "cpf": usuario.cpf,
+        "objetivo": aluno.objetivo if aluno else ""
+    })
+
+# 2. UPDATE: Atualizar Nome e Objetivo
+@app.route('/api/usuario/atualizar', methods=['POST'])
+def atualizar_perfil():
+    if 'usuario_id' not in session:
+        return jsonify({"sucesso": False, "mensagem": "Não autorizado"}), 401
+    
+    data = request.get_json()
+    usuario = Usuario.query.get(session['usuario_id'])
+    
+    if usuario:
+        # Atualiza o nome do usuário
+        usuario.nome = data.get('nome')
+        session['nome'] = usuario.nome # Atualiza na sessão para o Header mudar na hora
+        
+        # Se for aluno, atualiza o objetivo
+        aluno = Aluno.query.filter_by(id_usuario=usuario.id_usuario).first()
+        if aluno:
+            aluno.objetivo = data.get('objetivo')
+                
+        db.session.commit()
+        return jsonify({"sucesso": True})
+        
+    return jsonify({"sucesso": False, "mensagem": "Usuário não encontrado"}), 404
+
+# 3. DELETE: Apagar a conta do sistema com segurança
+@app.route('/api/usuario/excluir', methods=['POST'])
+def excluir_conta():
+    if 'usuario_id' not in session:
+        return jsonify({"sucesso": False}), 401
+    
+    id_alvo = session['usuario_id']
+    usuario = Usuario.query.get(id_alvo)
+    
+    if usuario:
+        try:
+            # 1º PASSO: Lidar com o Aluno e seus Treinos
+            aluno = Aluno.query.filter_by(id_usuario=id_alvo).first()
+            if aluno:
+                # TRAVA DE SEGURANÇA: Apaga os treinos e exercícios do aluno antes
+                treinos = Treino.query.filter_by(id_aluno=aluno.id_aluno).all()
+                for t in treinos:
+                    ItemTreino.query.filter_by(id_treino=t.id_treino).delete()
+                    db.session.delete(t)
+                
+                # Agora sim pode apagar o Aluno
+                db.session.delete(aluno)
+                
+            # 2º PASSO: Apagar o Usuário principal
+            db.session.delete(usuario)
+            db.session.commit()
+            
+            # Limpa a sessão para deslogar a pessoa automaticamente
+            session.clear()
+            return jsonify({"sucesso": True})
+            
+        except Exception as e:
+            # Se der qualquer erro no banco, ele desfaz tudo para não corromper os dados
+            db.session.rollback()
+            return jsonify({"sucesso": False, "erro": str(e)}), 500
+            
+    return jsonify({"sucesso": False}), 404
+
+if __name__ == '__main__':
+    app.run(debug=True)

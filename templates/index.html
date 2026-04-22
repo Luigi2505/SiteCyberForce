@@ -71,13 +71,16 @@
 <nav class="nav-drawer" id="navDrawer">
   <div class="nav-label">// NAVIGATION_SYSTEM</div>
 <div class="nav-item active" onclick="showSection('home'); closeMenu()">HOME</div>
+{% if session.get('usuario_id') %}
+<div class="nav-item" onclick="showSection('perfil'); closeMenu()">MEU PERFIL</div>
+{% endif %}
 <div class="nav-item" onclick="showSection('logbook'); closeMenu()">LOG BOOK</div>
 {% if session.get('perfil') == 'treinador' %}
 <div class="nav-item" onclick="showSection('painel-professor'); closeMenu()">PAINEL DO PROFESSOR</div>
 {% endif %}
 <div class="nav-item" onclick="showSection('store'); closeMenu()">ESTOQUE</div>
 <div class="nav-item" onclick="showSection('schedule'); closeMenu()">PROGRAMAÇÃO</div>
-  
+
   <br>
   <div class="nav-label" style="margin-top:2rem">// STATUS</div>
   <div style="font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:#333;padding:0.5rem 1.2rem;letter-spacing:0.2em">
@@ -188,189 +191,47 @@
   </section>
 
   <!-- ══════════════════ LOG BOOK ══════════════════ -->
-  <section id="logbook">
-    <div class="logbook-section">
-      <div class="section-header" style="padding:0 0 2rem">
-        <span class="section-tag">// DIÁRIO_DE_TREINO</span>
-        <h2 class="section-title">LOG BOOK</h2>
-        <div class="section-line"></div>
-      </div>
-
-      <div class="log-tabs">
-        <button class="log-tab push active" onclick="switchLogTab('push')">PUSH</button>
-        <button class="log-tab pull" onclick="switchLogTab('pull')">PULL</button>
-        <button class="log-tab legs" onclick="switchLogTab('legs')">LEGS</button>
-      </div>
-
-      <!-- PUSH -->
-      <div class="log-panel active" id="panel-push">
-        <div class="log-date-header">
-          <span class="log-date" id="log-date">// 2026.04.01 — TERÇA-FEIRA</span>
-          <span class="log-category-badge badge-push">PUSH</span>
-        </div>
-        <table class="exercise-table">
-          <thead>
-            <tr>
-              <th>EXERCÍCIO</th>
-              <th>SÉRIES</th>
-              <th>REPS</th>
-              <th>CARGA (kg)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="ex-name">SUPINO RETO</td>
-              <td><input type="number" class="log-input" value="4" min="1"></td>
-              <td><input type="number" class="log-input" value="8" min="1"></td>
-              <td><input type="number" class="log-input weight" value="80" step="2.5"></td>
-            </tr>
-            <tr>
-              <td class="ex-name">SUPINO INCLINADO</td>
-              <td><input type="number" class="log-input" value="3" min="1"></td>
-              <td><input type="number" class="log-input" value="10" min="1"></td>
-              <td><input type="number" class="log-input weight" value="65" step="2.5"></td>
-            </tr>
-            <tr>
-              <td class="ex-name">DESENVOLVIMENTO MILITAR</td>
-              <td><input type="number" class="log-input" value="4" min="1"></td>
-              <td><input type="number" class="log-input" value="8" min="1"></td>
-              <td><input type="number" class="log-input weight" value="50" step="2.5"></td>
-            </tr>
-            <tr>
-              <td class="ex-name">ELEVAÇÃO LATERAL</td>
-              <td><input type="number" class="log-input" value="3" min="1"></td>
-              <td><input type="number" class="log-input" value="15" min="1"></td>
-              <td><input type="number" class="log-input weight" value="16" step="1"></td>
-            </tr>
-            <tr>
-              <td class="ex-name">TRÍCEPS PULLEY</td>
-              <td><input type="number" class="log-input" value="3" min="1"></td>
-              <td><input type="number" class="log-input" value="12" min="1"></td>
-              <td><input type="number" class="log-input weight" value="30" step="2.5"></td>
-            </tr>
-          </tbody>
-        </table>
-        <button class="add-exercise-btn">+ ADICIONAR_EXERCÍCIO</button>
-        <div class="volume-summary">
-          <div class="vol-item"><span class="vol-num">17</span><span class="vol-label">// SÉRIES TOTAL</span></div>
-          <div class="vol-item"><span class="vol-num">241</span><span class="vol-label">// REPS TOTAL</span></div>
-          <div class="vol-item"><span class="vol-num">9,240</span><span class="vol-label">// VOL. (kg)</span></div>
-        </div>
-      </div>
-
-      <!-- PULL -->
-      <div class="log-panel" id="panel-pull">
-        <div class="log-date-header">
-          <span class="log-date">// 2026.04.01 — TERÇA-FEIRA</span>
-          <span class="log-category-badge badge-pull">PULL</span>
-        </div>
-        <table class="exercise-table">
-          <thead>
-            <tr>
-              <th>EXERCÍCIO</th>
-              <th>SÉRIES</th>
-              <th>REPS</th>
-              <th>CARGA (kg)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="ex-name">BARRA FIXA</td>
-              <td><input type="number" class="log-input" value="4" min="1"></td>
-              <td><input type="number" class="log-input" value="8" min="1"></td>
-              <td><input type="number" class="log-input weight" value="0" step="2.5"></td>
-            </tr>
-            <tr>
-              <td class="ex-name">REMADA CURVADA</td>
-              <td><input type="number" class="log-input" value="4" min="1"></td>
-              <td><input type="number" class="log-input" value="8" min="1"></td>
-              <td><input type="number" class="log-input weight" value="70" step="2.5"></td>
-            </tr>
-            <tr>
-              <td class="ex-name">PUXADA FRENTE</td>
-              <td><input type="number" class="log-input" value="3" min="1"></td>
-              <td><input type="number" class="log-input" value="10" min="1"></td>
-              <td><input type="number" class="log-input weight" value="55" step="2.5"></td>
-            </tr>
-            <tr>
-              <td class="ex-name">ROSCA DIRETA</td>
-              <td><input type="number" class="log-input" value="3" min="1"></td>
-              <td><input type="number" class="log-input" value="12" min="1"></td>
-              <td><input type="number" class="log-input weight" value="30" step="2.5"></td>
-            </tr>
-            <tr>
-              <td class="ex-name">ROSCA MARTELO</td>
-              <td><input type="number" class="log-input" value="3" min="1"></td>
-              <td><input type="number" class="log-input" value="12" min="1"></td>
-              <td><input type="number" class="log-input weight" value="24" step="1"></td>
-            </tr>
-          </tbody>
-        </table>
-        <button class="add-exercise-btn">+ ADICIONAR_EXERCÍCIO</button>
-        <div class="volume-summary">
-          <div class="vol-item"><span class="vol-num">17</span><span class="vol-label">// SÉRIES TOTAL</span></div>
-          <div class="vol-item"><span class="vol-num">210</span><span class="vol-label">// REPS TOTAL</span></div>
-          <div class="vol-item"><span class="vol-num">8,160</span><span class="vol-label">// VOL. (kg)</span></div>
-        </div>
-      </div>
-
-      <!-- LEGS -->
-      <div class="log-panel" id="panel-legs">
-        <div class="log-date-header">
-          <span class="log-date">// 2026.04.01 — TERÇA-FEIRA</span>
-          <span class="log-category-badge badge-legs">LEGS</span>
-        </div>
-        <table class="exercise-table">
-          <thead>
-            <tr>
-              <th>EXERCÍCIO</th>
-              <th>SÉRIES</th>
-              <th>REPS</th>
-              <th>CARGA (kg)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="ex-name">AGACHAMENTO LIVRE</td>
-              <td><input type="number" class="log-input" value="4" min="1"></td>
-              <td><input type="number" class="log-input" value="8" min="1"></td>
-              <td><input type="number" class="log-input weight" value="100" step="5"></td>
-            </tr>
-            <tr>
-              <td class="ex-name">LEG PRESS 45°</td>
-              <td><input type="number" class="log-input" value="4" min="1"></td>
-              <td><input type="number" class="log-input" value="12" min="1"></td>
-              <td><input type="number" class="log-input weight" value="200" step="5"></td>
-            </tr>
-            <tr>
-              <td class="ex-name">EXTENSORA</td>
-              <td><input type="number" class="log-input" value="3" min="1"></td>
-              <td><input type="number" class="log-input" value="15" min="1"></td>
-              <td><input type="number" class="log-input weight" value="45" step="2.5"></td>
-            </tr>
-            <tr>
-              <td class="ex-name">FLEXORA</td>
-              <td><input type="number" class="log-input" value="3" min="1"></td>
-              <td><input type="number" class="log-input" value="12" min="1"></td>
-              <td><input type="number" class="log-input weight" value="35" step="2.5"></td>
-            </tr>
-            <tr>
-              <td class="ex-name">PANTURRILHA EM PÉ</td>
-              <td><input type="number" class="log-input" value="4" min="1"></td>
-              <td><input type="number" class="log-input" value="20" min="1"></td>
-              <td><input type="number" class="log-input weight" value="80" step="5"></td>
-            </tr>
-          </tbody>
-        </table>
-        <button class="add-exercise-btn">+ ADICIONAR_EXERCÍCIO</button>
-        <div class="volume-summary">
-          <div class="vol-item"><span class="vol-num">18</span><span class="vol-label">// SÉRIES TOTAL</span></div>
-          <div class="vol-item"><span class="vol-num">335</span><span class="vol-label">// REPS TOTAL</span></div>
-          <div class="vol-item"><span class="vol-num">22,450</span><span class="vol-label">// VOL. (kg)</span></div>
-        </div>
-      </div>
+  {% if session.get('usuario_id') %}
+<section id="logbook">
+  <div class="logbook-section">
+    <div class="section-header" style="padding:0 0 2rem">
+      <span class="section-tag">// PROTOCOLO_DE_TREINAMENTO</span>
+      <h2 class="section-title">LOG BOOK</h2>
+      <div class="section-line"></div>
     </div>
-  </section>
+
+    <div class="log-tabs">
+      <button class="log-tab push active" onclick="switchLogTab('push')">PUSH</button>
+      <button class="log-tab pull" onclick="switchLogTab('pull')">PULL</button>
+      <button class="log-tab legs" onclick="switchLogTab('legs')">LEGS</button>
+    </div>
+
+    <div class="log-panel active" id="panel-container">
+      <div class="log-date-header">
+        <span class="log-date" id="log-date-display">// CARREGANDO DATA...</span>
+        <span id="categoria-badge" class="log-category-badge badge-push">PUSH</span>
+      </div>
+
+      <table class="exercise-table">
+        <thead>
+          <tr>
+            <th>EXERCÍCIO</th>
+            <th>SÉRIES</th>
+            <th>REPS</th>
+            <th>CARGA (kg)</th>
+          </tr>
+        </thead>
+        <tbody id="logbook-tbody">
+          </tbody>
+      </table>
+
+      {% if session.get('perfil') == 'treinador' %}
+      <button class="add-exercise-btn" onclick="showSection('painel-professor')">⚙️ EDITAR TREINO NO PAINEL</button>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endif %}
   <section id="painel-professor">
     <div class="logbook-section">
         <div class="section-header" style="padding:0 0 2rem">
@@ -706,7 +567,58 @@
 
     </div>
   </section>
+  <!-- ══════════════════ PERFIL ══════════════════ -->
+  {% if session.get('usuario_id') %}
+  <section id="perfil">
+    <div class="logbook-section">
+      <div class="section-header" style="padding:0 0 2rem">
+        <span class="section-tag">// USER_DATA_CORE</span>
+        <h2 class="section-title">MEU PERFIL</h2>
+        <div class="section-line"></div>
+      </div>
 
+      <div style="max-width: 600px; margin: 0 auto; background: rgba(10,10,20,0.8); padding: 3rem; border: 1px solid var(--neon-purple); box-shadow: inset 0 0 20px rgba(160,32,240,0.1);">
+        
+        <div style="font-family:'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--cyan); letter-spacing: 0.2em; margin-bottom: 1.5rem;">
+          // IDENTIFICAÇÃO NEURAL
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label style="font-family:'Share Tech Mono'; font-size:0.6rem; color:var(--text-dim); display:block; margin-bottom:0.5rem;">// NOME COMPLETO</label>
+            <input type="text" id="perfil-nome" class="field-input" style="width: 100%; border: 1px solid var(--neon-purple); background: transparent; color: var(--text); padding: 0.8rem; font-family:'Share Tech Mono'; outline:none;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+            <div>
+                <label style="font-family:'Share Tech Mono'; font-size:0.6rem; color:var(--text-dim); display:block; margin-bottom:0.5rem;">// CPF (BLOQUEADO)</label>
+                <input type="text" id="perfil-cpf" readonly style="width: 100%; border: 1px dashed rgba(85,85,119,0.5); background: transparent; color: var(--text-dim); padding: 0.8rem; font-family:'Share Tech Mono'; cursor: not-allowed;">
+            </div>
+            <div>
+                <label style="font-family:'Share Tech Mono'; font-size:0.6rem; color:var(--text-dim); display:block; margin-bottom:0.5rem;">// EMAIL (BLOQUEADO)</label>
+                <input type="text" id="perfil-email" readonly style="width: 100%; border: 1px dashed rgba(85,85,119,0.5); background: transparent; color: var(--text-dim); padding: 0.8rem; font-family:'Share Tech Mono'; cursor: not-allowed;">
+            </div>
+        </div>
+
+        <div style="margin-bottom: 2.5rem;">
+            <label style="font-family:'Share Tech Mono'; font-size:0.6rem; color:var(--text-dim); display:block; margin-bottom:0.5rem;">// OBJETIVO DO PROTOCOLO (Ex: Hipertrofia, Força)</label>
+            <input type="text" id="perfil-objetivo" class="field-input" style="width: 100%; border: 1px solid var(--cyan); background: transparent; color: var(--cyan); padding: 0.8rem; font-family:'Share Tech Mono'; outline:none;">
+        </div>
+
+        <button onclick="salvarPerfil()" style="width: 100%; padding: 1rem; background: rgba(0,212,255,0.1); border: 1px solid var(--cyan); color: var(--cyan); font-family: 'Michroma'; font-size: 0.75rem; letter-spacing: 0.2em; cursor: pointer; transition: 0.3s; margin-bottom: 3rem;">
+          SALVAR ALTERAÇÕES
+        </button>
+
+        <div style="border-top: 1px solid rgba(255,34,68,0.3); padding-top: 2rem; text-align: center;">
+            <p style="font-family:'Share Tech Mono'; font-size:0.6rem; color:var(--neon-red); margin-bottom:1rem;">⚠️ AÇÃO IRREVERSÍVEL: APAGAR REGISTRO NEURAL ⚠️</p>
+            <button onclick="deletarConta()" style="padding: 0.8rem 2rem; background: transparent; border: 1px dashed var(--neon-red); color: var(--neon-red); font-family: 'Michroma'; font-size: 0.6rem; letter-spacing: 0.1em; cursor: pointer; transition: 0.3s;">
+              EXCLUIR CONTA DEFINITIVAMENTE
+            </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+  {% endif %}
 </main>
 
 <footer>

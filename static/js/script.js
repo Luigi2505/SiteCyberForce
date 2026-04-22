@@ -237,3 +237,152 @@ function toggleDropdown() {
         dropdown.style.display = 'none';
     }
 }
+
+// Adicione isto ao seu script.js
+async function carregarLogbook(categoria) {
+    const tbody = document.getElementById('logbook-tbody');
+    const badge = document.getElementById('categoria-badge');
+    const userPerfil = document.body.dataset.userPerfil; // Certifique-se de ter adicionado isso ao <body>
+    
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center">// SINCRONIZANDO COM O SERVIDOR...</td></tr>';
+    
+    // Atualiza o visual do badge
+    badge.textContent = categoria.toUpperCase();
+    badge.className = `log-category-badge badge-${categoria}`;
+
+    try {
+        const response = await fetch(`/api/aluno/meu_treino/${categoria}`);
+        const data = await response.json();
+
+        if (response.ok) {
+            tbody.innerHTML = '';
+            data.exercicios.forEach(ex => {
+                // REGRA DE OURO: Se for aluno, o campo é readonly (somente leitura)
+                const isReadOnly = userPerfil !== 'treinador' ? 'readonly' : '';
+                const inputClass = userPerfil !== 'treinador' ? 'input-bloqueado' : '';
+
+                const tr = `
+                    <tr>
+                        <td class="ex-name">${ex.nome}</td>
+                        <td><input type="number" class="log-input" value="${ex.series}" readonly></td>
+                        <td><input type="number" class="log-input" value="${ex.reps}" readonly></td>
+                        <td>
+                            <input type="number" 
+                                   class="log-input weight ${inputClass}" 
+                                   value="${ex.carga}" 
+                                   ${isReadOnly}
+                                   onchange="salvarCargaRapida(${ex.id_item}, this.value)">
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += tr;
+            });
+        } else {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-dim)">${data.mensagem || "// NENHUM TREINO ENCONTRADO"}</td></tr>`;
+        }
+    } catch (error) {
+        console.error("Erro ao carregar logbook:", error);
+    }
+}
+
+// Função para o professor alterar a carga direto no logbook se quiser
+async function salvarCargaRapida(idItem, novaCarga) {
+    await fetch('/api/treino/atualizar_carga', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ id_item_treino: idItem, nova_carga: novaCarga })
+    });
+}
+
+// Ajuste na função de troca de abas
+function switchLogTab(cat) {
+    document.querySelectorAll('.log-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`.log-tab.${cat}`).classList.add('active');
+    carregarLogbook(cat);
+}
+
+// ==========================================
+// FUNÇÕES DO PERFIL (CRUD)
+// ==========================================
+
+// 1. READ: Carregar os dados quando a aba abrir
+async function carregarDadosPerfil() {
+    try {
+        const response = await fetch('/api/usuario/perfil');
+        const data = await response.json();
+        
+        if (response.ok) {
+            document.getElementById('perfil-nome').value = data.nome;
+            document.getElementById('perfil-cpf').value = data.cpf;
+            document.getElementById('perfil-email').value = data.email;
+            document.getElementById('perfil-objetivo').value = data.objetivo || '';
+        }
+    } catch (e) {
+        console.error("Erro ao carregar perfil:", e);
+    }
+}
+
+// 2. UPDATE: Salvar as alterações
+async function salvarPerfil() {
+    const nome = document.getElementById('perfil-nome').value;
+    const objetivo = document.getElementById('perfil-objetivo').value;
+    
+    if (!nome) {
+        alert("O nome não pode ficar vazio.");
+        return;
+    }
+    
+    const payload = { nome: nome, objetivo: objetivo };
+    
+    const response = await fetch('/api/usuario/atualizar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+    
+    const result = await response.json();
+    if (result.sucesso) {
+        alert("DADOS SINCRONIZADOS COM SUCESSO!");
+        location.reload(); // Recarrega a página para atualizar o Header
+    } else {
+        alert("Erro ao atualizar perfil.");
+    }
+}
+
+// 3. DELETE: Excluir a conta
+async function deletarConta() {
+    const confirmacao = confirm("ALERTA CRÍTICO: Tem certeza que deseja apagar sua conta? Todos os seus treinos e dados serão perdidos. Esta ação NÃO pode ser desfeita.");
+    
+    if (confirmacao) {
+        const response = await fetch('/api/usuario/excluir', { method: 'POST' });
+        const result = await response.json();
+        
+        if (result.sucesso) {
+            alert("SISTEMA: Conta eliminada com sucesso. Desconectando...");
+            window.location.href = '/'; // Como a sessão foi limpa no Python, a home será recarregada como visitante
+        } else {
+            alert("Falha ao excluir conta.");
+        }
+    }
+}
+
+// ==========================================
+// ATUALIZAR A FUNÇÃO DE NAVEGAÇÃO
+// ==========================================
+// Precisamos fazer com que a função showSection carregue os dados ao clicar no perfil.
+// Encontre a sua função showSection atual e modifique-a para ficar assim:
+
+function showSection(id) {
+    document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    
+    // Atualiza o menu lateral
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    
+    // Se a aba for o perfil, carrega os dados
+    if (id === 'perfil') {
+        carregarDadosPerfil();
+    }
+    
+    window.scrollTo({top:0, behavior:'smooth'});
+}
