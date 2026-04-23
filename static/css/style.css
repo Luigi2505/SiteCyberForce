@@ -46,9 +46,10 @@
     background: rgba(0,0,0,0.85);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    display: flex;
+    
+    display: grid;
+    grid-template-columns: 60px 1fr auto; 
     align-items: center;
-    justify-content: space-between;
     padding: 0 4vw;
     z-index: 1001;
   }
@@ -85,19 +86,20 @@
   .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
   .logo {
     font-family: 'Michroma', sans-serif;
-    font-size: clamp(1rem, 4vw, 2.8rem);
-    letter-spacing: 0.25em;
+    font-size: clamp(1.2rem, 3vw, 2.2rem); /* Tamanho seguro */
+    letter-spacing: 0.15em;
+    text-align: center; /* Força ficar exatamente no meio */
+    margin: 0 auto;
+    white-space: nowrap; /* Proíbe a palavra de quebrar ao meio */
+    
     background: var(--grad);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    filter: drop-shadow(0 0 10px rgba(86,0,120,0.8)) drop-shadow(0 0 20px rgba(20,111,181,0.6));
+    filter: drop-shadow(0 0 10px rgba(86,0,120,0.8));
     cursor: pointer;
     transition: filter 0.3s;
     user-select: none;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
   }
   .logo:hover {
     filter: drop-shadow(0 0 15px rgba(160,32,240,1)) drop-shadow(0 0 35px rgba(0,212,255,0.9));
@@ -435,3 +437,84 @@
     .about-visual { height: 180px; }
     .nav-drawer { width: 85vw; }
   }
+
+
+/* ==========================================
+    DIRETRIZES DE RESPONSIVIDADE (MOBILE)
+   ========================================== */
+
+@media (max-width: 768px) {
+    /* 1. Ajustes Gerais de Espaçamento */
+    .section-header { 
+        padding: 3rem 1rem 1.5rem; 
+        flex-direction: column; 
+        align-items: flex-start; 
+        gap: 0.5rem; 
+    }
+    .hero { padding: 3rem 1rem; }
+    .logbook-section, .store-section, .schedule-section { padding: 2rem 1rem; }
+
+    /* 2. Formulários em 1 coluna (Login e Perfil) */
+    .field-row { 
+        grid-template-columns: 1fr !important; 
+        gap: 1rem;
+    }
+
+    /* 3. Ajuste do Menu Superior (Header) */
+    header { padding: 0 1rem; }
+    .logo { font-size: 1.5rem; }
+    #user-display-name, #user-display-email { display: none; } /* Esconde o texto no mobile, deixa só o ícone */
+
+    /* 4. Tabelas do Logbook (Permitir Rolagem Horizontal) */
+    .log-panel { 
+        overflow-x: auto; 
+        padding-bottom: 1rem; 
+    }
+    .exercise-table { 
+        min-width: 600px; /* Impede a tabela de esmagar, ativando o scroll (deslizar p/ lado) */
+    }
+    .log-tabs { 
+        overflow-x: auto; 
+        white-space: nowrap; 
+        padding-bottom: 0.5rem; 
+    }
+
+    /* 5. Caixa de Login/Perfil */
+    .login-box { padding: 2rem 1.5rem; margin: 0 1rem; }
+
+    /* 6. Estatísticas e Resumo de Volume */
+    .stats-bar { grid-template-columns: 1fr 1fr; }
+    .volume-summary { grid-template-columns: 1fr; }
+}
+
+/* ─── CORREÇÕES EXTREMAS PARA CELULARES PEQUENOS ─── */
+@media (max-width: 480px) {
+    /* 1. O título gigante do meio da tela (Hero) */
+    .hero-title {
+        font-size: 8.5vw !important; /* 8.5% * 10 letras = 85% da tela. Agora cabe perfeito! */
+        letter-spacing: 2px !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    /* 2. O Logo do Cabeçalho no celular */
+    .logo {
+        font-size: 4.5vw !important; /* Diminui o logo do topo para caber certinho */
+        letter-spacing: 1px !important;
+    }
+
+    /* 3. Esconde o nome e email do perfil no celular, deixa só a bolinha */
+    #user-profile-display > div:first-child {
+        display: none !important; 
+    }
+
+    /* 4. Ajuste do Menu Lateral */
+    .nav-drawer {
+        width: 85vw !important; 
+        padding: 2rem 1rem !important;
+    }
+    .nav-item {
+        font-size: 0.65rem !important;
+        letter-spacing: 0.1em !important;
+        padding: 0.8rem !important;
+    }
+}

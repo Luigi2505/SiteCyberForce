@@ -155,3 +155,27 @@
   #panel-cadastro::-webkit-scrollbar { width:3px; }
   #panel-cadastro::-webkit-scrollbar-track { background:transparent; }
   #panel-cadastro::-webkit-scrollbar-thumb { background:rgba(160,32,240,0.5); border-radius:2px; }
+
+
+
+/* ─── CORREÇÃO MOBILE LOGIN ─── */
+@media (max-width: 480px) {
+    /* 1. Reduz as margens grossas da caixa de login */
+    .login-box {
+        padding: 2rem 1.2rem !important;
+        margin: 0 0.5rem !important;
+    }
+    
+    /* 2. Ajusta a palavra ACESSO para não cortar o 'O' */
+    .login-title {
+        font-size: 1.5rem !important;
+        letter-spacing: 0.15em !important;
+    }
+    
+    /* 3. Ajusta as abas de Login/Cadastro para não ficarem esmagadas */
+    .auth-tab {
+        padding: 0.8rem 0.5rem !important;
+        font-size: 0.55rem !important;
+        letter-spacing: 0.1em !important;
+    }
+}

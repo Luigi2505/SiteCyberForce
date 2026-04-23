@@ -42,7 +42,8 @@ function mascaraData(valor) {
 // 1. Validar Nome (Só letras e espaços, com acentos)
 function validarNome(nome) {
     const regex = /^[a-zA-ZÀ-ÿ\s]+$/;
-    return regex.test(nome);
+    // O nome precisa passar no teste de letras E ter tamanho 3 ou maior
+    return regex.test(nome) && nome.trim().length >= 3;
 }
 
 // 2. Validar Data (Não pode ser no futuro)
@@ -124,18 +125,16 @@ async function fazerCadastro() {
         return; 
     }
 
-    // 2. Verificação de Coincidência de Senhas
     if (senha !== senhaConfirma) {
         mostrarMensagem("// ERRO: AS SENHAS NÃO COINCIDEM", "error", false);
         return;
     }
 
-    // 3. Verificações de Formato
     if (!validarNome(nome)) {
-        mostrarMensagem("// ERRO: NOME DEVE CONTER APENAS LETRAS", "error", false);
+        mostrarMensagem("// ERRO: NOME INVALIDO", "error", false);
         return;
     }
-
+    
     if (!validarDataNascimento(data_nascimento)) {
         mostrarMensagem("// ERRO: DATA DE NASCIMENTO INVÁLIDA OU NO FUTURO", "error", false);
         return;

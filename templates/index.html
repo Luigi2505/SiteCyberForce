@@ -74,7 +74,9 @@
 {% if session.get('usuario_id') %}
 <div class="nav-item" onclick="showSection('perfil'); closeMenu()">MEU PERFIL</div>
 {% endif %}
+{% if session.get(  'usuario_id') %}
 <div class="nav-item" onclick="showSection('logbook'); closeMenu()">LOG BOOK</div>
+{% endif %}
 {% if session.get('perfil') == 'treinador' %}
 <div class="nav-item" onclick="showSection('painel-professor'); closeMenu()">PAINEL DO PROFESSOR</div>
 {% endif %}
