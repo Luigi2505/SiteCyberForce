@@ -99,7 +99,7 @@ def cadastro():
             senha=generate_password_hash(data.get('senha')),
             cpf=data.get('cpf'),
             perfil='aluno',
-            data_nascimento=data_nasc_mysql # <--- A DATA ENTRA AQUI AGORA
+            data_nascimento=data_nasc_mysql 
         )
         db.session.add(novo_usuario)
         db.session.flush() # Salva temporariamente para gerar o id_usuario
