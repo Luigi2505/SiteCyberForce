@@ -76,23 +76,20 @@ def logout():
 def cadastro():
     data = request.get_json()
     
-    # 1. Verificação de campos preenchidos
     campos_obrigatorios = ['nome', 'email', 'senha', 'cpf', 'data_nascimento']
     if not all(data.get(c) for c in campos_obrigatorios):
         return jsonify({'sucesso': False, 'mensagem': 'DADOS_INCOMPLETOS'}), 400
 
-    # 2. Verifica se o email ou CPF já existem
-    if Usuario.query.filter_by(email=data.get('email')).first():
-        return jsonify({'sucesso': False, 'mensagem': 'EMAIL_JÁ_REGISTRADO'}), 400
-    if Usuario.query.filter_by(cpf=data.get('cpf')).first():
-        return jsonify({'sucesso': False, 'mensagem': 'CPF_JÁ_REGISTRADO'}), 400
-    
     try:
-        # 3. Converter a data de DD/MM/AAAA (Frontend) para AAAA-MM-DD (MySQL)
+        # Consultas movidas para dentro do try
+        if Usuario.query.filter_by(email=data.get('email')).first():
+            return jsonify({'sucesso': False, 'mensagem': 'EMAIL_JÁ_REGISTRADO'}), 400
+        if Usuario.query.filter_by(cpf=data.get('cpf')).first():
+            return jsonify({'sucesso': False, 'mensagem': 'CPF_JÁ_REGISTRADO'}), 400
+        
         data_nasc_texto = data.get('data_nascimento')
         data_nasc_mysql = datetime.strptime(data_nasc_texto, '%d/%m/%Y').date()
 
-        # 4. Criar o Usuário (Acesso)
         novo_usuario = Usuario(
             nome=data.get('nome'),
             email=data.get('email'),
@@ -102,15 +99,13 @@ def cadastro():
             data_nascimento=data_nasc_mysql 
         )
         db.session.add(novo_usuario)
-        db.session.flush() # Salva temporariamente para gerar o id_usuario
+        db.session.flush()
 
-        # 5. Criar o Perfil de Aluno vinculado ao Usuário
         novo_aluno = Aluno(
             id_usuario=novo_usuario.id_usuario
         )
         db.session.add(novo_aluno)
         
-        # Confirma tudo no 
         db.session.commit()
         return jsonify({'sucesso': True})
         
@@ -119,14 +114,10 @@ def cadastro():
         return jsonify({'sucesso': False, 'mensagem': 'FORMATO_DE_DATA_INVÁLIDO (Use DD/MM/AAAA)'}), 400
     except Exception as e:
         db.session.rollback()
-        # ISSO AQUI VAI MOSTRAR O ERRO REAL NO SEU TERMINAL DO VSCODE/PROMPT:
         print(f"=============================")
         print(f"ERRO REAL DO MYSQL: {e}")
         print(f"=============================")
-        
-        # E vai enviar um pedaço do erro para a tela vermelha do site pra facilitar
         return jsonify({'sucesso': False, 'mensagem': f'ERRO NO BANCO: {str(e)}'}), 500
-
     
 # ROTA PARA O PROFESSOR VER SEUS ALUNOS E CRIAR TREINOS
 @app.route('/api/professor/alunos', methods=['GET'])
