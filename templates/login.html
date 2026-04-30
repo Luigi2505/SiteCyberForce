@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBERFORCE — ACESSO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body>
+<div class="scanline"></div>
+
+<header>
+    <div class="logo glitch" data-text="CYBERFORCE" onclick="window.location.href='/'">CYBERFORCE</div>
+</header>
+<div class="scanline"></div>
+
+<div class="login-wrapper">
+    <div class="login-box">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+
+        <span class="login-tag">// AUTH_SYSTEM — v2.0</span>
+        <div class="login-title">ACESSO</div>
+        
+        <div class="auth-tabs">
+            <button class="auth-tab active" onclick="switchTab('login')">LOGIN</button>
+            <button class="auth-tab" onclick="switchTab('cadastro')">CADASTRO</button>
+        </div>
+
+        <div class="auth-panel active" id="panel-login">
+            <div class="field-group">
+                <label class="field-label">// EMAIL_ID</label>
+                <input type="email" class="field-input" id="login-email" placeholder="usuario@cyberforce.gym">
+            </div>
+            <div class="field-group">
+                <label class="field-label">// SENHA_HASH</label>
+                <input type="password" class="field-input" id="login-senha" placeholder="••••••••">
+            </div>
+            <button class="btn-cyber" onclick="fazerLogin()"><span>AUTENTICAR</span></button>
+            <div class="msg-box" id="msg-login"></div>
+        </div>
+
+        <div class="auth-panel" id="panel-cadastro">
+            <div class="form-section-label">// IDENTIFICAÇÃO_NEURAL</div>
+            
+            <div class="field-group">
+                <label class="field-label">// NOME_COMPLETO *</label>
+                <input type="text" class="field-input" id="cad-nome">
+            </div>
+            
+            <div class="field-row">
+                <div class="field-group">
+                   <label class="field-label">// CPF *</label>
+                    <input type="text" class="field-input" id="cad-cpf" placeholder="000.000.000-00" maxlength="14" oninput="this.value = mascaraCPF(this.value)">
+                </div>
+                <div class="field-group">
+                    <label class="field-label">// NASCIMENTO *</label>
+                    <input type="text" class="field-input" id="cad-nasc" placeholder="DD/MM/AAAA" maxlength="10" oninput="this.value = mascaraData(this.value)">
+                </div>
+            </div>
+
+            <div class="form-section-label">// CREDENCIAIS_DE_ACESSO</div>
+            <div class="field-group">
+                <label class="field-label">// EMAIL *</label>
+                <input type="email" class="field-input" id="cad-email">
+            </div>
+            <div class="field-group">
+                <label class="field-label">// SENHA *</label>
+                <input type="password" class="field-input" id="cad-senha" placeholder="Mínimo 8 caracteres">
+            </div>
+            <div class="field-group">
+                <label class="field-label">// CONFIRMAR SENHA *</label>
+                <input type="password" class="field-input" id="cad-senha-confirma" placeholder="Repita a senha">
+            </div>
+
+            <button class="btn-cyber" onclick="fazerCadastro()"><span>REGISTRAR</span></button>
+            <div class="msg-box" id="msg-cadastro"></div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/login.js') }}?v=2"></script>
+</body>
+</html>
