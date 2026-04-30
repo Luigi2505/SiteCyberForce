@@ -118,6 +118,9 @@ async function fazerCadastro() {
     const email = document.getElementById('cad-email').value.trim();
     const senha = document.getElementById('cad-senha').value;
     const senhaConfirma = document.getElementById('cad-senha-confirma').value; 
+    const genero = document.getElementById('cad-genero').value;
+    const peso = parseFloat(document.getElementById('cad-peso').value);
+    const altura = parseInt(document.getElementById('cad-altura').value);
 
     // 1. Verificação de campos vazios
     if (!nome || !cpf || !data_nascimento || !email || !senha || !senhaConfirma) {
@@ -153,6 +156,21 @@ async function fazerCadastro() {
     if (!validarCPF(cpf)) {
         mostrarMensagem("// ERRO: CPF MATEMATICAMENTE INVÁLIDO", "error", false);
         return;
+    } 
+
+    if (!genero) {
+        mostrarMensagem("// ERRO: SELECIONE UM GÊNERO", "error", false);
+        return;
+    }
+
+    if (isNaN(peso) || peso < 30 || peso > 300) {
+        mostrarMensagem("// ERRO: PESO INVÁLIDO. DEVE SER ENTRE 30KG E 300KG", "error", false);
+        return;
+    }
+
+    if (isNaN(altura) || altura < 100 || altura > 250) {
+        mostrarMensagem("// ERRO: ALTURA INVÁLIDA. DEVE SER ENTRE 100CM E 250CM", "error", false);
+        return;
     }
 
     // Se tudo passar, monta o pacote e envia
@@ -161,7 +179,10 @@ async function fazerCadastro() {
         cpf: cpf,
         data_nascimento: data_nascimento,
         email: email,
-        senha: senha
+        senha: senha,
+        genero: genero,   
+        peso: peso,       
+        altura: altura
     };
 
     try {
@@ -221,5 +242,19 @@ async function fazerLogin() {
     } catch (e) {
         mostrarMensagem("// FALHA DE CONEXÃO", "error", true);
         console.error("Erro no login:", e);
+    }
+}
+
+// ─── VISIBILIDADE DA SENHA (OLHINHO) ───
+function toggleSenha(inputId, icon) {
+    const input = document.getElementById(inputId);
+    if (input.type === "password") {
+        input.type = "text";
+        icon.innerText = "🙈"; // Muda para o macaquinho tapando o olho (ou outro emoji)
+        icon.style.opacity = "1";
+    } else {
+        input.type = "password";
+        icon.innerText = "👁️"; // Volta para o olho
+        icon.style.opacity = "0.7";
     }
 }
