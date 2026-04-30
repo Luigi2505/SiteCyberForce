@@ -324,28 +324,54 @@ async function carregarDadosPerfil() {
 
 // 2. UPDATE: Salvar as alterações
 async function salvarPerfil() {
-    const nome = document.getElementById('perfil-nome').value;
-    const objetivo = document.getElementById('perfil-objetivo').value;
+    const nome = document.getElementById('perfil-nome').value.trim();
+    const cpf = document.getElementById('perfil-cpf').value.trim();
+    const email = document.getElementById('perfil-email').value.trim();
+    const data_nascimento = document.getElementById('perfil-data').value;
+    const genero = document.getElementById('perfil-genero').value;
+    const peso = parseFloat(document.getElementById('perfil-peso').value);
+    const altura = parseInt(document.getElementById('perfil-altura').value);
+    const objetivo = document.getElementById('perfil-objetivo') ? document.getElementById('perfil-objetivo').value.trim() : "";
     
-    if (!nome) {
-        alert("O nome não pode ficar vazio.");
+    // Campo de senha obrigatório
+    const senha_confirmacao = document.getElementById('perfil-senha-confirma').value;
+    
+    if (!nome || !cpf || !email) {
+        alert("// ERRO: NOME, CPF E EMAIL NÃO PODEM FICAR VAZIOS.");
         return;
     }
     
-    const payload = { nome: nome, objetivo: objetivo };
+    if (!senha_confirmacao) {
+        alert("// ERRO DE SEGURANÇA: DIGITE SUA SENHA PARA SALVAR.");
+        return;
+    }
     
-    const response = await fetch('/api/usuario/atualizar', {
+    const payload = { 
+        nome: nome, 
+        cpf: cpf,
+        email: email,
+        data_nascimento: data_nascimento,
+        genero: genero,
+        peso: peso,
+        altura: altura,
+        objetivo: objetivo,
+        senha_confirmacao: senha_confirmacao // Enviando a senha para verificação
+    };
+    
+    const res = await fetch('/api/usuario/atualizar', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(payload)
     });
-    
-    const result = await response.json();
+
+    const result = await res.json();
     if (result.sucesso) {
-        alert("DADOS SINCRONIZADOS COM SUCESSO!");
-        location.reload(); // Recarrega a página para atualizar o Header
+        alert("// DADOS ATUALIZADOS COM SUCESSO");
+        // Limpa a senha do campo por segurança
+        document.getElementById('perfil-senha-confirma').value = ''; 
+        location.reload(); 
     } else {
-        alert("Erro ao atualizar perfil.");
+        alert(result.mensagem); // Vai mostrar se a senha estiver errada ou o CPF já existir
     }
 }
 
