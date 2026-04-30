@@ -23,19 +23,22 @@ db = SQLAlchemy(app)
 
 class Usuario(db.Model):
     __tablename__ = 'Usuario'
-    id_usuario      = db.Column(db.Integer, primary_key=True)
-    nome            = db.Column(db.String(100), nullable=False)
-    email           = db.Column(db.String(100), unique=True, nullable=False)
-    senha           = db.Column(db.String(255), nullable=False)
-    perfil          = db.Column(db.Enum('aluno', 'treinador', 'admin'), default='aluno')
-    cpf             = db.Column(db.String(14), unique=True, nullable=False)
-    data_nascimento = db.Column(db.Date) 
+    id_usuario = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    senha = db.Column(db.String(255), nullable=False)
+    cpf = db.Column(db.String(14), unique=True, nullable=False)
+    perfil = db.Column(db.String(20), nullable=False)
+    data_nascimento = db.Column(db.Date, nullable=False)
+    genero = db.Column(db.String(1))   
+    peso = db.Column(db.Numeric(5, 2)) 
+    altura = db.Column(db.Integer)     
+
 class Aluno(db.Model):
     __tablename__ = 'Aluno'
-    id_aluno        = db.Column(db.Integer, primary_key=True)
-    id_usuario      = db.Column(db.Integer, db.ForeignKey('Usuario.id_usuario'), nullable=False)
-    id_treinador    = db.Column(db.Integer, nullable=True)
-    objetivo        = db.Column(db.String(100))
+    id_aluno = db.Column(db.Integer, primary_key=True)
+    id_usuario = db.Column(db.Integer, db.ForeignKey('Usuario.id_usuario'), nullable=False)
+    objetivo = db.Column(db.String(100))
 
 # ─── ROTAS ───
 
@@ -99,7 +102,11 @@ def cadastro():
             senha=generate_password_hash(data.get('senha')),
             cpf=data.get('cpf'),
             perfil='aluno',
-            data_nascimento=data_nasc_mysql 
+            data_nascimento=data_nasc_mysql,
+            genero=data.get('genero'),
+            peso=data.get('peso'),
+            altura=data.get('altura')
+            
         )
         db.session.add(novo_usuario)
         db.session.flush() # Salva temporariamente para gerar o id_usuario
@@ -227,7 +234,7 @@ def meus_alunos():
     
     # Busca todos os alunos no sistema
     alunos = db.session.query(Usuario.nome, Aluno.id_aluno)\
-             .join(Aluno, Usuario.id_usuario == Aluno.id_usuario).all()
+            .join(Aluno, Usuario.id_usuario == Aluno.id_usuario).all()
     
     return jsonify([{"nome": a.nome, "id_aluno": a.id_aluno} for a in alunos])
 
@@ -275,6 +282,9 @@ def buscar_perfil():
         "nome": usuario.nome,
         "email": usuario.email,
         "cpf": usuario.cpf,
+        "genero": usuario.genero,
+        "peso": float(usuario.peso) if usuario.peso else 0,
+        "altura": usuario.altura,
         "objetivo": aluno.objetivo if aluno else ""
     })
 
@@ -287,20 +297,41 @@ def atualizar_perfil():
     data = request.get_json()
     usuario = Usuario.query.get(session['usuario_id'])
     
-    if usuario:
-        # Atualiza o nome do usuário
+    if not usuario:
+        return jsonify({"sucesso": False, "mensagem": "Usuário não encontrado"}), 404
+
+    # 1. TRAVA DE SEGURANÇA: Verifica a senha antes de permitir qualquer alteração
+    senha_confirmacao = data.get('senha_confirmacao')
+    if not senha_confirmacao or not check_password_hash(usuario.senha, senha_confirmacao):
+        return jsonify({"sucesso": False, "mensagem": "Senha incorreta. Alteração bloqueada."}), 403
+    
+    try:
+        # 2. Atualiza os dados básicos
         usuario.nome = data.get('nome')
-        session['nome'] = usuario.nome # Atualiza na sessão para o Header mudar na hora
+        usuario.email = data.get('email')
+        usuario.cpf = data.get('cpf')
         
-        # Se for aluno, atualiza o objetivo
+        # 3. Atualiza os dados biométricos
+        if data.get('genero'): usuario.genero = data.get('genero')
+        if data.get('peso'): usuario.peso = data.get('peso')
+        if data.get('altura'): usuario.altura = data.get('altura')
+        
+        if data.get('data_nascimento'):
+            usuario.data_nascimento = datetime.strptime(data.get('data_nascimento'), '%Y-%m-%d').date()
+                
+        # 4. Atualiza o objetivo (se for aluno)
         aluno = Aluno.query.filter_by(id_usuario=usuario.id_usuario).first()
-        if aluno:
+        if aluno and 'objetivo' in data:
             aluno.objetivo = data.get('objetivo')
                 
         db.session.commit()
-        return jsonify({"sucesso": True})
+        session['nome'] = usuario.nome 
+        return jsonify({"sucesso": True, "mensagem": "Perfil atualizado!"})
         
-    return jsonify({"sucesso": False, "mensagem": "Usuário não encontrado"}), 404
+    except Exception as e:
+        db.session.rollback()
+        # Se der erro aqui, geralmente é porque tentou colocar um CPF ou Email que já existe noutra conta
+        return jsonify({"sucesso": False, "mensagem": "Erro: CPF ou Email já estão em uso por outro usuário."}), 400
 
 # 3. DELETE: Apagar a conta do sistema com segurança
 @app.route('/api/usuario/excluir', methods=['POST'])
