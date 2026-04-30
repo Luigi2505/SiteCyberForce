@@ -4,11 +4,18 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import os
 from dotenv import load_dotenv
+from datetime import timedelta  # adicione no topo com os outros imports
+from functools import wraps
+
+
 
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'cyberforce_2026_key')
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(seconds=45)
+app.config['SESSION_PERMANENT'] = True
+app.config['SESSION_REFRESH_EACH_REQUEST'] = False
 
 # Configuração da Conexão
 app.config['SQLALCHEMY_DATABASE_URI'] = (
@@ -18,6 +25,14 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
+# ← decorator aqui, antes de qualquer rota
+def login_obrigatorio(f):
+    @wraps(f)
+    def decorador(*args, **kwargs):
+        if 'usuario_id' not in session:
+            return jsonify({"erro": "Sessão expirada. Faça login novamente."}), 401
+        return f(*args, **kwargs)
+    return decorador
 
 # ─── MODELOS QUE REFLETEM O SEU BANCO DE DADOS ───
 
@@ -54,7 +69,8 @@ def login():
         usuario = Usuario.query.filter_by(email=data.get('email')).first()
         
         if usuario and check_password_hash(usuario.senha, data.get('senha')):
-            # 2. SALVA TUDO NA SESSÃO DO SERVIDOR (Mais seguro que localStorage)
+            # 2. SALVA TUDO NA SESSÃO DO SERVIDOR E FAZ O TIMEOUT PARA DESLOGAR(Mais seguro que localStorage)
+            session.permanent = True
             session['usuario_id'] = usuario.id_usuario
             session['perfil'] = usuario.perfil
             session['nome'] = usuario.nome
@@ -75,24 +91,21 @@ def logout():
 @app.route('/cadastro', methods=['POST'])
 def cadastro():
     data = request.get_json()
-    
-    # 1. Verificação de campos preenchidos
+
     campos_obrigatorios = ['nome', 'email', 'senha', 'cpf', 'data_nascimento']
     if not all(data.get(c) for c in campos_obrigatorios):
         return jsonify({'sucesso': False, 'mensagem': 'DADOS_INCOMPLETOS'}), 400
 
-    # 2. Verifica se o email ou CPF já existem
-    if Usuario.query.filter_by(email=data.get('email')).first():
-        return jsonify({'sucesso': False, 'mensagem': 'EMAIL_JÁ_REGISTRADO'}), 400
-    if Usuario.query.filter_by(cpf=data.get('cpf')).first():
-        return jsonify({'sucesso': False, 'mensagem': 'CPF_JÁ_REGISTRADO'}), 400
-    
     try:
-        # 3. Converter a data de DD/MM/AAAA (Frontend) para AAAA-MM-DD (MySQL)
+        # Consultas movidas para dentro do try
+        if Usuario.query.filter_by(email=data.get('email')).first():
+            return jsonify({'sucesso': False, 'mensagem': 'EMAIL_JÁ_REGISTRADO'}), 400
+        if Usuario.query.filter_by(cpf=data.get('cpf')).first():
+            return jsonify({'sucesso': False, 'mensagem': 'CPF_JÁ_REGISTRADO'}), 400
+
         data_nasc_texto = data.get('data_nascimento')
         data_nasc_mysql = datetime.strptime(data_nasc_texto, '%d/%m/%Y').date()
 
-        # 4. Criar o Usuário (Acesso)
         novo_usuario = Usuario(
             nome=data.get('nome'),
             email=data.get('email'),
@@ -102,29 +115,24 @@ def cadastro():
             data_nascimento=data_nasc_mysql 
         )
         db.session.add(novo_usuario)
-        db.session.flush() # Salva temporariamente para gerar o id_usuario
+        db.session.flush()
 
-        # 5. Criar o Perfil de Aluno vinculado ao Usuário
         novo_aluno = Aluno(
             id_usuario=novo_usuario.id_usuario
         )
         db.session.add(novo_aluno)
-        
-        # Confirma tudo no 
+
         db.session.commit()
         return jsonify({'sucesso': True})
-        
+
     except ValueError:
         db.session.rollback()
         return jsonify({'sucesso': False, 'mensagem': 'FORMATO_DE_DATA_INVÁLIDO (Use DD/MM/AAAA)'}), 400
     except Exception as e:
         db.session.rollback()
-        # ISSO AQUI VAI MOSTRAR O ERRO REAL NO SEU TERMINAL DO VSCODE/PROMPT:
         print(f"=============================")
         print(f"ERRO REAL DO MYSQL: {e}")
         print(f"=============================")
-        
-        # E vai enviar um pedaço do erro para a tela vermelha do site pra facilitar
         return jsonify({'sucesso': False, 'mensagem': f'ERRO NO BANCO: {str(e)}'}), 500
 
     
@@ -258,13 +266,25 @@ def salvar_treino():
     db.session.commit()
     return jsonify({"sucesso": True})
 
-# ─── CRUD DE USUÁRIO: BUSCAR, ATUALIZAR E EXCLUIR ───
+# ─── CRUD DE USUÁRIO: BUSCAR, ATUALIZAR, EXCLUIR E RENOVAR SESSÃO APÓS O TIMEOUT ───
+@app.route('/api/renovar-sessao', methods=['POST'])
+def renovar_sessao():
+    if 'usuario_id' in session:
+        session.modified = True  # força o Flask a renovar o cookie
+    return '', 204
+
+# ROTA 1 — separada
+@app.route('/api/check-session')
+def check_session():
+    if 'usuario_id' not in session:
+        return jsonify({"logado": False}), 401
+    return jsonify({"logado": True}), 200
 
 # 1. READ: Buscar os dados para preencher a tela
 @app.route('/api/usuario/perfil', methods=['GET'])
+@login_obrigatorio  # substitui o if manual acima, faz a mesma coisa de forma reutilizável
+
 def buscar_perfil():
-    if 'usuario_id' not in session:
-        return jsonify({"erro": "Não autorizado"}), 401
     
     usuario = Usuario.query.get(session['usuario_id'])
     
@@ -280,9 +300,8 @@ def buscar_perfil():
 
 # 2. UPDATE: Atualizar Nome e Objetivo
 @app.route('/api/usuario/atualizar', methods=['POST'])
+@login_obrigatorio
 def atualizar_perfil():
-    if 'usuario_id' not in session:
-        return jsonify({"sucesso": False, "mensagem": "Não autorizado"}), 401
     
     data = request.get_json()
     usuario = Usuario.query.get(session['usuario_id'])
@@ -304,9 +323,8 @@ def atualizar_perfil():
 
 # 3. DELETE: Apagar a conta do sistema com segurança
 @app.route('/api/usuario/excluir', methods=['POST'])
+@login_obrigatorio  # substitui o if manual acima
 def excluir_conta():
-    if 'usuario_id' not in session:
-        return jsonify({"sucesso": False}), 401
     
     id_alvo = session['usuario_id']
     usuario = Usuario.query.get(id_alvo)

@@ -386,3 +386,116 @@ function showSection(id) {
     
     window.scrollTo({top:0, behavior:'smooth'});
 }
+
+// SUBSTITUA o bloco do vigia por esse
+window.addEventListener('load', () => {
+  const estaLogado = document.getElementById('user-profile-display') !== null;
+
+  if (estaLogado) {
+    setInterval(async () => {
+      const resposta = await fetch('/api/check-session');
+      if (resposta.status === 401) {
+        mostrarPopupSessao();
+      }
+    }, 15000);
+  }
+});
+
+function mostrarPopupSessao() {
+  // Cria o fundo escuro
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  `;
+
+  // Cria o popup
+  overlay.innerHTML = `
+    <div style="
+      background: rgba(10,10,20,0.98);
+      border: 1px solid rgba(0,212,255,0.4);
+      box-shadow: 0 0 40px rgba(0,212,255,0.15), inset 0 0 20px rgba(0,0,0,0.5);
+      padding: 3rem;
+      max-width: 420px;
+      width: 90%;
+      text-align: center;
+      position: relative;
+    ">
+      <div style="font-family:'Share Tech Mono',monospace; font-size:0.65rem; color:rgba(0,212,255,0.6); letter-spacing:0.4em; margin-bottom:1.5rem;">
+        // SESSION_TIMEOUT
+      </div>
+
+      <div style="font-family:'Michroma',sans-serif; font-size:1.4rem; color:#ff2244; text-shadow: 0 0 20px rgba(255,34,68,0.6); letter-spacing:0.1em; margin-bottom:1rem;">
+        SESSÃO ENCERRADA
+      </div>
+
+      <div style="font-family:'Share Tech Mono',monospace; font-size:0.75rem; color:rgba(245,237,224,0.7); line-height:1.8; margin-bottom:2rem; letter-spacing:0.05em;">
+        Sua sessão expirou.<br>Realize o login novamente.
+      </div>
+
+      <button onclick="window.location.href='/login'" style="
+        width: 100%;
+        padding: 1rem;
+        background: rgba(255,34,68,0.1);
+        border: 1px solid rgba(255,34,68,0.5);
+        color: #ff2244;
+        font-family: 'Michroma', sans-serif;
+        font-size: 0.75rem;
+        letter-spacing: 0.25em;
+        cursor: pointer;
+        text-shadow: 0 0 8px rgba(255,34,68,0.4);
+        transition: all 0.3s;
+      "
+      onmouseover="this.style.background='rgba(255,34,68,0.2)'"
+      onmouseout="this.style.background='rgba(255,34,68,0.1)'"
+      >
+        REALIZAR LOGIN
+      </button>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+}
+
+const eventos = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
+let ultimaRenovacao = 0;
+let vigiaInterval = null; // ← guarda a referência do intervalo
+
+function iniciarVigia() {
+  // Cancela o intervalo anterior se existir
+  if (vigiaInterval) clearInterval(vigiaInterval);
+  
+  // Cria um novo intervalo zerado
+  vigiaInterval = setInterval(async () => {
+    const resposta = await fetch('/api/check-session');
+    if (resposta.status === 401) {
+      clearInterval(vigiaInterval);
+      mostrarPopupSessao();
+    }
+  }, 15000);
+}
+
+window.addEventListener('load', () => {
+  const estaLogado = document.getElementById('user-profile-display') !== null;
+  
+  if (estaLogado) {
+    iniciarVigia();
+
+    // Move os eventos para dentro do if
+    eventos.forEach(evento => {
+      document.addEventListener(evento, () => {
+        const agora = Date.now();
+        if (agora - ultimaRenovacao > 30000) {
+          ultimaRenovacao = agora;
+          fetch('/api/renovar-sessao', { method: 'POST' });
+          iniciarVigia();
+        }
+      });
+    });
+  }
+});
+
