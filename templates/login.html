@@ -1,23 +1,38 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CYBERFORCE — ACESSO</title>
-    <link href="https://fonts.googleapis.com/css2?family=Michroma&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
-</head>
-<body>
-<div class="scanline"></div>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Michroma&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/login.css') }}"
+    />
+  </head>
+  <body>
+    <div class="scanline"></div>
 
-<header>
-    <div class="logo glitch" data-text="CYBERFORCE" onclick="window.location.href='/'">CYBERFORCE</div>
-</header>
-<div class="scanline"></div>
+    <header>
+      <div
+        class="logo glitch"
+        data-text="CYBERFORCE"
+        onclick="window.location.href = '/'"
+      >
+        CYBERFORCE
+      </div>
+    </header>
+    <div class="scanline"></div>
 
-<div class="login-wrapper">
-    <div class="login-box">
+    <div class="login-wrapper">
+      <div class="login-box">
         <div class="corner corner-tl"></div>
         <div class="corner corner-tr"></div>
         <div class="corner corner-bl"></div>
@@ -25,26 +40,44 @@
 
         <span class="login-tag">// AUTH_SYSTEM — v2.0</span>
         <div class="login-title">ACESSO</div>
-        
+
         <div class="auth-tabs">
-            <button class="auth-tab active" onclick="switchTab('login')">LOGIN</button>
-            <button class="auth-tab" onclick="switchTab('cadastro')">CADASTRO</button>
+          <button class="auth-tab active" onclick="switchTab('login')">
+            LOGIN
+          </button>
+          <button class="auth-tab" onclick="switchTab('cadastro')">
+            CADASTRO
+          </button>
         </div>
 
         <div class="auth-panel active" id="panel-login">
-            <div class="field-group">
-                <label class="field-label">// EMAIL_ID</label>
-                <input type="email" class="field-input" id="login-email" placeholder="usuario@cyberforce.gym">
-            </div>
-            <div class="field-group">
-                <label class="field-label">// SENHA_HASH</label>
-                <input type="password" class="field-input" id="login-senha" placeholder="••••••••">
-            </div>
-            <button class="btn-cyber" onclick="fazerLogin()"><span>AUTENTICAR</span></button>
-            <div class="msg-box" id="msg-login"></div>
+          <div class="field-group">
+            <label class="field-label">// EMAIL_ID</label>
+            <input
+              type="email"
+              class="field-input"
+              id="login-email"
+              placeholder="usuario@cyberforce.gym"
+            />
+          </div>
+          <div class="field-group">
+            <label class="field-label">// SENHA_HASH</label>
+            <input
+              type="password"
+              class="field-input"
+              id="login-senha"
+              placeholder="••••••••"
+            />
+          </div>
+          <button class="btn-cyber" onclick="fazerLogin()">
+            <span>AUTENTICAR</span>
+          </button>
+          <div class="msg-box" id="msg-login"></div>
         </div>
 
         <div class="auth-panel" id="panel-cadastro">
+    <div class="cadastro-grid">
+        <div class="cadastro-coluna">
             <div class="form-section-label">// IDENTIFICAÇÃO_NEURAL</div>
             
             <div class="field-group">
@@ -54,7 +87,7 @@
             
             <div class="field-row">
                 <div class="field-group">
-                   <label class="field-label">// CPF *</label>
+                    <label class="field-label">// CPF *</label>
                     <input type="text" class="field-input" id="cad-cpf" placeholder="000.000.000-00" maxlength="14" oninput="this.value = mascaraCPF(this.value)">
                 </div>
                 <div class="field-group">
@@ -62,56 +95,53 @@
                     <input type="text" class="field-input" id="cad-nasc" placeholder="DD/MM/AAAA" maxlength="10" oninput="this.value = mascaraData(this.value)">
                 </div>
             </div>
+
             <div class="field-group">
-                    <label class="field-label">// GÊNERO *</label>
-                    <select class="field-input" id="cad-genero" style="background: rgba(10,10,20,0.8); color: var(--cyan);" required>
-                        <option value="" disabled selected>Selecione uma opção...</option>
-                        <option value="M">Homem</option>
-                        <option value="F">Mulher</option>
-                        <option value="N">Prefiro não informar</option>
-                    </select>
+                <label class="field-label">// GÊNERO *</label>
+                <select class="field-input" id="cad-genero" style="appearance: none; cursor: pointer;">
+                    <option value="">Selecione uma opção...</option>
+                    <option value="M">Masculino</option>
+                    <option value="F">Feminino</option>
+                    <option value="N">Não Informar</option>
+                </select>
             </div>
 
             <div class="field-row">
                 <div class="field-group">
                     <label class="field-label">// PESO (kg) *</label>
-                    <input type="number" step="0.1" class="field-input" id="cad-peso" placeholder="Ex: 75.5" required>
-                    <span style="font-size: 1rem; color: var(--text-dim);">Use ponto ou vírgula.</span>
+                    <input type="number" class="field-input" id="cad-peso" placeholder="Ex: 75.5" step="0.1">
                 </div>
                 <div class="field-group">
                     <label class="field-label">// ALTURA (cm) *</label>
-                    <input type="number" class="field-input" id="cad-altura" placeholder="Ex: 175" required>
-                    <span style="font-size: 1rem; color: var(--text-dim);">Digite em centímetros.</span>
+                    <input type="number" class="field-input" id="cad-altura" placeholder="Ex: 175">
                 </div>
             </div>
+        </div>
+
+        <div class="cadastro-coluna">
             <div class="form-section-label">// CREDENCIAIS_DE_ACESSO</div>
             <div class="field-group">
                 <label class="field-label">// EMAIL *</label>
                 <input type="email" class="field-input" id="cad-email">
             </div>
-        <div class="field-group">
-            <label class="field-label">// SENHA *</label>
-            <div style="position: relative;">
-                <input type="password" class="field-input" id="cad-senha" placeholder="Mínimo 8 caracteres" required style="padding-right: 40px;">
-                <span onclick="toggleSenha('cad-senha', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; filter: grayscale(1); opacity: 0.7;">👁️</span>
+            <div class="field-group">
+                <label class="field-label">// SENHA *</label>
+                <input type="password" class="field-input" id="cad-senha" placeholder="Mínimo 8 caracteres">
             </div>
-            <span style="font-size: 1rem; color: var(--text-dim);">A senha deve conter mínimo de 8 caracteres, 1 maiúscula e 1 símbolo.</span>
-        </div>
-
-        <div class="field-group">
-            <label class="field-label">// CONFIRMAR SENHA *</label>
-            <div style="position: relative;">
-                <input type="password" class="field-input" id="cad-senha-confirma" placeholder="Repita a senha" required style="padding-right: 40px;">
-                <span onclick="toggleSenha('cad-senha-confirma', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; filter: grayscale(1); opacity: 0.7;">👁️</span>
+            <div class="field-group">
+                <label class="field-label">// CONFIRMAR SENHA *</label>
+                <input type="password" class="field-input" id="cad-senha-confirma" placeholder="Repita a senha">
             </div>
-        </div>         
-
-            <button class="btn-cyber" onclick="fazerCadastro()"><span>REGISTRAR</span></button>
-            <div class="msg-box" id="msg-cadastro"></div>
         </div>
     </div>
-</div>
 
-<script src="{{ url_for('static', filename='js/login.js') }}?v=2"></script>
-</body>
+    <button class="btn-cyber" onclick="fazerCadastro()"><span>REGISTRAR</span></button>
+    <div class="msg-box" id="msg-cadastro"></div>
+</div>
+        </div>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/login.js') }}?v=2"></script>
+  </body>
 </html>
