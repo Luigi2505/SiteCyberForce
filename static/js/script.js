@@ -412,3 +412,22 @@ function showSection(id) {
     
     window.scrollTo({top:0, behavior:'smooth'});
 }
+
+function navegarParaHome() {
+    // 1. Esconde a seção de perfil
+    const perfil = document.getElementById('perfil-section');
+    if (perfil) perfil.style.display = 'none';
+
+    // 2. Tenta encontrar a sua Home (pode ser 'home-section' ou 'hero')
+    const home = document.getElementById('home-section') || document.getElementById('hero');
+    
+    if (home) {
+        home.style.display = 'block';
+        // Se a sua home usar flex/grid, force o estilo correto:
+        // home.style.display = 'flex'; 
+    } else {
+        console.error("// ERRO: Seção Home não encontrada. Verifique o ID no index.html");
+        // Caso falhe, apenas recarrega a página para voltar ao estado inicial
+        window.location.reload();
+    }
+}
