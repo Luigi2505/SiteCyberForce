@@ -1,0 +1,30 @@
+{% extends 'base.html' %} {% block content %}
+<section id="store" class="active">
+  <div class="store-section">
+    <div class="section-header" style="padding: 0 0 2rem">
+      <span class="section-tag">// ESTOQUE_FÍSICO</span>
+      <h2 class="section-title">SUPLEMENTOS</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterProducts('all', this)">
+        TODOS
+      </button>
+      <button class="filter-btn" onclick="filterProducts('proteina', this)">
+        PROTEÍNA
+      </button>
+      <button class="filter-btn" onclick="filterProducts('creatina', this)">
+        CREATINA
+      </button>
+    </div>
+    <div class="product-grid" id="productGrid">
+      <div class="product-card" data-cat="proteina">
+        <span class="product-status status-available">DISPONÍVEL</span>
+        <span class="product-img">🥛</span>
+        <div class="product-name">WHEY PROTEIN ISOLADO</div>
+        <span class="product-price">R$ 189,90</span>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

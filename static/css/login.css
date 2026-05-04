@@ -398,13 +398,12 @@
     font-size: 0.55rem !important;
     letter-spacing: 0.1em !important;
   }
-
-  .field-input:-webkit-autofill,
-  .field-input:-webkit-autofill:hover,
-  .field-input:-webkit-autofill:focus,
-  .field-input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 30px #0a0a14 inset !important;
-    -webkit-text-fill-color: var(--cyan) !important;
-    transition: background-color 5000s ease-in-out 0s;
-  }
+}
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 50px #0a0a14 inset !important;
+  -webkit-text-fill-color: #00d4ff !important;
+  caret-color: #00d4ff !important;
 }

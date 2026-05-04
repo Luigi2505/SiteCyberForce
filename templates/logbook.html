@@ -1,0 +1,53 @@
+{% extends 'base.html' %} {% block content %}
+<section id="logbook" class="active">
+  <div class="logbook-section">
+    <div class="section-header" style="padding: 0 0 2rem">
+      <span class="section-tag">// PROTOCOLO_DE_TREINAMENTO</span>
+      <h2 class="section-title">LOG BOOK</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="log-tabs">
+      <button class="log-tab push active" onclick="switchLogTab('push')">
+        PUSH
+      </button>
+      <button class="log-tab pull" onclick="switchLogTab('pull')">PULL</button>
+      <button class="log-tab legs" onclick="switchLogTab('legs')">LEGS</button>
+    </div>
+
+    <div class="log-panel active" id="panel-container">
+      <div class="log-date-header">
+        <span class="log-date" id="log-date-display"
+          >// CARREGANDO DATA...</span
+        >
+        <span id="categoria-badge" class="log-category-badge badge-push"
+          >PUSH</span
+        >
+      </div>
+
+      <div class="table-wrapper">
+        <table class="exercise-table">
+          <thead>
+            <tr>
+              <th>EXERCÍCIO</th>
+              <th>SÉRIES</th>
+              <th>REPS</th>
+              <th>CARGA (kg)</th>
+            </tr>
+          </thead>
+          <tbody id="logbook-tbody"></tbody>
+        </table>
+      </div>
+
+      {% if session.get('perfil') == 'treinador' %}
+      <button
+        class="add-exercise-btn"
+        onclick="window.location.href = '/professor'"
+      >
+        ⚙️ EDITAR TREINO NO PAINEL
+      </button>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}
