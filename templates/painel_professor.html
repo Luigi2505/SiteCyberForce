@@ -1,0 +1,87 @@
+{% extends 'base.html' %} {% block content %}
+<section id="painel-professor" class="active">
+  <div class="logbook-section">
+    <div class="section-header" style="padding: 0 0 2rem">
+      <span class="section-tag">// TRAINER_INTERFACE</span>
+      <h2 class="section-title">PAINEL DO PROFESSOR</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div id="lista-alunos-container">
+      <p class="field-label">// SELECIONE UM ALUNO PARA GERENCIAR</p>
+      <div
+        id="grid-alunos"
+        class="equipment-grid"
+        style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr))"
+      ></div>
+    </div>
+
+    <div
+      id="form-treino"
+      style="
+        display: none;
+        margin-top: 3rem;
+        border-top: 1px solid var(--purple);
+        padding-top: 2rem;
+      "
+    >
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 2rem;
+        "
+      >
+        <h3
+          id="nome-aluno-selecionado"
+          style="font-family: &quot;Michroma&quot;; color: var(--cyan)"
+        >
+          ALUNO: ---
+        </h3>
+        <button onclick="fecharCriadorTreino()" class="filter-btn">
+          VOLTAR
+        </button>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">// CATEGORIA DO TREINO</label>
+        <select
+          id="treino-categoria"
+          class="log-input"
+          style="width: 200px; text-align: left"
+        >
+          <option value="PUSH">PUSH</option>
+          <option value="PULL">PULL</option>
+          <option value="LEGS">LEGS</option>
+        </select>
+      </div>
+
+      <table class="exercise-table" id="tabela-criacao-treino">
+        <thead>
+          <tr>
+            <th>EXERCÍCIO</th>
+            <th>SÉRIES</th>
+            <th>REPS</th>
+            <th>CARGA (kg)</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="corpo-treino-novo"></tbody>
+      </table>
+
+      <button class="add-exercise-btn" onclick="adicionarLinhaExercicio()">
+        + ADICIONAR EXERCÍCIO
+      </button>
+      <br />
+      <button
+        class="cta-btn"
+        onclick="salvarTreinoCompleto()"
+        style="width: 100%; margin-top: 2rem"
+      >
+        CONFIRMAR PROTOCOLO DE TREINO
+      </button>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'base.html' %} {% block content %}
+<section id="home" class="active">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-tag">// SISTEMA_ATIVADO — CYBERFORCE.GYM v2.0</div>
+    <h1 class="hero-title">CYBERFORCE</h1>
+    <p class="hero-sub">
+      A academia do futuro. Tecnologia neural integrada ao treino de alta
+      performance.
+    </p>
+    <button class="cta-btn" onclick="window.location.href = '/logbook'">
+      INICIAR PROTOCOLO
+    </button>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-item">
+      <span class="stat-num">247</span
+      ><span class="stat-label">// Membros Ativos</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">48</span
+      ><span class="stat-label">// Equipamentos</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">24/7</span
+      ><span class="stat-label">// Funcionamento</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">∞</span
+      ><span class="stat-label">// Potencial</span>
+    </div>
+  </div>
+
+  <div class="section-header">
+    <span class="section-tag">// EQ.SYS</span>
+    <h2 class="section-title">EQUIPAMENTOS</h2>
+    <div class="section-line"></div>
+  </div>
+  <div id="equipamentos-container"></div>
+</section>
+{% endblock %}
