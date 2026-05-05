@@ -284,49 +284,58 @@ def buscar_perfil():
     })
 
 # 2. UPDATE: Atualizar Nome e Objetivo
-@app.route('/api/usuario/atualizar', methods=['POST'])
-def atualizar_perfil():
+@app.route('/api/usuario/atualizar_completo', methods=['POST'])
+def atualizar_perfil_completo():
     if 'usuario_id' not in session:
         return jsonify({"sucesso": False, "mensagem": "Não autorizado"}), 401
     
-    data = request.get_json()
     usuario = Usuario.query.get(session['usuario_id'])
     
-    if not usuario:
-        return jsonify({"sucesso": False, "mensagem": "Usuário não encontrado"}), 404
-
-    # 1. TRAVA DE SEGURANÇA: Verifica a senha antes de permitir qualquer alteração
-    senha_confirmacao = data.get('senha_confirmacao')
+    # 1. TRAVA DE SEGURANÇA: Verifica a senha antes de tudo
+    senha_confirmacao = request.form.get('senha_confirmacao')
     if not senha_confirmacao or not check_password_hash(usuario.senha, senha_confirmacao):
-        return jsonify({"sucesso": False, "mensagem": "Senha incorreta. Alteração bloqueada."}), 403
-    
+        return jsonify({"sucesso": False, "mensagem": "Senha de confirmação incorreta."}), 403
+
     try:
-        # 2. Atualiza os dados básicos
-        usuario.nome = data.get('nome')
-        usuario.email = data.get('email')
-        usuario.cpf = data.get('cpf')
-        
-        # 3. Atualiza os dados biométricos
-        if data.get('genero'): usuario.genero = data.get('genero')
-        if data.get('peso'): usuario.peso = data.get('peso')
-        if data.get('altura'): usuario.altura = data.get('altura')
-        
+        # 2. Processamento da Foto (se houver)
+        if 'foto' in request.files:
+            file = request.files['foto']
+            if file and file.filename != '' and allowed_file(file.filename):
+                # Cria nome único: id_usuario_nomeoriginalseguro.jpg
+                filename = secure_filename(f"{usuario.id_usuario}_{file.filename}")
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                
+                # Apaga a foto antiga se não for a padrão
+                if usuario.foto_perfil != 'default_avatar.png':
+                    old_path = os.path.join(app.config['UPLOAD_FOLDER'], usuario.foto_perfil)
+                    if os.path.exists(old_path):
+                        os.remove(old_path)
+                
+                file.save(file_path) # Salva o arquivo físico
+                usuario.foto_perfil = filename # Salva o nome no banco
+
+        # 3. Atualização dos Dados de Texto 
+        usuario.nome = request.form.get('nome')
+        usuario.email = request.form.get('email')
+        usuario.genero = request.form.get('genero')
+        peso_raw = request.form.get('peso')
+        usuario.peso = float(peso_raw) if peso_raw and peso_raw != 'None' else None
+        usuario.altura = request.form.get('altura')
         if data.get('data_nascimento'):
             usuario.data_nascimento = datetime.strptime(data.get('data_nascimento'), '%Y-%m-%d').date()
-                
+
         # 4. Atualiza o objetivo (se for aluno)
         aluno = Aluno.query.filter_by(id_usuario=usuario.id_usuario).first()
         if aluno and 'objetivo' in data:
             aluno.objetivo = data.get('objetivo')
-                
+
         db.session.commit()
-        session['nome'] = usuario.nome 
-        return jsonify({"sucesso": True, "mensagem": "Perfil atualizado!"})
-        
+        session['nome'] = usuario.nome
+        return jsonify({"sucesso": True, "mensagem": "Perfil e Protocolo Biométrico atualizados."})
+
     except Exception as e:
         db.session.rollback()
-        # Se der erro aqui, geralmente é porque tentou colocar um CPF ou Email que já existe noutra conta
-        return jsonify({"sucesso": False, "mensagem": "Erro: CPF ou Email já estão em uso por outro usuário."}), 400
+        return jsonify({"sucesso": False, "mensagem": f"Erro interno: {str(e)}"}), 500
 
 # 3. DELETE: Apagar a conta do sistema com segurança
 @app.route('/api/usuario/excluir', methods=['POST'])
@@ -384,54 +393,6 @@ def allowed_file(filename):
     return '.' in filename and \
             filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS 
 
-@app.route('/api/usuario/atualizar_completo', methods=['POST'])
-def atualizar_perfil_completo():
-    if 'usuario_id' not in session:
-        return jsonify({"sucesso": False, "mensagem": "Não autorizado"}), 401
-    
-    usuario = Usuario.query.get(session['usuario_id'])
-    
-    # 1. TRAVA DE SEGURANÇA: Verifica a senha antes de tudo
-    senha_confirmacao = request.form.get('senha_confirmacao')
-    if not senha_confirmacao or not check_password_hash(usuario.senha, senha_confirmacao):
-        return jsonify({"sucesso": False, "mensagem": "Senha de confirmação incorreta."}), 403
-
-    try:
-        # 2. Processamento da Foto (se houver)
-        if 'foto' in request.files:
-            file = request.files['foto']
-            if file and file.filename != '' and allowed_file(file.filename):
-                # Cria nome único: id_usuario_nomeoriginalseguro.jpg
-                filename = secure_filename(f"{usuario.id_usuario}_{file.filename}")
-                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                
-                # Apaga a foto antiga se não for a padrão
-                if usuario.foto_perfil != 'default_avatar.png':
-                    old_path = os.path.join(app.config['UPLOAD_FOLDER'], usuario.foto_perfil)
-                    if os.path.exists(old_path):
-                        os.remove(old_path)
-                
-                file.save(file_path) # Salva o arquivo físico
-                usuario.foto_perfil = filename # Salva o nome no banco
-
-        # 3. Atualização dos Dados de Texto (incluindo o Peso)
-        usuario.nome = request.form.get('nome')
-        usuario.email = request.form.get('email')
-        usuario.genero = request.form.get('genero')
-        
-        peso_raw = request.form.get('peso')
-        usuario.peso = float(peso_raw) if peso_raw and peso_raw != 'None' else None
-        
-        usuario.altura = request.form.get('altura')
-        # ... outros campos ...
-
-        db.session.commit()
-        session['nome'] = usuario.nome
-        return jsonify({"sucesso": True, "mensagem": "Perfil e Protocolo Biométrico atualizados."})
-
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"sucesso": False, "mensagem": f"Erro interno: {str(e)}"}), 500
 
 
 if __name__ == '__main__':

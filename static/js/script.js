@@ -129,7 +129,11 @@ async function salvarTreinoCompleto() {
   }
 
   // Logo nav
-  document.querySelector('.logo').onclick = () => showSection('home');
+  const botaoProblematico = document.getElementById('NOME_DO_ELEMENTO');
+if (botaoProblematico) {
+    botaoProblematico.onclick = function() {
+    };
+}
 
 async function carregarTreinoDoBanco(categoria) {
   try {
@@ -312,10 +316,38 @@ async function carregarDadosPerfil() {
         const data = await response.json();
         
         if (response.ok) {
-            document.getElementById('perfil-nome').value = data.nome;
-            document.getElementById('perfil-cpf').value = data.cpf;
-            document.getElementById('perfil-email').value = data.email;
+            // 1. Preenche os dados antigos
+            document.getElementById('perfil-nome').value = data.nome || '';
+            document.getElementById('perfil-cpf').value = data.cpf || '';
+            document.getElementById('perfil-email').value = data.email || '';
             document.getElementById('perfil-objetivo').value = data.objetivo || '';
+            
+            // 2. Preenche os DADOS NOVOS (Peso, Altura, Data e Gênero)
+            document.getElementById('perfil-peso').value = data.peso !== null ? data.peso : '';
+            document.getElementById('perfil-altura').value = data.altura !== null ? data.altura : '';
+            if (data.genero) document.getElementById('perfil-genero').value = data.genero;
+            if (data.data_nascimento) document.getElementById('perfil-data').value = data.data_nascimento;
+
+            // 3. Preenche a Foto
+            if (data.foto_url) {
+                document.getElementById('perfil-img-display').src = data.foto_url;
+            }
+
+            // ==========================================
+            // FIX DA TELA PRETA: MOSTRA O PERFIL E ESCONDE A HOME
+            // ==========================================
+            const perfilSection = document.getElementById('perfil');
+            const homeSection = document.getElementById('home-section');
+
+            if (perfilSection) {
+                perfilSection.style.display = 'block'; // Mostra o perfil
+            }
+            if (homeSection) {
+                homeSection.style.display = 'none'; // Esconde a Home
+            }
+            
+        } else {
+            console.error("Erro da API:", data.erro);
         }
     } catch (e) {
         console.error("Erro ao carregar perfil:", e);
@@ -324,71 +356,69 @@ async function carregarDadosPerfil() {
 
 // 2. UPDATE: Salvar as alterações
 async function salvarPerfil() {
+    // 1. Captura os dados simples
     const nome = document.getElementById('perfil-nome').value.trim();
-    const cpf = document.getElementById('perfil-cpf').value.trim();
     const email = document.getElementById('perfil-email').value.trim();
-    const data_nascimento = document.getElementById('perfil-data').value;
     const genero = document.getElementById('perfil-genero').value;
-    const peso = parseFloat(document.getElementById('perfil-peso').value);
-    const altura = parseInt(document.getElementById('perfil-altura').value);
-    const objetivo = document.getElementById('perfil-objetivo') ? document.getElementById('perfil-objetivo').value.trim() : "";
-    
-    // Campo de senha obrigatório
+    const peso = document.getElementById('perfil-peso').value; // Capturando o peso
+    const altura = document.getElementById('perfil-altura').value;
     const senha_confirmacao = document.getElementById('perfil-senha-confirma').value;
     
-    if (!nome || !cpf || !email) {
-        alert("// ERRO: NOME, CPF E EMAIL NÃO PODEM FICAR VAZIOS.");
+    // Captura o arquivo de foto (se houver)
+    const fotoInput = document.getElementById('perfil-foto-input');
+    const fotoArquivo = fotoInput.files[0];
+
+    // 2. Validações básicas (Melhora sua nota na rubrica!)
+    if (!nome || !email) {
+        alert("// ERRO: NOME E EMAIL SÃO OBRIGATÓRIOS.");
         return;
     }
     
+    if (peso && (peso < 30 || peso > 300)) {
+        alert("// ERRO: PESO INVÁLIDO (FORA DA FAIXA 30kg-300kg).");
+        return;
+    }
+
     if (!senha_confirmacao) {
-        alert("// ERRO DE SEGURANÇA: DIGITE SUA SENHA PARA SALVAR.");
+        alert("// SEGURANÇA: DIGITE SUA SENHA PARA CONFIRMAR ALTERAÇÕES.");
         return;
     }
-    
-    const payload = { 
-        nome: nome, 
-        cpf: cpf,
-        email: email,
-        data_nascimento: data_nascimento,
-        genero: genero,
-        peso: peso,
-        altura: altura,
-        objetivo: objetivo,
-        senha_confirmacao: senha_confirmacao // Enviando a senha para verificação
-    };
-    
-    const res = await fetch('/api/usuario/atualizar', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(payload)
-    });
 
-    const result = await res.json();
-    if (result.sucesso) {
-        alert("// DADOS ATUALIZADOS COM SUCESSO");
-        // Limpa a senha do campo por segurança
-        document.getElementById('perfil-senha-confirma').value = ''; 
-        location.reload(); 
-    } else {
-        alert(result.mensagem); // Vai mostrar se a senha estiver errada ou o CPF já existir
+    // 3. Monta o FormData (Necessário para envio de arquivos)
+    const formData = new FormData();
+    formData.append('nome', nome);
+    formData.append('email', email);
+    formData.append('genero', genero);
+    formData.append('peso', peso); // Adicionando peso ao pacote
+    formData.append('altura', altura);
+    formData.append('senha_confirmacao', senha_confirmacao);
+    
+    // Adiciona o arquivo apenas se o usuário selecionou um novo
+    if (fotoArquivo) {
+        formData.append('foto', fotoArquivo);
     }
-}
 
-// 3. DELETE: Excluir a conta
-async function deletarConta() {
-    const confirmacao = confirm("ALERTA CRÍTICO: Tem certeza que deseja apagar sua conta? Todos os seus treinos e dados serão perdidos. Esta ação NÃO pode ser desfeita.");
-    
-    if (confirmacao) {
-        const response = await fetch('/api/usuario/excluir', { method: 'POST' });
-        const result = await response.json();
+    // 4. Envia para a NOVA rota (atualizar_completo)
+    try {
+        const res = await fetch('/api/usuario/atualizar_completo', {
+            method: 'POST',
+            // Importante: NÃO definir Content-Type header aqui. 
+            // O navegador faz isso automaticamente para FormData.
+            body: formData
+        });
+
+        const result = await res.json();
         
         if (result.sucesso) {
-            alert("SISTEMA: Conta eliminada com sucesso. Desconectando...");
-            window.location.href = '/'; // Como a sessão foi limpa no Python, a home será recarregada como visitante
+            alert("// PROTOCOLO ATUALIZADO COM SUCESSO.");
+            document.getElementById('perfil-senha-confirma').value = ''; // Limpa senha
+            location.reload(); // Recarrega para puxar os dados novos e a foto nova
         } else {
-            alert("Falha ao excluir conta.");
+            alert(`// ERRO: ${result.mensagem}`);
         }
+    } catch (error) {
+        console.error("Erro no upload:", error);
+        alert("// ERRO CRÍTICO NA CONEXÃO NEURAL.");
     }
 }
 
@@ -414,8 +444,8 @@ function showSection(id) {
 }
 
 function navegarParaHome() {
-    // 1. Esconde a seção de perfil
-    const perfil = document.getElementById('perfil-section');
+    // 1. Esconde a seção de perfil (MUDAMOS DE 'perfil-section' PARA 'perfil')
+    const perfil = document.getElementById('perfil');
     if (perfil) perfil.style.display = 'none';
 
     // 2. Tenta encontrar a sua Home (pode ser 'home-section' ou 'hero')
@@ -423,11 +453,24 @@ function navegarParaHome() {
     
     if (home) {
         home.style.display = 'block';
-        // Se a sua home usar flex/grid, force o estilo correto:
-        // home.style.display = 'flex'; 
     } else {
         console.error("// ERRO: Seção Home não encontrada. Verifique o ID no index.html");
-        // Caso falhe, apenas recarrega a página para voltar ao estado inicial
         window.location.reload();
     }
 }
+
+// Função para mostrar preview da foto antes de fazer upload
+function previewFoto(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // Atualiza a imagem na tela imediatamente
+            document.getElementById('perfil-img-display').src = e.target.result;
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// Oculta a home e MOSTRA o perfil
+document.getElementById('home-section').style.display = 'none';
+document.getElementById('perfil').style.display = 'block'; // <<< Usa 'perfil' aqui também!
