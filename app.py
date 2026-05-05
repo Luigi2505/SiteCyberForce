@@ -4,6 +4,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import os
 from dotenv import load_dotenv
+import os # Para lidar com caminhos de pastas
+from flask import send_from_directory
 
 load_dotenv()
 
@@ -32,7 +34,8 @@ class Usuario(db.Model):
     data_nascimento = db.Column(db.Date, nullable=False)
     genero = db.Column(db.String(1))   
     peso = db.Column(db.Numeric(5, 2)) 
-    altura = db.Column(db.Integer)     
+    altura = db.Column(db.Integer)    
+    foto_perfil = db.Column(db.String(255), default='default_avatar.png') 
 
 class Aluno(db.Model):
     __tablename__ = 'Aluno'
@@ -276,7 +279,8 @@ def buscar_perfil():
         "genero": usuario.genero,
         "peso": float(usuario.peso) if usuario.peso else 0,
         "altura": usuario.altura,
-        "objetivo": aluno.objetivo if aluno else ""
+        "objetivo": aluno.objetivo if aluno else "",
+        "foto_url": f"/static/uploads/perfil/{usuario.foto_perfil}"
     })
 
 # 2. UPDATE: Atualizar Nome e Objetivo
@@ -362,5 +366,74 @@ def excluir_conta():
             
     return jsonify({"sucesso": False}), 404
 
+
+
+# Configurações de Upload de Imagem
+UPLOAD_FOLDER = os.path.join('static', 'uploads', 'perfil') # Onde salvar
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'} # Tipos permitidos
+MAX_CONTENT_LENGTH = 2 * 1024 * 1024 # Limite de tamanho (2MB)
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
+
+# Cria as pastas automaticamente se não existirem
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# Função auxiliar para verificar extensão
+def allowed_file(filename):
+    return '.' in filename and \
+            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS 
+
+@app.route('/api/usuario/atualizar_completo', methods=['POST'])
+def atualizar_perfil_completo():
+    if 'usuario_id' not in session:
+        return jsonify({"sucesso": False, "mensagem": "Não autorizado"}), 401
+    
+    usuario = Usuario.query.get(session['usuario_id'])
+    
+    # 1. TRAVA DE SEGURANÇA: Verifica a senha antes de tudo
+    senha_confirmacao = request.form.get('senha_confirmacao')
+    if not senha_confirmacao or not check_password_hash(usuario.senha, senha_confirmacao):
+        return jsonify({"sucesso": False, "mensagem": "Senha de confirmação incorreta."}), 403
+
+    try:
+        # 2. Processamento da Foto (se houver)
+        if 'foto' in request.files:
+            file = request.files['foto']
+            if file and file.filename != '' and allowed_file(file.filename):
+                # Cria nome único: id_usuario_nomeoriginalseguro.jpg
+                filename = secure_filename(f"{usuario.id_usuario}_{file.filename}")
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                
+                # Apaga a foto antiga se não for a padrão
+                if usuario.foto_perfil != 'default_avatar.png':
+                    old_path = os.path.join(app.config['UPLOAD_FOLDER'], usuario.foto_perfil)
+                    if os.path.exists(old_path):
+                        os.remove(old_path)
+                
+                file.save(file_path) # Salva o arquivo físico
+                usuario.foto_perfil = filename # Salva o nome no banco
+
+        # 3. Atualização dos Dados de Texto (incluindo o Peso)
+        usuario.nome = request.form.get('nome')
+        usuario.email = request.form.get('email')
+        usuario.genero = request.form.get('genero')
+        
+        peso_raw = request.form.get('peso')
+        usuario.peso = float(peso_raw) if peso_raw and peso_raw != 'None' else None
+        
+        usuario.altura = request.form.get('altura')
+        # ... outros campos ...
+
+        db.session.commit()
+        session['nome'] = usuario.nome
+        return jsonify({"sucesso": True, "mensagem": "Perfil e Protocolo Biométrico atualizados."})
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"sucesso": False, "mensagem": f"Erro interno: {str(e)}"}), 500
+
+
 if __name__ == '__main__':
     app.run(debug=True)
+
