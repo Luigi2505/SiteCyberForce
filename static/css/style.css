@@ -518,3 +518,25 @@
         padding: 0.8rem !important;
     }
 }
+
+/* ==========================================
+   GARANTIA DO MENU HAMBÚRGUER
+   ========================================== */
+.nav-drawer {
+    position: fixed;
+    top: 0;
+    left: -300px; /* Fica escondido fora da tela */
+    width: 250px;
+    height: 100vh;
+    background-color: rgba(10, 10, 20, 0.98);
+    border-right: 1px solid var(--cyan);
+    box-shadow: 5px 0 15px rgba(0, 255, 255, 0.2);
+    transition: left 0.4s ease-in-out; /* A animação de deslizar */
+    z-index: 999999; /* Fica na frente de tudo no site */
+    padding-top: 60px;
+}
+
+/* Essa é a classe mágica que o JS adiciona quando você clica */
+.nav-drawer.active {
+    left: 0 !important; /* Desliza para dentro da tela */
+}
