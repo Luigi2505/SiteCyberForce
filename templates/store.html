@@ -6,6 +6,7 @@
       <h2 class="section-title">SUPLEMENTOS</h2>
       <div class="section-line"></div>
     </div>
+
     <div class="filter-bar">
       <button class="filter-btn active" onclick="filterProducts('all', this)">
         TODOS
@@ -16,15 +17,117 @@
       <button class="filter-btn" onclick="filterProducts('creatina', this)">
         CREATINA
       </button>
+      <button class="filter-btn" onclick="filterProducts('pre', this)">
+        PRÉ-TREINO
+      </button>
+      <button class="filter-btn" onclick="filterProducts('aminoacido', this)">
+        AMINOÁCIDO
+      </button>
+      <button class="filter-btn" onclick="filterProducts('vitamina', this)">
+        VITAMINA
+      </button>
     </div>
-    <div class="product-grid" id="productGrid">
-      <div class="product-card" data-cat="proteina">
-        <span class="product-status status-available">DISPONÍVEL</span>
-        <span class="product-img">🥛</span>
-        <div class="product-name">WHEY PROTEIN ISOLADO</div>
-        <span class="product-price">R$ 189,90</span>
+
+    {% if session.get('perfil') in ['admin', 'treinador'] %}
+    <div class="admin-panel">
+      <div class="section-header" style="margin-bottom: 2rem; padding: 0">
+        <span class="section-tag" style="color: var(--cyan)"
+          >// PAINEL_ADMINISTRATIVO</span
+        >
       </div>
+
+      <div
+        style="
+          display: grid;
+          grid-template-columns: 80px 1fr 1fr 120px;
+          gap: 1rem;
+          margin-bottom: 1.5rem;
+        "
+      >
+        <input
+          type="text"
+          id="novo-icone"
+          class="admin-input"
+          placeholder="Ícone"
+          maxlength="4"
+        />
+        <input
+          type="text"
+          id="novo-nome"
+          class="admin-input"
+          placeholder="NOME DO PRODUTO"
+          maxlength="50"
+        />
+        <input
+          type="text"
+          id="nova-marca"
+          class="admin-input"
+          placeholder="MARCA E PESO"
+          maxlength="40"
+        />
+        <input
+          type="number"
+          id="novo-qtd"
+          class="admin-input"
+          placeholder="QTD"
+          value="0"
+          min="0"
+          max="9999"
+        />
+      </div>
+
+      <div
+        style="
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+          gap: 1rem;
+          margin-bottom: 2rem;
+        "
+      >
+        <select id="nova-cat" class="admin-input">
+          <option value="" disabled selected>SELECIONE A CATEGORIA...</option>
+          <option value="proteina">PROTEÍNA</option>
+          <option value="creatina">CREATINA</option>
+          <option value="pre">PRÉ-TREINO</option>
+          <option value="aminoacido">AMINOÁCIDO</option>
+          <option value="vitamina">VITAMINA</option>
+        </select>
+
+        <input
+          type="text"
+          id="novo-preco"
+          class="admin-input"
+          placeholder="PREÇO (Ex: 100 ou 100,50)"
+          oninput="this.value = this.value.replace(/[^0-9.,]/g, '')"
+          onblur="formatarMoeda(this)"
+          maxlength="15"
+        />
+
+        <select id="novo-status" class="admin-input">
+          <option value="available">DISPONÍVEL</option>
+          <option value="out">ESGOTADO</option>
+        </select>
+      </div>
+
+      <button
+        class="cta-btn"
+        onclick="adicionarProdutoBD()"
+        style="width: 100%"
+      >
+        + CADASTRAR NOVO PRODUTO NO ESTOQUE
+      </button>
     </div>
+
+    <script>
+      var userPerfil = "{{ session.get('perfil') }}";
+    </script>
+    {% else %}
+    <script>
+      var userPerfil = "aluno";
+    </script>
+    {% endif %}
+
+    <div class="product-grid" id="productGrid"></div>
   </div>
 </section>
 {% endblock %}

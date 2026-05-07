@@ -56,6 +56,17 @@ class ItemTreino(db.Model):
     repeticoes     = db.Column(db.Integer)
     carga          = db.Column(db.Float)
 
+class Produto(db.Model):
+    __tablename__ = 'Produto'
+    id_produto = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(100), nullable=False)
+    marca = db.Column(db.String(100))
+    categoria = db.Column(db.String(50), nullable=False)
+    preco = db.Column(db.String(20))
+    status = db.Column(db.String(20), default='available')
+    icone = db.Column(db.String(10))
+    quantidade = db.Column(db.Integer, default=0)
+
 
 # ─── ROTAS DE PÁGINAS (FRONTEND) ───
 
@@ -147,7 +158,7 @@ def cadastro():
             altura=data.get('altura')
         )
         db.session.add(novo_usuario)
-        db.session.flush() # Gera o id_usuario para usar no Aluno
+        db.session.flush()
 
         novo_aluno = Aluno(id_usuario=novo_usuario.id_usuario)
         db.session.add(novo_aluno)
@@ -160,7 +171,6 @@ def cadastro():
         return jsonify({'sucesso': False, 'mensagem': 'FORMATO_DE_DATA_INVÁLIDO (Use DD/MM/AAAA)'}), 400
     except Exception as e:
         db.session.rollback()
-        print(f"ERRO DE CADASTRO: {e}")
         return jsonify({'sucesso': False, 'mensagem': 'ERRO NO BANCO DE DADOS'}), 500
 
 
@@ -327,6 +337,67 @@ def excluir_conta():
             return jsonify({"sucesso": False, "erro": str(e)}), 500
             
     return jsonify({"sucesso": False}), 404
+
+# ─── ROTAS DO ESTOQUE (CRUD) ───
+
+@app.route('/api/produtos', methods=['GET'])
+def listar_produtos():
+    produtos = Produto.query.all()
+    lista = []
+    for p in produtos:
+        lista.append({
+            "id": p.id_produto, "name": p.nome, "brand": p.marca, 
+            "cat": p.categoria, "price": p.preco, "status": p.status, 
+            "icon": p.icone, "quantity": p.quantidade
+        })
+    return jsonify(lista)
+
+@app.route('/api/produtos', methods=['POST'])
+def criar_produto():
+    if session.get('perfil') not in ['admin', 'treinador']:
+        return jsonify({"sucesso": False, "mensagem": "Acesso Negado"}), 403
+        
+    data = request.get_json()
+    try:
+        novo = Produto(
+            nome=data.get('name'), marca=data.get('brand'), categoria=data.get('cat'),
+            preco=data.get('price'), status=data.get('status'), icone=data.get('icon'),
+            quantidade=data.get('quantity')
+        )
+        db.session.add(novo)
+        db.session.commit()
+        return jsonify({"sucesso": True, "mensagem": "Produto adicionado!"})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"sucesso": False, "mensagem": str(e)}), 500
+
+@app.route('/api/produtos/<int:id_produto>/quantidade', methods=['PUT'])
+def alterar_quantidade(id_produto):
+    if session.get('perfil') not in ['admin', 'treinador']:
+        return jsonify({"sucesso": False}), 403
+    
+    data = request.get_json()
+    produto = Produto.query.get(id_produto)
+    
+    if produto:
+        produto.quantidade = data.get('quantity')
+        produto.status = 'out' if produto.quantidade <= 0 else 'available'
+        db.session.commit()
+        return jsonify({"sucesso": True})
+        
+    return jsonify({"sucesso": False}), 404
+
+@app.route('/api/produtos/<int:id_produto>', methods=['DELETE'])
+def deletar_produto(id_produto):
+    if session.get('perfil') not in ['admin', 'treinador']:
+        return jsonify({"sucesso": False, "mensagem": "Acesso Negado"}), 403
+        
+    produto = Produto.query.get(id_produto)
+    if produto:
+        db.session.delete(produto)
+        db.session.commit()
+        return jsonify({"sucesso": True})
+    return jsonify({"sucesso": False, "mensagem": "Produto não encontrado"}), 404
 
 if __name__ == '__main__':
     with app.app_context():

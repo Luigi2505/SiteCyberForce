@@ -1,37 +1,234 @@
 /* ─── STORE ─── */
-  .store-section { padding: 4rem 4vw; }
-  .filter-bar { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 3rem; }
-  .filter-btn { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; padding: 0.6rem 1.2rem; background: transparent; border: 1px solid rgba(86,0,120,0.4); color: var(--text-dim); cursor: pointer; transition: all 0.3s; text-transform: uppercase; }
-  .filter-btn.active, .filter-btn:hover { border-color: var(--cyan); color: var(--cyan); text-shadow: 0 0 8px var(--cyan); box-shadow: 0 0 10px rgba(0,212,255,0.15); background: rgba(0,212,255,0.05); }
-  .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem; }
-  .product-card { background: rgba(8,8,12,0.9); border: 1px solid rgba(86,0,120,0.25); padding: 1.5rem; position: relative; transition: all 0.3s; overflow: hidden; }
-  .product-card:hover { border-color: rgba(86,0,120,0.6); box-shadow: 0 0 20px rgba(86,0,120,0.2), 0 0 40px rgba(20,111,181,0.1); transform: translateY(-3px); }
-  .product-card.hidden { display: none; }
-  .product-card.out .product-img { filter: grayscale(0.7) brightness(0.5); }
-  .product-status { position: absolute; top: 1rem; right: 1rem; font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; letter-spacing: 0.25em; padding: 0.3rem 0.7rem; }
-  .status-available { border: 1px solid var(--neon-green); color: var(--neon-green); text-shadow: 0 0 8px var(--neon-green); box-shadow: 0 0 10px rgba(0,255,136,0.2); animation: blinkGreen 3s ease-in-out infinite; }
-  .status-out { border: 1px solid var(--neon-red); color: var(--neon-red); text-shadow: 0 0 8px var(--neon-red); box-shadow: 0 0 10px rgba(255,34,68,0.2); }
-  @keyframes blinkGreen { 0%,100% { box-shadow: 0 0 10px rgba(0,255,136,0.2); } 50% { box-shadow: 0 0 20px rgba(0,255,136,0.5), 0 0 40px rgba(0,255,136,0.2); } }
-  .product-img { font-size: 3.5rem; text-align: center; padding: 1.5rem 0; display: block; filter: drop-shadow(0 0 10px rgba(0,212,255,0.3)); transition: filter 0.3s; }
-  .product-name { font-family: 'Michroma', sans-serif; font-size: 0.75rem; letter-spacing: 0.1em; color: var(--text); margin-bottom: 0.4rem; }
-  .product-brand { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--text-dim); margin-bottom: 0.8rem; }
-  .product-cat-tag { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; padding: 0.25rem 0.6rem; background: rgba(86,0,120,0.15); border: 1px solid rgba(86,0,120,0.3); color: var(--neon-purple); display: inline-block; }
-  .product-price { font-family: 'Share Tech Mono', monospace; font-size: 1rem; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: block; margin-top: 0.8rem; }
-
-  /* ════════ RESPONSIVIDADE STORE ════════ */
-  @media (max-width: 768px) {
-    .store-section { padding: 2rem 3vw; }
-    .product-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; }
-    .filter-btn { font-size: 0.6rem; padding: 0.5rem 0.8rem; letter-spacing: 0.1em; }
+.store-section {
+  padding: 4rem 4vw;
+}
+.filter-bar {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 3rem;
+}
+.filter-btn {
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  padding: 0.6rem 1.2rem;
+  background: transparent;
+  border: 1px solid rgba(86, 0, 120, 0.4);
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: uppercase;
+}
+.filter-btn.active,
+.filter-btn:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  text-shadow: 0 0 8px var(--cyan);
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.15);
+  background: rgba(0, 212, 255, 0.05);
+}
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+.product-card {
+  background: rgba(8, 8, 12, 0.9);
+  border: 1px solid rgba(86, 0, 120, 0.25);
+  padding: 1.5rem;
+  position: relative;
+  transition: all 0.3s;
+  overflow: hidden;
+}
+.product-card:hover {
+  border-color: rgba(86, 0, 120, 0.6);
+  box-shadow:
+    0 0 20px rgba(86, 0, 120, 0.2),
+    0 0 40px rgba(20, 111, 181, 0.1);
+  transform: translateY(-3px);
+}
+.product-card.hidden {
+  display: none;
+}
+.product-card.out .product-img {
+  filter: grayscale(0.7) brightness(0.5);
+}
+.product-status {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.25em;
+  padding: 0.3rem 0.7rem;
+}
+.status-available {
+  border: 1px solid var(--neon-green);
+  color: var(--neon-green);
+  text-shadow: 0 0 8px var(--neon-green);
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+  animation: blinkGreen 3s ease-in-out infinite;
+}
+.status-out {
+  border: 1px solid var(--neon-red);
+  color: var(--neon-red);
+  text-shadow: 0 0 8px var(--neon-red);
+  box-shadow: 0 0 10px rgba(255, 34, 68, 0.2);
+}
+@keyframes blinkGreen {
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
   }
-
-  @media (max-width: 480px) {
-    .store-section { padding: 1.5rem 4vw; }
-    .product-grid { grid-template-columns: repeat(2, 1fr); gap: 0.8rem; }
-    .filter-bar { gap: 0.3rem; margin-bottom: 1.5rem; }
-    .filter-btn { font-size: 0.55rem; padding: 0.4rem 0.6rem; }
-    .product-card { padding: 1rem; }
-    .product-img { font-size: 2.5rem; padding: 1rem 0; }
-    .product-name { font-size: 0.65rem; }
-    .product-status { font-size: 0.45rem; padding: 0.2rem 0.4rem; top: 0.5rem; right: 0.5rem; }
+  50% {
+    box-shadow:
+      0 0 20px rgba(0, 255, 136, 0.5),
+      0 0 40px rgba(0, 255, 136, 0.2);
   }
+}
+.product-img {
+  font-size: 3.5rem;
+  text-align: center;
+  padding: 1.5rem 0;
+  display: block;
+  filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.3));
+  transition: filter 0.3s;
+}
+.product-name {
+  font-family: "Michroma", sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+}
+.product-brand {
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  margin-bottom: 0.8rem;
+}
+.product-cat-tag {
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  padding: 0.25rem 0.6rem;
+  background: rgba(86, 0, 120, 0.15);
+  border: 1px solid rgba(86, 0, 120, 0.3);
+  color: var(--neon-purple);
+  display: inline-block;
+}
+.product-price {
+  font-family: "Share Tech Mono", monospace;
+  font-size: 1rem;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: block;
+  margin-top: 0.8rem;
+}
+
+/* ════════ RESPONSIVIDADE STORE ════════ */
+@media (max-width: 768px) {
+  .store-section {
+    padding: 2rem 3vw;
+  }
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+  }
+  .filter-btn {
+    font-size: 0.6rem;
+    padding: 0.5rem 0.8rem;
+    letter-spacing: 0.1em;
+  }
+}
+
+@media (max-width: 480px) {
+  .store-section {
+    padding: 1.5rem 4vw;
+  }
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+  }
+  .filter-bar {
+    gap: 0.3rem;
+    margin-bottom: 1.5rem;
+  }
+  .filter-btn {
+    font-size: 0.55rem;
+    padding: 0.4rem 0.6rem;
+  }
+  .product-card {
+    padding: 1rem;
+  }
+  .product-img {
+    font-size: 2.5rem;
+    padding: 1rem 0;
+  }
+  .product-name {
+    font-size: 0.65rem;
+  }
+  .product-status {
+    font-size: 0.45rem;
+    padding: 0.2rem 0.4rem;
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+}
+
+/* ─── ESTILOS DO PAINEL ADMINISTRATIVO ─── */
+.admin-panel {
+  background: rgba(10, 10, 20, 0.8);
+  border: 1px solid var(--neon-purple);
+  box-shadow: inset 0 0 20px rgba(160, 32, 240, 0.1);
+  padding: 2.5rem;
+  margin-bottom: 3rem;
+}
+
+.admin-input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  border: 1px solid rgba(160, 32, 240, 0.35);
+  color: var(--cyan);
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.88rem;
+  padding: 0.8rem 1rem;
+  outline: none;
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
+}
+
+.admin-input::placeholder {
+  color: rgba(85, 85, 119, 0.5);
+}
+
+.admin-input:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 14px rgba(0, 212, 255, 0.25);
+}
+
+/* Formatação específica para os Dropdowns (Selects) */
+select.admin-input {
+  appearance: none;
+  cursor: pointer;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--cyan) 50%),
+    linear-gradient(135deg, var(--cyan) 50%, transparent 50%);
+  background-position:
+    calc(100% - 20px) calc(1em + 2px),
+    calc(100% - 15px) calc(1em + 2px);
+  background-size:
+    5px 5px,
+    5px 5px;
+  background-repeat: no-repeat;
+}
+
+select.admin-input option {
+  background: #0a0a14;
+  color: var(--cyan);
+  font-family: "Share Tech Mono", monospace;
+}
