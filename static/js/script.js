@@ -128,12 +128,7 @@ async function salvarTreinoCompleto() {
     });
   }
 
-  // Logo nav
-  const botaoProblematico = document.getElementById('NOME_DO_ELEMENTO');
-if (botaoProblematico) {
-    botaoProblematico.onclick = function() {
-    };
-}
+
 
 async function carregarTreinoDoBanco(categoria) {
   try {
@@ -312,113 +307,118 @@ function switchLogTab(cat) {
 // 1. READ: Carregar os dados quando a aba abrir
 async function carregarDadosPerfil() {
     try {
+        if (typeof mostrarAviso === "function") {
+            mostrarAviso("// ACESSANDO CORE NEURAL...");
+        }
+
         const response = await fetch('/api/usuario/perfil');
         const data = await response.json();
         
         if (response.ok) {
-            // 1. Preenche os dados antigos
-            document.getElementById('perfil-nome').value = data.nome || '';
-            document.getElementById('perfil-cpf').value = data.cpf || '';
-            document.getElementById('perfil-email').value = data.email || '';
-            document.getElementById('perfil-objetivo').value = data.objetivo || '';
-            
-            // 2. Preenche os DADOS NOVOS (Peso, Altura, Data e Gênero)
-            document.getElementById('perfil-peso').value = data.peso !== null ? data.peso : '';
-            document.getElementById('perfil-altura').value = data.altura !== null ? data.altura : '';
-            if (data.genero) document.getElementById('perfil-genero').value = data.genero;
-            if (data.data_nascimento) document.getElementById('perfil-data').value = data.data_nascimento;
+            // Preenche os dados
+            if(document.getElementById('perfil-nome')) document.getElementById('perfil-nome').value = data.nome || '';
+            if(document.getElementById('perfil-cpf')) document.getElementById('perfil-cpf').value = data.cpf || '';
+            if(document.getElementById('perfil-email')) document.getElementById('perfil-email').value = data.email || '';
+            if(document.getElementById('perfil-objetivo')) document.getElementById('perfil-objetivo').value = data.objetivo || '';
+            if(document.getElementById('perfil-peso')) document.getElementById('perfil-peso').value = data.peso !== null ? data.peso : '';
+            if(document.getElementById('perfil-altura')) document.getElementById('perfil-altura').value = data.altura !== null ? data.altura : '';
+            if(data.genero && document.getElementById('perfil-genero')) document.getElementById('perfil-genero').value = data.genero;
 
-            // 3. Preenche a Foto
-            if (data.foto_url) {
-                document.getElementById('perfil-img-display').src = data.foto_url;
+            // FIX DA DATA
+            if (data.data_nascimento && document.getElementById('perfil-data')) {
+                document.getElementById('perfil-data').value = data.data_nascimento;
+            } else if (document.getElementById('perfil-data')) {
+                document.getElementById('perfil-data').value = '';
             }
 
-            // ==========================================
-            // FIX DA TELA PRETA: MOSTRA O PERFIL E ESCONDE A HOME
-            // ==========================================
-            const perfilSection = document.getElementById('perfil');
-            const homeSection = document.getElementById('home-section');
+            // ATUALIZA FOTOS
+            const fotoUrl = data.foto_url || '/static/uploads/perfil/default_avatar.png';
+            if(document.getElementById('perfil-img-display')) document.getElementById('perfil-img-display').src = fotoUrl;
+            if(document.getElementById('header-profile-img')) document.getElementById('header-profile-img').src = fotoUrl;
 
-            if (perfilSection) {
-                perfilSection.style.display = 'block'; // Mostra o perfil
+            // ==========================================
+            // FIX DEFINITIVO DA TELA E DO ERRO DE SINTAXE
+            // ==========================================
+            // Fazemos a troca direto no elemento, sem criar variáveis "const" que possam dar conflito!
+            if (document.getElementById('perfil')) {
+                document.getElementById('perfil').style.display = 'block';
             }
-            if (homeSection) {
-                homeSection.style.display = 'none'; // Esconde a Home
+            if (document.getElementById('home-section')) {
+                document.getElementById('home-section').style.display = 'none';
             }
             
         } else {
-            console.error("Erro da API:", data.erro);
+            if (typeof mostrarAviso === "function") mostrarAviso(`// ERRO: ${data.erro}`, true);
         }
     } catch (e) {
         console.error("Erro ao carregar perfil:", e);
+        if (typeof mostrarAviso === "function") mostrarAviso("// ERRO CRÍTICO NA CONEXÃO NEURAL.", true);
     }
 }
-
 // 2. UPDATE: Salvar as alterações
 async function salvarPerfil() {
-    // 1. Captura os dados simples
-    const nome = document.getElementById('perfil-nome').value.trim();
-    const email = document.getElementById('perfil-email').value.trim();
-    const genero = document.getElementById('perfil-genero').value;
-    const peso = document.getElementById('perfil-peso').value; // Capturando o peso
-    const altura = document.getElementById('perfil-altura').value;
-    const senha_confirmacao = document.getElementById('perfil-senha-confirma').value;
-    
-    // Captura o arquivo de foto (se houver)
-    const fotoInput = document.getElementById('perfil-foto-input');
-    const fotoArquivo = fotoInput.files[0];
-
-    // 2. Validações básicas (Melhora sua nota na rubrica!)
-    if (!nome || !email) {
-        alert("// ERRO: NOME E EMAIL SÃO OBRIGATÓRIOS.");
-        return;
-    }
-    
-    if (peso && (peso < 30 || peso > 300)) {
-        alert("// ERRO: PESO INVÁLIDO (FORA DA FAIXA 30kg-300kg).");
-        return;
-    }
-
-    if (!senha_confirmacao) {
-        alert("// SEGURANÇA: DIGITE SUA SENHA PARA CONFIRMAR ALTERAÇÕES.");
-        return;
-    }
-
-    // 3. Monta o FormData (Necessário para envio de arquivos)
-    const formData = new FormData();
-    formData.append('nome', nome);
-    formData.append('email', email);
-    formData.append('genero', genero);
-    formData.append('peso', peso); // Adicionando peso ao pacote
-    formData.append('altura', altura);
-    formData.append('senha_confirmacao', senha_confirmacao);
-    
-    // Adiciona o arquivo apenas se o usuário selecionou um novo
-    if (fotoArquivo) {
-        formData.append('foto', fotoArquivo);
-    }
-
-    // 4. Envia para a NOVA rota (atualizar_completo)
     try {
+        const nome = document.getElementById('perfil-nome').value.trim();
+        const cpf = document.getElementById('perfil-cpf').value.trim();
+        const email = document.getElementById('perfil-email').value.trim();
+        const data_nascimento = document.getElementById('perfil-data').value;
+        const genero = document.getElementById('perfil-genero').value;
+        const peso = document.getElementById('perfil-peso').value;
+        const altura = document.getElementById('perfil-altura').value;
+        const objetivo = document.getElementById('perfil-objetivo').value.trim();
+        const senha_confirmacao = document.getElementById('perfil-senha-confirma').value;
+        
+        const fotoInput = document.getElementById('perfil-foto-input');
+        const fotoArquivo = fotoInput ? fotoInput.files[0] : null;
+
+        // VALIDAÇÕES COM O NOVO POP-UP
+        if (!nome || !email || !cpf) {
+            mostrarAviso("// ERRO: NOME, CPF E EMAIL SÃO OBRIGATÓRIOS.", true);
+            return;
+        }
+        if (!senha_confirmacao) {
+            mostrarAviso("// SEGURANÇA: DIGITE SUA SENHA PARA CONFIRMAR.", true);
+            return;
+        }
+
+        mostrarAviso("// INICIANDO TRANSFERÊNCIA DE DADOS...");
+
+        const formData = new FormData();
+        formData.append('nome', nome);
+        formData.append('cpf', cpf);
+        formData.append('email', email);
+        formData.append('data_nascimento', data_nascimento); 
+        formData.append('genero', genero);
+        formData.append('peso', peso);
+        formData.append('altura', altura);
+        formData.append('objetivo', objetivo);
+        formData.append('senha_confirmacao', senha_confirmacao);
+        if (fotoArquivo) formData.append('foto', fotoArquivo);
+
         const res = await fetch('/api/usuario/atualizar_completo', {
             method: 'POST',
-            // Importante: NÃO definir Content-Type header aqui. 
-            // O navegador faz isso automaticamente para FormData.
             body: formData
         });
+
+        if (!res.ok && res.status !== 403 && res.status !== 400) {
+            mostrarAviso("// ERRO NO SERVIDOR. Olhe o terminal do VSCode.", true);
+            return;
+        }
 
         const result = await res.json();
         
         if (result.sucesso) {
-            alert("// PROTOCOLO ATUALIZADO COM SUCESSO.");
-            document.getElementById('perfil-senha-confirma').value = ''; // Limpa senha
-            location.reload(); // Recarrega para puxar os dados novos e a foto nova
+            mostrarAviso("// PROTOCOLO ATUALIZADO COM SUCESSO.");
+            document.getElementById('perfil-senha-confirma').value = '';
+            
+            // Recarrega a página após 2 segundos para dar tempo de ler o aviso
+            setTimeout(() => { location.reload(); }, 2000);
         } else {
-            alert(`// ERRO: ${result.mensagem}`);
+            mostrarAviso(`// ERRO: ${result.mensagem}`, true);
         }
     } catch (error) {
-        console.error("Erro no upload:", error);
-        alert("// ERRO CRÍTICO NA CONEXÃO NEURAL.");
+        console.error("Erro no JS:", error);
+        mostrarAviso("// ERRO CRÍTICO NA TELA.", true);
     }
 }
 
@@ -474,3 +474,23 @@ function previewFoto(input) {
 // Oculta a home e MOSTRA o perfil
 document.getElementById('home-section').style.display = 'none';
 document.getElementById('perfil').style.display = 'block'; // <<< Usa 'perfil' aqui também!
+
+function mostrarAviso(msg, isError = false) {
+    const toast = document.getElementById("cyber-toast");
+    const toastMsg = document.getElementById("cyber-toast-msg");
+    
+    toastMsg.innerText = msg;
+
+    if (isError) {
+        toast.classList.add("error"); // Fica vermelho
+    } else {
+        toast.classList.remove("error"); // Fica azul cyan
+    }
+
+    toast.classList.add("show");
+    
+    // Esconde automaticamente após 4 segundos
+    setTimeout(function() { 
+        toast.classList.remove("show"); 
+    }, 4000);
+}

@@ -32,17 +32,29 @@
         </div>
 
         <div class="auth-panel active" id="panel-login">
-            <div class="field-group">
-                <label class="field-label">// EMAIL_ID</label>
-                <input type="email" class="field-input" id="login-email" placeholder="usuario@cyberforce.gym">
-            </div>
-            <div class="field-group">
-                <label class="field-label">// SENHA_HASH</label>
-                <input type="password" class="field-input" id="login-senha" placeholder="••••••••">
-            </div>
-            <button class="btn-cyber" onclick="fazerLogin()"><span>AUTENTICAR</span></button>
-            <div class="msg-box" id="msg-login"></div>
+    
+    <div class="field-group">
+        <label class="field-label">// EMAIL_ID</label>
+        <input type="email" class="field-input" id="login-email" placeholder="usuario@cyberforce.gym">
+    </div>
+
+    <div class="field-group">
+        <label class="field-label">// SENHA_HASH</label>
+        
+        <div style="position: relative; width: 100%;">
+            <input type="password" class="field-input" id="login-senha" placeholder="••••••••" style="width: 100%; padding-right: 70px; box-sizing: border-box;">
+            
+            <span onclick="toggleSenha('login-senha', this)" 
+                    style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; font-family: 'Share Tech Mono'; font-size: 0.8rem; color: var(--cyan); transition: 0.3s; z-index: 10;">
+                EXIBIR
+            </span>
         </div>
+    </div>
+
+    <button class="btn-cyber" onclick="fazerLogin()"><span>AUTENTICAR</span></button>
+    <div class="msg-box" id="msg-login"></div>
+
+</div>
 
         <div class="auth-panel" id="panel-cadastro">
             <div class="form-section-label">// IDENTIFICAÇÃO_NEURAL</div>
@@ -93,7 +105,7 @@
             <label class="field-label">// SENHA *</label>
             <div style="position: relative;">
                 <input type="password" class="field-input" id="cad-senha" placeholder="Mínimo 8 caracteres" required style="padding-right: 40px;">
-                <span onclick="toggleSenha('cad-senha', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; filter: grayscale(1); opacity: 0.7;">👁️</span>
+                <span onclick="toggleSenha('cad-senha', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; filter: grayscale(1); opacity: 0.7;">EXIBIR</span>
             </div>
             <span style="font-size: 1rem; color: var(--text-dim);">A senha deve conter mínimo de 8 caracteres, 1 maiúscula e 1 símbolo.</span>
         </div>
@@ -102,7 +114,7 @@
             <label class="field-label">// CONFIRMAR SENHA *</label>
             <div style="position: relative;">
                 <input type="password" class="field-input" id="cad-senha-confirma" placeholder="Repita a senha" required style="padding-right: 40px;">
-                <span onclick="toggleSenha('cad-senha-confirma', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; filter: grayscale(1); opacity: 0.7;">👁️</span>
+                <span onclick="toggleSenha('cad-senha-confirma', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; filter: grayscale(1); opacity: 0.7;">EXIBIR</span>
             </div>
         </div>         
 

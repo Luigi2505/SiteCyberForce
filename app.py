@@ -4,9 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import os
 from dotenv import load_dotenv
-import os # Para lidar com caminhos de pastas
-from flask import send_from_directory
-
+from werkzeug.utils import secure_filename
 load_dotenv()
 
 app = Flask(__name__)
@@ -276,6 +274,7 @@ def buscar_perfil():
         "nome": usuario.nome,
         "email": usuario.email,
         "cpf": usuario.cpf,
+        "data_nascimento": usuario.data_nascimento.strftime('%Y-%m-%d') if usuario.data_nascimento else "",
         "genero": usuario.genero,
         "peso": float(usuario.peso) if usuario.peso else 0,
         "altura": usuario.altura,
@@ -291,52 +290,58 @@ def atualizar_perfil_completo():
     
     usuario = Usuario.query.get(session['usuario_id'])
     
-    # 1. TRAVA DE SEGURANÇA: Verifica a senha antes de tudo
     senha_confirmacao = request.form.get('senha_confirmacao')
     if not senha_confirmacao or not check_password_hash(usuario.senha, senha_confirmacao):
-        return jsonify({"sucesso": False, "mensagem": "Senha de confirmação incorreta."}), 403
+        return jsonify({"sucesso": False, "mensagem": "Senha incorreta."}), 403
 
     try:
-        # 2. Processamento da Foto (se houver)
+        # Tratamento da Foto
         if 'foto' in request.files:
             file = request.files['foto']
             if file and file.filename != '' and allowed_file(file.filename):
-                # Cria nome único: id_usuario_nomeoriginalseguro.jpg
                 filename = secure_filename(f"{usuario.id_usuario}_{file.filename}")
                 file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                
-                # Apaga a foto antiga se não for a padrão
-                if usuario.foto_perfil != 'default_avatar.png':
+                if usuario.foto_perfil and usuario.foto_perfil != 'default_avatar.png':
                     old_path = os.path.join(app.config['UPLOAD_FOLDER'], usuario.foto_perfil)
                     if os.path.exists(old_path):
                         os.remove(old_path)
-                
-                file.save(file_path) # Salva o arquivo físico
-                usuario.foto_perfil = filename # Salva o nome no banco
+                file.save(file_path)
+                usuario.foto_perfil = filename
 
-        # 3. Atualização dos Dados de Texto 
+        # Salvando os textos simples
         usuario.nome = request.form.get('nome')
+        usuario.cpf = request.form.get('cpf')
         usuario.email = request.form.get('email')
         usuario.genero = request.form.get('genero')
-        peso_raw = request.form.get('peso')
-        usuario.peso = float(peso_raw) if peso_raw and peso_raw != 'None' else None
-        usuario.altura = request.form.get('altura')
-        if data.get('data_nascimento'):
-            usuario.data_nascimento = datetime.strptime(data.get('data_nascimento'), '%Y-%m-%d').date()
+        
+        # Salvando a DATA DE NASCIMENTO
+        data_nasc_str = request.form.get('data_nascimento')
+        if data_nasc_str:
+            usuario.data_nascimento = datetime.strptime(data_nasc_str, '%Y-%m-%d').date()
 
-        # 4. Atualiza o objetivo (se for aluno)
+        # Salvando o PESO
+        peso_str = request.form.get('peso')
+        usuario.peso = float(peso_str) if peso_str and peso_str != 'None' else None
+
+        # Salvando a ALTURA
+        altura_str = request.form.get('altura')
+        usuario.altura = int(altura_str) if altura_str and altura_str != 'None' else None
+        
+        # Salvando o OBJETIVO (caso seja aluno)
+        objetivo_str = request.form.get('objetivo')
         aluno = Aluno.query.filter_by(id_usuario=usuario.id_usuario).first()
-        if aluno and 'objetivo' in data:
-            aluno.objetivo = data.get('objetivo')
+        if aluno and objetivo_str:
+            aluno.objetivo = objetivo_str
 
         db.session.commit()
         session['nome'] = usuario.nome
-        return jsonify({"sucesso": True, "mensagem": "Perfil e Protocolo Biométrico atualizados."})
+        return jsonify({"sucesso": True, "mensagem": "Perfil atualizado!"})
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({"sucesso": False, "mensagem": f"Erro interno: {str(e)}"}), 500
-
+        print(f"Erro no Python ao salvar perfil: {e}") # Vai mostrar o erro real no terminal!
+        return jsonify({"sucesso": False, "mensagem": "Erro interno no servidor ao salvar."}), 500
+    
 # 3. DELETE: Apagar a conta do sistema com segurança
 @app.route('/api/usuario/excluir', methods=['POST'])
 def excluir_conta():
