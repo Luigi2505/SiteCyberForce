@@ -50,7 +50,7 @@
     <div class="overlay" id="overlay" onclick="closeMenu()"></div>
 
     <header>
-        <button class="hamburger" id="hamburger" onclick="document.getElementById('navDrawer').classList.toggle('active'); this.classList.toggle('active'); console.log('Hambúrguer clicado!');">
+        <button class="hamburger" id="hamburger" onclick="document.getElementById('navDrawer').classList.toggle('active'); this.classList.toggle('active');">
             <span></span><span></span><span></span>
         </button>
         
@@ -119,7 +119,7 @@
         <div class="nav-item" onclick="showSection('logbook'); closeMenu()">LOG BOOK</div>
         {% endif %}
         
-        {% if session.get('perfil') == 'treinador' %}
+        {% if session.get('perfil') == 'treinador' or session.get('perfil') == 'admin' %}
         <div class="nav-item" onclick="showSection('painel-professor'); closeMenu()">PAINEL DO PROFESSOR</div>
         {% endif %}
         
@@ -234,10 +234,6 @@
                             <tbody id="logbook-tbody"></tbody>
                         </table>
                     </div>
-
-                    {% if session.get('perfil') == 'treinador' %}
-                    <button class="add-exercise-btn" onclick="showSection('painel-professor')">⚙️ EDITAR TREINO NO PAINEL</button>
-                    {% endif %}
                 </div>
             </div>
         </section>
@@ -251,42 +247,67 @@
                     <div class="section-line"></div>
                 </div>
 
-                <div id="lista-alunos-container">
-                    <p class="field-label">// SELECIONE UM ALUNO PARA GERENCIAR</p>
-                    <div id="grid-alunos" class="equipment-grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));"></div>
+                <section id="admin-conexoes" style="display:none; background: rgba(255,0,0,0.05); padding: 1.5rem; margin-bottom: 2rem; border: 1px dashed var(--neon-red);">
+                    <h3 style="color: var(--neon-red); font-family: 'Share Tech Mono'; margin-top:0;">// GESTÃO ADMINISTRATIVA DE VÍNCULOS</h3>
+                    <div class="table-wrapper">
+                        <table class="exercise-table">
+                            <thead>
+                                <tr><th>PROFESSOR</th><th>ALUNO</th><th>AÇÃO</th></tr>
+                            </thead>
+                            <tbody id="tabela-admin-conexoes"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <div style="background: rgba(0,255,255,0.05); border: 1px dashed var(--cyan); padding: 1.5rem; margin-bottom: 2.5rem; border-radius: 5px;">
+                    <label class="field-label" style="color: var(--cyan);">// RECRUTAR NOVO ALUNO (DIGITE NOME OU ID)</label>
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <input type="text" id="busca-aluno-input" class="field-input" placeholder="Ex: Maria, Silva, 42..." style="flex: 1; background: #000;">
+                        <button onclick="buscarNovoAluno()" class="filter-btn" style="height: 45px; margin: 0; min-width: 120px;">BUSCAR</button>
+                        <button onclick="buscarTodosAlunos()" class="filter-btn" style="height: 45px; margin: 0; min-width: 120px; border-color: var(--purple); color: var(--purple);">VER TODOS</button>
+                    </div>
+                </div>
+                    <div id="resultado-busca" style="margin-top: 15px; display: none; max-height: 200px; overflow-y: auto;"></div>
                 </div>
 
-                <div id="form-treino" style="display: none; margin-top: 3rem; border-top: 1px solid var(--purple); padding-top: 2rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-                        <h3 id="nome-aluno-selecionado" style="font-family: 'Michroma'; color: var(--cyan);">ALUNO: ---</h3>
-                        <button onclick="fecharCriadorTreino()" class="filter-btn">VOLTAR</button>
+                <div id="lista-alunos-container">
+                    <p class="field-label" style="margin-bottom: 10px;">// SEUS ALUNOS ATIVOS (Clique no card para prescrever treino)</p>
+                    <div style="display: flex; gap: 10px; margin-bottom: 1.5rem; align-items: center;">
+                        <input type="text" oninput="filtrarAlunosLocal(this.value)" class="field-input" placeholder="Pesquisar em meus alunos..." style="flex: 1;">
+                        <button onclick="ordenarAlunosAz()" class="filter-btn" style="white-space: nowrap;">A-Z</button>
                     </div>
-
-                    <div class="field-group">
-                        <label class="field-label">// CATEGORIA DO TREINO</label>
-                        <select id="treino-categoria" class="log-input" style="width: 200px; text-align: left;">
-                            <option value="PUSH">PUSH</option>
-                            <option value="PULL">PULL</option>
-                            <option value="LEGS">LEGS</option>
-                        </select>
-                    </div>
-
-                    <table class="exercise-table" id="tabela-criacao-treino">
-                        <thead>
-                            <tr>
-                                <th>EXERCÍCIO</th>
-                                <th>SÉRIES</th>
-                                <th>REPS</th>
-                                <th>CARGA (kg)</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody id="corpo-treino-novo"></tbody>
-                    </table>
                     
-                    <button class="add-exercise-btn" onclick="adicionarLinhaExercicio()">+ ADICIONAR EXERCÍCIO</button>
+                    <div id="grid-alunos" class="equipment-grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
+                    </div>
+                </div>
+
+                <div id="form-treino" style="display: none; margin-top: 3rem; border-top: 1px solid rgba(0,255,255,0.3); padding-top: 2rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+                        <h3 id="nome-aluno-selecionado" style="font-family: 'Michroma'; color: var(--cyan); margin: 0;">ALUNO: ---</h3>
+                        <button onclick="fecharCriadorTreino()" class="filter-btn" style="border-color: var(--neon-red); color: var(--neon-red);">CANCELAR / VOLTAR</button>
+                    </div>
+
+                    <div class="field-group" style="margin-bottom: 2rem;">
+                        <label class="field-label">// CATEGORIA DO PROTOCOLO</label>
+                        <select id="treino-categoria" class="log-input" style="width: 200px; text-align: left; background: #000;" onchange="carregarTreinoProfessor()">
+                          <option value="PUSH">PUSH</option>
+                          <option value="PULL">PULL</option>
+                          <option value="LEGS">LEGS</option>
+                      </select>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="exercise-table" id="tabela-criacao-treino">
+                            <thead>
+                                <tr><th>EXERCÍCIO</th><th>SÉRIES</th><th>REPS</th><th>CARGA (kg)</th><th>AÇÃO</th></tr>
+                            </thead>
+                            <tbody id="corpo-treino-novo"></tbody>
+                        </table>
+                    </div>
+                    
+                    <button class="add-exercise-btn" onclick="adicionarLinhaExercicio()" style="margin-top: 1rem;">+ ADICIONAR EXERCÍCIO</button>
                     <br>
-                    <button class="cta-btn" onclick="salvarTreinoCompleto()" style="width: 100%; margin-top: 2rem;">CONFIRMAR PROTOCOLO DE TREINO</button>
+                    <button class="cta-btn" onclick="salvarTreinoCompleto()" style="width: 100%; margin-top: 3rem;">CONFIRMAR PROTOCOLO DE TREINO</button>
                 </div>
             </div>
         </section>
@@ -325,7 +346,79 @@
                         <span class="product-cat-tag">PROTEÍNA</span>
                         <span class="product-price">R$ 149,90</span>
                     </div>
+                    <div class="product-card" data-cat="proteina">
+                        <span class="product-status status-available">DISPONÍVEL</span>
+                        <span class="product-img">🍫</span>
+                        <div class="product-name">BARRA DE PROTEÍNA NEURAL</div>
+                        <div class="product-brand">CYBERFORCE SNACKS — 12 UNID.</div>
+                        <span class="product-cat-tag">PROTEÍNA</span>
+                        <span class="product-price">R$ 89,90</span>
                     </div>
+                    <div class="product-card" data-cat="creatina">
+                        <span class="product-status status-available">DISPONÍVEL</span>
+                        <span class="product-img">⚡</span>
+                        <div class="product-name">CREATINA MONOHIDRATADA</div>
+                        <div class="product-brand">PURE TECH — 300g</div>
+                        <span class="product-cat-tag">CREATINA</span>
+                        <span class="product-price">R$ 99,90</span>
+                    </div>
+                    <div class="product-card out" data-cat="creatina">
+                        <span class="product-status status-out">ESGOTADO</span>
+                        <span class="product-img">🔋</span>
+                        <div class="product-name">CREAPURE 100%</div>
+                        <div class="product-brand">MAXIMUM LABS — 250g</div>
+                        <span class="product-cat-tag">CREATINA</span>
+                        <span class="product-price">R$ 129,90</span>
+                    </div>
+                    <div class="product-card" data-cat="pre">
+                        <span class="product-status status-available">DISPONÍVEL</span>
+                        <span class="product-img">🔥</span>
+                        <div class="product-name">PRÉ-TREINO OVERDRIVE</div>
+                        <div class="product-brand">CYBERFORCE LAB — 300g</div>
+                        <span class="product-cat-tag">PRÉ-TREINO</span>
+                        <span class="product-price">R$ 119,90</span>
+                    </div>
+                    <div class="product-card" data-cat="pre">
+                        <span class="product-status status-available">DISPONÍVEL</span>
+                        <span class="product-img">🧪</span>
+                        <div class="product-name">VENOM PRE-WORKOUT</div>
+                        <div class="product-brand">STIMULANT X — 150g</div>
+                        <span class="product-cat-tag">PRÉ-TREINO</span>
+                        <span class="product-price">R$ 135,00</span>
+                    </div>
+                    <div class="product-card" data-cat="aminoacido">
+                        <span class="product-status status-available">DISPONÍVEL</span>
+                        <span class="product-img">🧬</span>
+                        <div class="product-name">BCAA 2:1:1 RECOVERY</div>
+                        <div class="product-brand">BIO HACK — 120 CÁPS.</div>
+                        <span class="product-cat-tag">AMINOÁCIDO</span>
+                        <span class="product-price">R$ 69,90</span>
+                    </div>
+                    <div class="product-card" data-cat="aminoacido">
+                        <span class="product-status status-available">DISPONÍVEL</span>
+                        <span class="product-img">🧪</span>
+                        <div class="product-name">EAA ESSENTIALS POWDER</div>
+                        <div class="product-brand">QUANTUM NUTRITION — 200g</div>
+                        <span class="product-cat-tag">AMINOÁCIDO</span>
+                        <span class="product-price">R$ 109,90</span>
+                    </div>
+                    <div class="product-card" data-cat="vitamina">
+                        <span class="product-status status-available">DISPONÍVEL</span>
+                        <span class="product-img">💊</span>
+                        <div class="product-name">MULTIVITAMÍNICO A-Z</div>
+                        <div class="product-brand">VITA CORE — 90 TABS</div>
+                        <span class="product-cat-tag">VITAMINA</span>
+                        <span class="product-price">R$ 49,90</span>
+                    </div>
+                    <div class="product-card" data-cat="vitamina">
+                        <span class="product-status status-available">DISPONÍVEL</span>
+                        <span class="product-img">🛡️</span>
+                        <div class="product-name">ÔMEGA 3 ULTRA PURE</div>
+                        <div class="product-brand">FISH LABS — 120 CÁPS.</div>
+                        <span class="product-cat-tag">VITAMINA</span>
+                        <span class="product-price">R$ 89,90</span>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -346,8 +439,88 @@
                             <span class="class-instructor">Instr: MARCOS.exe</span>
                             <span class="class-slots slots-ok">12 VAGAS</span>
                         </div>
+                        <div class="class-card">
+                            <span class="class-time">18:00</span>
+                            <span class="class-name">MUAY THAI</span>
+                            <span class="class-instructor">Instr: ANDRÉ.sys</span>
+                            <span class="class-slots slots-full">LOTADO</span>
+                        </div>
                     </div>
+                    
+                    <div class="day-col">
+                        <div class="day-header">TER</div>
+                        <div class="class-card">
+                            <span class="class-time">07:00</span>
+                            <span class="class-name">CROSSFIT</span>
+                            <span class="class-instructor">Instr: CAMILA.net</span>
+                            <span class="class-slots slots-ok">08 VAGAS</span>
+                        </div>
+                        <div class="class-card">
+                            <span class="class-time">19:00</span>
+                            <span class="class-name">JIU JITSU</span>
+                            <span class="class-instructor">Instr: RAFAEL.bat</span>
+                            <span class="class-slots slots-ok">04 VAGAS</span>
+                        </div>
                     </div>
+
+                    <div class="day-col">
+                        <div class="day-header">QUA</div>
+                        <div class="class-card">
+                            <span class="class-time">06:00</span>
+                            <span class="class-name">BOXE</span>
+                            <span class="class-instructor">Instr: MARCOS.exe</span>
+                            <span class="class-slots slots-ok">10 VAGAS</span>
+                        </div>
+                        <div class="class-card">
+                            <span class="class-time">18:00</span>
+                            <span class="class-name">KRAV MAGA</span>
+                            <span class="class-instructor">Instr: DIEGO.dll</span>
+                            <span class="class-slots slots-full">LOTADO</span>
+                        </div>
+                    </div>
+
+                    <div class="day-col">
+                        <div class="day-header">QUI</div>
+                        <div class="class-card">
+                            <span class="class-time">07:00</span>
+                            <span class="class-name">CROSSFIT</span>
+                            <span class="class-instructor">Instr: CAMILA.net</span>
+                            <span class="class-slots slots-ok">05 VAGAS</span>
+                        </div>
+                        <div class="class-card">
+                            <span class="class-time">19:00</span>
+                            <span class="class-name">MUAY THAI</span>
+                            <span class="class-instructor">Instr: ANDRÉ.sys</span>
+                            <span class="class-slots slots-ok">02 VAGAS</span>
+                        </div>
+                    </div>
+
+                    <div class="day-col">
+                        <div class="day-header">SEX</div>
+                        <div class="class-card">
+                            <span class="class-time">06:00</span>
+                            <span class="class-name">FUNCIONAL</span>
+                            <span class="class-instructor">Instr: LUCIANA.bin</span>
+                            <span class="class-slots slots-ok">15 VAGAS</span>
+                        </div>
+                        <div class="class-card">
+                            <span class="class-time">18:00</span>
+                            <span class="class-name">JIU JITSU</span>
+                            <span class="class-instructor">Instr: RAFAEL.bat</span>
+                            <span class="class-slots slots-full">LOTADO</span>
+                        </div>
+                    </div>
+
+                    <div class="day-col">
+                        <div class="day-header">SÁB</div>
+                        <div class="class-card">
+                            <span class="class-time">10:00</span>
+                            <span class="class-name">AULÃO OPEN MAT</span>
+                            <span class="class-instructor">Instr: ALL_SYSTEMS</span>
+                            <span class="class-slots slots-ok">LIVRE</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -457,4 +630,4 @@
     </footer>
 
 </body>
-</html> 
+</html>
