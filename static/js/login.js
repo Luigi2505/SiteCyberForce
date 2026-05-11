@@ -1,89 +1,87 @@
 // ─── ALTERNAR ABAS LOGIN/CADASTRO ───
-// ─── ALTERNAR ABAS LOGIN/CADASTRO ───
 function switchTab(tab) {
   const loginPanel = document.getElementById("panel-login");
   const cadPanel = document.getElementById("panel-cadastro");
   const tabs = document.querySelectorAll(".auth-tab");
   const loginBox = document.querySelector(".login-box");
-
+ 
   if (tab === "login") {
     loginPanel.classList.add("active");
     cadPanel.classList.remove("active");
     tabs[0].classList.add("active");
     tabs[1].classList.remove("active");
-    loginBox.classList.remove("wide"); // Reduz a caixa
+    loginBox.classList.remove("wide");
   } else {
     loginPanel.classList.remove("active");
     cadPanel.classList.add("active");
     tabs[0].classList.remove("active");
     tabs[1].classList.add("active");
-    loginBox.classList.add("wide"); // Expande a caixa
+    loginBox.classList.add("wide");
   }
 }
-
+ 
 // ─── MÁSCARAS DE ENTRADA ───
 function mascaraCPF(valor) {
   let v = valor.replace(/\D/g, "");
   if (v.length > 11) v = v.substring(0, 11);
-
+ 
   v = v.replace(/(\d{3})(\d)/, "$1.$2");
   v = v.replace(/(\d{3})(\d)/, "$1.$2");
   v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
   return v;
 }
-
+ 
 function mascaraData(valor) {
   let v = valor.replace(/\D/g, "");
   if (v.length > 8) v = v.substring(0, 8);
-
+ 
   v = v.replace(/(\d{2})(\d)/, "$1/$2");
   v = v.replace(/(\d{2})(\d)/, "$1/$2");
   return v;
 }
-
+ 
 // ─── FUNÇÕES DE VALIDAÇÃO ───
-
+ 
 // 1. Validar Nome (Só letras e espaços, com acentos)
 function validarNome(nome) {
   const regex = /^[a-zA-ZÀ-ÿ\s]+$/;
-  // O nome precisa passar no teste de letras E ter tamanho 3 ou maior
   return regex.test(nome) && nome.trim().length >= 3;
 }
-
+ 
 // 2. Validar Data (Não pode ser no futuro)
 function validarDataNascimento(dataTexto) {
   const partes = dataTexto.split("/");
   if (partes.length !== 3) return false;
-
+ 
   const dia = parseInt(partes[0], 10);
   const mes = parseInt(partes[1], 10) - 1; // Meses no JS começam em 0
   const ano = parseInt(partes[2], 10);
-
+ 
   const dataInserida = new Date(ano, mes, dia);
   const hoje = new Date();
-
+ 
   if (isNaN(dataInserida.getTime())) return false;
   if (dataInserida > hoje) return false;
-
+ 
   return true;
 }
-
+ 
 // 3. Validar Senha (Mínimo 8 caracteres, Maiúscula, Número e Caractere Especial)
 function validarSenha(senha) {
   const temTamanhoSuficiente = senha.length >= 8;
   const temMaiuscula = /[A-Z]/.test(senha);
   const temNumero = /[0-9]/.test(senha);
   const temEspecial = /[^A-Za-z0-9]/.test(senha);
-
+ 
   return temTamanhoSuficiente && temMaiuscula && temNumero && temEspecial;
 }
-
+ 
 // 4. Validar Email
 function validarEmail(email) {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return regex.test(email);
 }
-
+ 
 // 5. Validar CPF Matemático
 function validarCPF(cpf) {
   cpf = cpf.replace(/[^\d]+/g, "");
@@ -99,23 +97,23 @@ function validarCPF(cpf) {
   if (rev == 10 || rev == 11) rev = 0;
   return rev == parseInt(cpf.charAt(10));
 }
-
+ 
 // ─── EXIBIR MENSAGENS DE ERRO/SUCESSO ───
 function mostrarMensagem(texto, tipo, isLogin = false) {
   const idCaixa = isLogin ? "msg-login" : "msg-cadastro";
   const msgBox = document.getElementById(idCaixa);
-
+ 
   if (msgBox) {
     msgBox.className = "msg-box " + tipo;
     msgBox.innerText = texto;
     msgBox.style.display = "block";
   }
 }
-
+ 
 // ─── PROTOCOLO DE CADASTRO ───
 async function fazerCadastro() {
   document.getElementById("msg-cadastro").style.display = "none";
-
+ 
   const nome = document.getElementById("cad-nome").value.trim();
   const cpf = document.getElementById("cad-cpf").value.trim();
   const data_nascimento = document.getElementById("cad-nasc").value.trim();
@@ -125,102 +123,72 @@ async function fazerCadastro() {
   const genero = document.getElementById("cad-genero").value;
   const peso = parseFloat(document.getElementById("cad-peso").value);
   const altura = parseInt(document.getElementById("cad-altura").value);
-
-  // 1. Verificação de campos vazios
+ 
   if (!nome || !cpf || !data_nascimento || !email || !senha || !senhaConfirma) {
-    mostrarMensagem(
-      "// ERRO: TODOS OS CAMPOS DEVEM SER PREENCHIDOS",
-      "error",
-      false,
-    );
+    mostrarMensagem("// ERRO: TODOS OS CAMPOS DEVEM SER PREENCHIDOS", "error", false);
     return;
   }
-
+ 
   if (senha !== senhaConfirma) {
     mostrarMensagem("// ERRO: AS SENHAS NÃO COINCIDEM", "error", false);
     return;
   }
-
+ 
   if (!validarNome(nome)) {
     mostrarMensagem("// ERRO: NOME INVALIDO", "error", false);
     return;
   }
-
+ 
   if (!validarDataNascimento(data_nascimento)) {
-    mostrarMensagem(
-      "// ERRO: DATA DE NASCIMENTO INVÁLIDA OU NO FUTURO",
-      "error",
-      false,
-    );
+    mostrarMensagem("// ERRO: DATA DE NASCIMENTO INVÁLIDA OU NO FUTURO", "error", false);
     return;
   }
-
+ 
   if (!validarSenha(senha)) {
-    mostrarMensagem(
-      "// ERRO: SENHA DEVE TER NO MÍNIMO 8 CARACTERES, 1 MAIÚSCULA, 1 NÚMERO E 1 SÍMBOLO",
-      "error",
-      false,
-    );
+    mostrarMensagem("// ERRO: SENHA DEVE TER NO MÍNIMO 8 CARACTERES, 1 MAIÚSCULA, 1 NÚMERO E 1 SÍMBOLO", "error", false);
     return;
   }
-
+ 
   if (!validarEmail(email)) {
     mostrarMensagem("// ERRO: FORMATO DE E-MAIL INVÁLIDO", "error", false);
     return;
   }
-
+ 
   if (!validarCPF(cpf)) {
     mostrarMensagem("// ERRO: CPF MATEMATICAMENTE INVÁLIDO", "error", false);
     return;
   }
-
+ 
   if (!genero) {
     mostrarMensagem("// ERRO: SELECIONE UM GÊNERO", "error", false);
     return;
   }
-
+ 
   if (isNaN(peso) || peso < 30 || peso > 300) {
-    mostrarMensagem(
-      "// ERRO: PESO INVÁLIDO. DEVE SER ENTRE 30KG E 300KG",
-      "error",
-      false,
-    );
+    mostrarMensagem("// ERRO: PESO INVÁLIDO. DEVE SER ENTRE 30KG E 300KG", "error", false);
     return;
   }
-
+ 
   if (isNaN(altura) || altura < 100 || altura > 250) {
-    mostrarMensagem(
-      "// ERRO: ALTURA INVÁLIDA. DEVE SER ENTRE 100CM E 250CM",
-      "error",
-      false,
-    );
+    mostrarMensagem("// ERRO: ALTURA INVÁLIDA. DEVE SER ENTRE 100CM E 250CM", "error", false);
     return;
   }
-
-  // Se tudo passar, monta o pacote e envia
+ 
   const payload = {
-    nome: nome,
-    cpf: cpf,
-    data_nascimento: data_nascimento,
-    email: email,
-    senha: senha,
-    genero: genero,
-    peso: peso,
-    altura: altura,
+    nome, cpf, data_nascimento, email, senha, genero, peso, altura,
   };
-
+ 
   try {
     const response = await fetch("/cadastro", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
-
+ 
     const result = await response.json();
-
+ 
     if (result.sucesso) {
       mostrarMensagem("// ACESSO_GERADO_COM_SUCESSO", "success", false);
-      // Aguarda 2 segundos e manda pra aba de login
       setTimeout(() => switchTab("login"), 2000);
     } else {
       mostrarMensagem("// ERRO_SISTEMA: " + result.mensagem, "error", false);
@@ -229,36 +197,33 @@ async function fazerCadastro() {
     mostrarMensagem("// FALHA_DE_CONEXÃO_COM_SERVIDOR", "error", false);
   }
 }
-
+ 
 // ─── PROTOCOLO DE LOGIN ───
 async function fazerLogin() {
   const msgBox = document.getElementById("msg-login");
   if (msgBox) msgBox.style.display = "none";
-
+ 
   const email = document.getElementById("login-email").value.trim();
   const senha = document.getElementById("login-senha").value;
-
+ 
   if (!email || !senha) {
     mostrarMensagem("// ERRO: PREENCHA EMAIL E SENHA", "error", true);
     return;
   }
-
+ 
   try {
     const response = await fetch("/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: email, senha: senha }),
+      body: JSON.stringify({ email, senha }),
     });
-
+ 
     const result = await response.json();
-
+ 
     if (result.sucesso) {
-      // Salva as informações de apoio (o Flask já salvou a sessão segura no servidor)
       localStorage.setItem("cyberforce_user_type", result.perfil);
       localStorage.setItem("cyberforce_user_name", result.nome);
       localStorage.setItem("cyberforce_user_email", result.email);
-
-      // Redireciona para a página principal
       window.location.href = "/";
     } else {
       mostrarMensagem("// ACESSO NEGADO: " + result.mensagem, "error", true);
@@ -268,17 +233,30 @@ async function fazerLogin() {
     console.error("Erro no login:", e);
   }
 }
-
-// ─── VISIBILIDADE DA SENHA (OLHINHO) ───
-function toggleSenha(inputId, icon) {
+ 
+// ─── VISIBILIDADE DA SENHA ───
+// Compatível com emoji (👁️/🙈) ou texto (EXIBIR/OCULTAR) dependendo do HTML usado
+function toggleSenha(inputId, elemento) {
   const input = document.getElementById(inputId);
+  const isEmoji = elemento.innerText === "👁️" || elemento.innerText === "🙈";
+ 
   if (input.type === "password") {
     input.type = "text";
-    icon.innerText = "🙈"; // Muda para o macaquinho tapando o olho (ou outro emoji)
-    icon.style.opacity = "1";
+    if (isEmoji) {
+      elemento.innerText = "EXIBIR";
+      elemento.style.opacity = "1";
+    } else {
+      elemento.innerText = "OCULTAR";
+      elemento.style.color = "var(--neon-purple)";
+    }
   } else {
     input.type = "password";
-    icon.innerText = "👁️"; // Volta para o olho
-    icon.style.opacity = "0.7";
+    if (isEmoji) {
+      elemento.innerText = "OCULTAR";
+      elemento.style.opacity = "0.7";
+    } else {
+      elemento.innerText = "EXIBIR";
+      elemento.style.color = "var(--cyan)";
+    }
   }
 }

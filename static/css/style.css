@@ -59,7 +59,7 @@ body::before {
   pointer-events: none;
   z-index: 0;
 }
-
+ 
 /* ─── HEADER ─── */
 header {
   position: fixed;
@@ -110,7 +110,7 @@ header {
       0 0 80px var(--neon-purple);
   }
 }
-
+ 
 /* Hamburger */
 .hamburger {
   display: flex;
@@ -144,7 +144,7 @@ header {
 .hamburger.open span:nth-child(3) {
   transform: translateY(-7px) rotate(-45deg);
 }
-
+ 
 /* Logo */
 .logo {
   font-family: "Michroma", sans-serif;
@@ -164,7 +164,7 @@ header {
   filter: drop-shadow(0 0 15px rgba(160, 32, 240, 1))
     drop-shadow(0 0 35px rgba(0, 212, 255, 0.9));
 }
-
+ 
 /* User icon */
 .user-icon {
   width: 38px;
@@ -187,26 +187,30 @@ header {
 .user-icon svg {
   stroke: url(#iconGrad);
 }
-
+ 
 /* ─── NAV DRAWER ─── */
 .nav-drawer {
   position: fixed;
-  top: var(--header-h);
-  left: -320px;
+  top: 0;
+  left: -300px;
   width: 280px;
-  height: calc(100vh - var(--header-h));
+  height: 100vh;
   background: rgba(5, 5, 10, 0.97);
   backdrop-filter: blur(30px);
   border-right: 1px solid rgba(86, 0, 120, 0.5);
-  box-shadow: 4px 0 30px rgba(86, 0, 120, 0.3);
-  z-index: 999;
+  box-shadow:
+    4px 0 30px rgba(86, 0, 120, 0.3),
+    5px 0 15px rgba(0, 255, 255, 0.2);
+  z-index: 999999;
   transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   padding: 3rem 2rem;
+  padding-top: 60px;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
-.nav-drawer.open {
+.nav-drawer.open,
+.nav-drawer.active {
   left: 0;
 }
 .nav-item {
@@ -251,7 +255,7 @@ header {
   margin-bottom: 1rem;
   font-family: "Share Tech Mono", monospace;
 }
-
+ 
 /* ─── MAIN CONTENT ─── */
 main {
   padding-top: calc(var(--header-h) + 3px);
@@ -274,7 +278,7 @@ section.active {
     transform: translateY(0);
   }
 }
-
+ 
 /* ─── SECTION: HOME ─── */
 /* Hero */
 .hero {
@@ -397,7 +401,7 @@ section.active {
   text-shadow: none;
   -webkit-text-fill-color: var(--black);
 }
-
+ 
 /* Stats bar */
 .stats-bar {
   display: grid;
@@ -434,7 +438,7 @@ section.active {
   display: block;
   font-family: "Share Tech Mono", monospace;
 }
-
+ 
 /* Equipment Grid */
 .section-header {
   display: flex;
@@ -463,7 +467,7 @@ section.active {
   color: var(--text-dim);
   letter-spacing: 0.3em;
 }
-
+ 
 .equipment-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -517,13 +521,13 @@ section.active {
 .eq-card:hover .eq-border {
   opacity: 1;
 }
-
+ 
 .eq-card-img {
   width: 100%;
   height: 70%;
   object-fit: contain;
 }
-
+ 
 .eq-border {
   position: absolute;
   inset: 1px;
@@ -533,7 +537,7 @@ section.active {
   transition: opacity 0.4s;
   pointer-events: none;
 }
-
+ 
 .eq-icon {
   font-size: 2.5rem;
   margin-bottom: 1rem;
@@ -564,7 +568,7 @@ section.active {
   color: var(--neon-purple);
   text-shadow: 0 0 8px var(--neon-purple);
 }
-
+ 
 /* About */
 .about-section {
   padding: 5rem 4vw;
@@ -658,7 +662,7 @@ section.active {
   letter-spacing: 0.03em;
   margin-bottom: 1rem;
 }
-
+ 
 /* ─── FOOTER ─── */
 footer {
   border-top: 1px solid rgba(86, 0, 120, 0.3);
@@ -675,7 +679,7 @@ footer span {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-
+ 
 /* ─── SCROLLBAR ─── */
 ::-webkit-scrollbar {
   width: 4px;
@@ -687,7 +691,7 @@ footer span {
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(var(--neon-purple), var(--cyan));
 }
-
+ 
 /* ─── OVERLAY ─── */
 .overlay {
   position: fixed;
@@ -703,7 +707,7 @@ footer span {
   opacity: 1;
   pointer-events: all;
 }
-
+ 
 /* ─── SCANLINE FLICKER ─── */
 .scanline {
   position: fixed;
@@ -724,7 +728,7 @@ footer span {
     top: 100vh;
   }
 }
-
+ 
 /* ─── GLITCH ─── */
 .glitch {
   position: relative;
@@ -756,10 +760,10 @@ footer span {
     transform: translateX(4px);
   }
 }
-
+ 
 /* ─── CORREÇÕES GERAIS DE RESPONSIVIDADE (MOBILE E TABLET) ─── */
 @media (max-width: 768px) {
-  /* 1. SEÇÃO PERFIL: Empilha os campos que estão lado a lado (CPF/Email e Peso/Altura) */
+  /* 1. SEÇÃO PERFIL: Empilha os campos que estão lado a lado */
   #perfil .field-row,
   #perfil div[style*="display: flex; gap: 1rem"] {
     flex-direction: column !important;
@@ -768,14 +772,14 @@ footer span {
   #perfil div[style*="flex: 1"] {
     width: 100% !important;
   }
-
-  /* 2. SEÇÃO PROGRAMAÇÃO: Transforma as colunas dos dias em um carrossel horizontal arrastável */
+ 
+  /* 2. SEÇÃO PROGRAMAÇÃO: Carrossel horizontal */
   .week-grid {
     display: flex;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     padding-bottom: 1rem;
-    -webkit-overflow-scrolling: touch; /* Suavidade no iOS */
+    -webkit-overflow-scrolling: touch;
   }
   .week-grid::-webkit-scrollbar {
     height: 4px;
@@ -785,13 +789,13 @@ footer span {
     border-radius: 4px;
   }
   .day-col {
-    min-width: 260px; /* Garante que a coluna não seja esmagada */
+    min-width: 260px;
     flex-shrink: 0;
     scroll-snap-align: start;
     margin-right: 1rem;
   }
-
-  /* 3. SEÇÃO ESTOQUE (STORE): Permite rolar os botões de filtro horizontalmente */
+ 
+  /* 3. SEÇÃO ESTOQUE: Filtros com scroll horizontal */
   .filter-bar {
     display: flex;
     flex-wrap: nowrap !important;
@@ -804,11 +808,23 @@ footer span {
     font-size: 0.6rem;
     padding: 0.5rem 1rem;
   }
-
-  /* 4. BARRA DE STATUS (HERO): Organiza os 4 itens em formato 2x2 */
+ 
+  /* 4. BARRA DE STATUS (HERO): Grid 2x2 */
   .stats-bar {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
+  }
+ 
+  /* 5. MENU LATERAL: Largura adaptada para mobile */
+  .nav-drawer {
+    width: 85vw !important;
+    padding: 2rem 1rem !important;
+    padding-top: 60px !important;
+  }
+  .nav-item {
+    font-size: 0.65rem !important;
+    letter-spacing: 0.1em !important;
+    padding: 0.8rem !important;
   }
 }
