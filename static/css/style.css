@@ -147,13 +147,16 @@ header {
     0 0 12px var(--cyan),
     0 0 24px var(--cyan);
 }
-.hamburger.open span:nth-child(1) {
+.hamburger.open span:nth-child(1),
+.hamburger.active span:nth-child(1) {
   transform: translateY(7px) rotate(45deg);
 }
-.hamburger.open span:nth-child(2) {
+.hamburger.open span:nth-child(2),
+.hamburger.active span:nth-child(2) {
   opacity: 0;
 }
-.hamburger.open span:nth-child(3) {
+.hamburger.open span:nth-child(3),
+.hamburger.active span:nth-child(3) {
   transform: translateY(-7px) rotate(-45deg);
 }
 
@@ -207,27 +210,7 @@ header {
   stroke: url(#iconGrad);
 }
 
-/* ─── NAV DRAWER ─── */
-.nav-drawer {
-  position: fixed;
-  top: var(--header-h);
-  left: -320px;
-  width: 280px;
-  height: calc(100vh - var(--header-h));
-  background: rgba(2, 2, 3, 0.98);
-  backdrop-filter: blur(30px);
-  border-right: 1px solid rgba(86, 0, 120, 0.5);
-  box-shadow: 4px 0 30px rgba(86, 0, 120, 0.3);
-  z-index: 999;
-  transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  padding: 3rem 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-.nav-drawer.open {
-  left: 0;
-}
+/* ─── NAV DRAWER (BASE) ─── */
 .nav-item {
   font-family: "Michroma", sans-serif;
   font-size: 0.75rem;
@@ -240,6 +223,7 @@ header {
   position: relative;
   overflow: hidden;
   text-transform: uppercase;
+  margin-bottom: 0.5rem;
 }
 .nav-item::before {
   content: "";
@@ -888,6 +872,35 @@ footer span {
   opacity: 1;
 }
 
+/* ==========================================
+   GARANTIA DO MENU HAMBÚRGUER (ERIC)
+   ========================================== */
+.nav-drawer {
+  position: fixed;
+  top: 0;
+  left: -300px;
+  width: 250px;
+  height: 100vh;
+  background-color: rgba(10, 10, 20, 0.98);
+  border-right: 1px solid var(--cyan);
+  box-shadow: 5px 0 15px rgba(0, 255, 255, 0.2);
+  transition: left 0.4s ease-in-out;
+  z-index: 999999;
+  padding-top: 60px;
+
+  /* Configurações internas do drawer */
+  display: flex;
+  flex-direction: column;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+/* Classe de ativação (suporta tanto o .active do Eric quanto o .open) */
+.nav-drawer.active,
+.nav-drawer.open {
+  left: 0 !important;
+}
+
 /* ─── CORREÇÕES GERAIS DE RESPONSIVIDADE (MOBILE E TABLET) ─── */
 @media (max-width: 768px) {
   #perfil .field-row,
@@ -937,5 +950,16 @@ footer span {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
+  }
+
+  /* Ajustes adicionais de Menu do Eric */
+  .nav-drawer {
+    width: 85vw !important;
+    padding: 60px 1rem 2rem 1rem !important;
+  }
+  .nav-item {
+    font-size: 0.65rem !important;
+    letter-spacing: 0.1em !important;
+    padding: 0.8rem !important;
   }
 }
