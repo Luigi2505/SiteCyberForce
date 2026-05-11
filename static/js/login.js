@@ -1,5 +1,4 @@
 // ─── ALTERNAR ABAS LOGIN/CADASTRO ───
-// ─── ALTERNAR ABAS LOGIN/CADASTRO ───
 function switchTab(tab) {
   const loginPanel = document.getElementById("panel-login");
   const cadPanel = document.getElementById("panel-cadastro");
@@ -269,16 +268,17 @@ async function fazerLogin() {
   }
 }
 
-// ─── VISIBILIDADE DA SENHA (OLHINHO) ───
-function toggleSenha(inputId, icon) {
+// ─── VISIBILIDADE DA SENHA (TEXTO CYBERPUNK) ───
+function toggleSenha(inputId, spanElement) {
   const input = document.getElementById(inputId);
+
   if (input.type === "password") {
     input.type = "text";
-    icon.innerText = "🙈"; // Muda para o macaquinho tapando o olho (ou outro emoji)
-    icon.style.opacity = "1";
+    spanElement.innerText = "OCULTAR";
+    spanElement.style.color = "var(--neon-red)"; // Cor de alerta quando a senha está visível
   } else {
     input.type = "password";
-    icon.innerText = "👁️"; // Volta para o olho
-    icon.style.opacity = "0.7";
+    spanElement.innerText = "EXIBIR";
+    spanElement.style.color = "var(--cyan)"; // Cor normal
   }
 }
