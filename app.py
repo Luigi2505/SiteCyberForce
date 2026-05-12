@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, session, jsonify, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
@@ -11,6 +11,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'cyberforce_2026_key')
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=8)
 
 # Configurações de Upload do Eric
 UPLOAD_FOLDER = os.path.join('static', 'uploads', 'perfil')
@@ -79,6 +80,12 @@ class Produto(db.Model):
 
 # ─── ROTAS DE PÁGINAS (FRONTEND) ───
 
+@app.before_request
+def renovar_sessao():
+    if 'usuario_id' in session:
+        session.permanent = True
+        session.modified = True
+
 @app.route('/')
 def index():
     return render_template('home.html')
@@ -122,6 +129,7 @@ def login():
         usuario = Usuario.query.filter_by(email=data.get('email')).first()
         
         if usuario and check_password_hash(usuario.senha, data.get('senha')):
+            session.permanent = True
             session['usuario_id'] = usuario.id_usuario
             session['perfil'] = usuario.perfil
             session['nome'] = usuario.nome
