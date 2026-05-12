@@ -16,25 +16,18 @@ async function carregarEstoque() {
   }
 }
 
-// ─── FUNÇÃO NOVA: FORMATAÇÃO DE MOEDA (ON BLUR) ───
 function formatarMoeda(input) {
-  // Pega apenas números, ponto ou vírgula do que foi digitado
   let valor = input.value.replace(/[^\d.,]/g, "");
   if (!valor) {
     input.value = "";
     return;
   }
-
-  // Troca vírgula por ponto para o Javascript conseguir ler como float
   valor = valor.replace(",", ".");
   let num = parseFloat(valor);
-
   if (isNaN(num)) {
     input.value = "";
     return;
   }
-
-  // Converte o número final para o padrão de Reais (já limitando em 2 casas decimais)
   input.value = num.toLocaleString("pt-BR", {
     style: "currency",
     currency: "BRL",
@@ -61,31 +54,31 @@ function renderizarProdutos(categoriaFiltro) {
       (userPerfil === "admin" || userPerfil === "treinador")
     ) {
       adminControls = `
-                <div style="margin-top: 15px; border-top: 1px solid rgba(0,212,255,0.2); padding-top: 10px;">
-                    <div style="display: flex; gap: 5px; margin-bottom: 8px;">
-                        <input type="number" id="qtd-${prod.id}" value="${prod.quantity}" min="0" max="9999"
-                               class="admin-input" style="padding: 2px 5px; height: 30px; font-size: 0.7rem; width: 100%;">
-                        <button onclick="salvarQtd(${prod.id})" class="filter-btn" 
-                                style="padding: 2px 10px; font-size: 0.6rem; height: 30px;">SALVAR</button>
-                    </div>
-                    <button onclick="deletarProdutoBD(${prod.id})" 
-                            style="width:100%; background:transparent; border:1px dashed var(--neon-red); 
-                                   color:var(--neon-red); cursor:pointer; font-size: 0.6rem; padding: 5px;">EXCLUIR PRODUTO</button>
-                </div>
-            `;
+        <div style="margin-top: 15px; border-top: 1px solid rgba(0,212,255,0.2); padding-top: 10px;">
+          <div style="display: flex; gap: 5px; margin-bottom: 8px;">
+            <input type="number" id="qtd-${prod.id}" value="${prod.quantity}" min="0" max="9999"
+                   class="admin-input" style="padding: 2px 5px; height: 30px; font-size: 0.7rem; width: 100%;">
+            <button onclick="salvarQtd(${prod.id})" class="filter-btn"
+                    style="padding: 2px 10px; font-size: 0.6rem; height: 30px;">SALVAR</button>
+          </div>
+          <button onclick="deletarProdutoBD(${prod.id})"
+                  style="width:100%; background:transparent; border:1px dashed var(--neon-red);
+                         color:var(--neon-red); cursor:pointer; font-size: 0.6rem; padding: 5px;">EXCLUIR PRODUTO</button>
+        </div>
+      `;
     }
 
     htmlProdutos += `
-        <div class="${cardClass}" data-cat="${prod.cat}">
-            <span class="product-status ${statusClass}">${statusText}</span>
-            <span class="product-img">${prod.icon}</span>
-            <div class="product-name">${prod.name}</div>
-            <div class="product-brand">${prod.brand}</div>
-            <span class="product-cat-tag">${prod.cat.toUpperCase()}</span>
-            <span class="product-price">${prod.price}</span>
-            ${adminControls}
-        </div>
-        `;
+      <div class="${cardClass}" data-cat="${prod.cat}">
+        <span class="product-status ${statusClass}">${statusText}</span>
+        <span class="product-img">${prod.icon}</span>
+        <div class="product-name">${prod.name}</div>
+        <div class="product-brand">${prod.brand}</div>
+        <span class="product-cat-tag">${prod.cat.toUpperCase()}</span>
+        <span class="product-price">${prod.price}</span>
+        ${adminControls}
+      </div>
+    `;
   });
 
   grid.innerHTML = htmlProdutos;
@@ -105,13 +98,13 @@ async function adicionarProdutoBD() {
     name: document.getElementById("novo-nome").value,
     brand: document.getElementById("nova-marca").value,
     cat: document.getElementById("nova-cat").value,
-    price: document.getElementById("novo-preco").value, // Ele vai puxar o valor já formatado (ex: R$ 100,00)
+    price: document.getElementById("novo-preco").value,
     status: document.getElementById("novo-status").value,
     quantity: parseInt(document.getElementById("novo-qtd").value) || 0,
   };
 
   if (!payload.name || !payload.price) {
-    alert("Preencha nome e preço!");
+    mostrarAviso("// ERRO: PREENCHA O NOME E O PREÇO DO PRODUTO.", true);
     return;
   }
 
@@ -129,11 +122,13 @@ async function adicionarProdutoBD() {
       document.getElementById("nova-marca").value = "";
       document.getElementById("novo-preco").value = "";
       document.getElementById("novo-qtd").value = "0";
+      mostrarAviso("// PRODUTO CADASTRADO COM SUCESSO.");
       carregarEstoque();
     } else {
-      alert("Erro: " + result.mensagem);
+      mostrarAviso("// ERRO: " + result.mensagem, true);
     }
   } catch (e) {
+    mostrarAviso("// FALHA DE CONEXÃO COM O SERVIDOR.", true);
     console.error(e);
   }
 }
@@ -147,29 +142,37 @@ async function salvarQtd(id) {
       body: JSON.stringify({ quantity: parseInt(novaQtd) }),
     });
     if (response.ok) {
+      mostrarAviso("// QUANTIDADE ATUALIZADA.");
       carregarEstoque();
     } else {
-      alert("Erro ao atualizar quantidade.");
+      mostrarAviso("// ERRO AO ATUALIZAR QUANTIDADE.", true);
     }
   } catch (e) {
+    mostrarAviso("// FALHA DE CONEXÃO COM O SERVIDOR.", true);
     console.error(e);
   }
 }
 
 async function deletarProdutoBD(id) {
-  if (!confirm("Tem certeza que deseja excluir este produto do estoque?"))
-    return;
+  cyberConfirm(
+    "Tem certeza que deseja excluir este produto do estoque? Esta ação é irreversível.",
+    async () => {
+      try {
+        const response = await fetch(`/api/produtos/${id}`, {
+          method: "DELETE",
+        });
+        const result = await response.json();
 
-  try {
-    const response = await fetch(`/api/produtos/${id}`, { method: "DELETE" });
-    const result = await response.json();
-
-    if (result.sucesso) {
-      carregarEstoque();
-    } else {
-      alert("Erro ao excluir");
-    }
-  } catch (e) {
-    console.error(e);
-  }
+        if (result.sucesso) {
+          mostrarAviso("// PRODUTO REMOVIDO DO ESTOQUE.");
+          carregarEstoque();
+        } else {
+          mostrarAviso("// ERRO AO EXCLUIR: " + result.mensagem, true);
+        }
+      } catch (e) {
+        mostrarAviso("// FALHA DE CONEXÃO COM O SERVIDOR.", true);
+        console.error(e);
+      }
+    },
+  );
 }
