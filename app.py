@@ -103,7 +103,7 @@ def logbook():
         return redirect(url_for('login'))
     return render_template('logbook.html')
 
-@app.route('/professor')
+@app.route('/painel_professor')
 def professor_painel():
     if session.get('perfil') not in ['treinador', 'admin']:
         return redirect(url_for('index'))
