@@ -385,35 +385,59 @@ def buscar_perfil():
 
 @app.route('/api/usuario/atualizar_completo', methods=['POST'])
 def atualizar_perfil_completo():
-    if 'usuario_id' not in session: return jsonify({"sucesso": False, "mensagem": "Não autorizado"}), 401
+    if 'usuario_id' not in session: 
+        return jsonify({"sucesso": False, "mensagem": "Sessão expirada. Faça login novamente."}), 401
+        
     usuario = Usuario.query.get(session['usuario_id'])
     senha_confirmacao = request.form.get('senha_confirmacao')
+    
+    # 1. VERIFICA A SENHA DE SEGURANÇA
     if not senha_confirmacao or not check_password_hash(usuario.senha, senha_confirmacao):
-        return jsonify({"sucesso": False, "mensagem": "Senha incorreta."}), 403
+        return jsonify({"sucesso": False, "mensagem": "Senha de confirmação incorreta."}), 403
+
     try:
+        # 2. ATUALIZA A FOTO DE PERFIL (Se enviada)
         if 'foto' in request.files:
             file = request.files['foto']
             if file and '.' in file.filename and file.filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}:
                 filename = secure_filename(f"{usuario.id_usuario}_{file.filename}")
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 usuario.foto_perfil = filename
-        usuario.nome   = request.form.get('nome')
-        usuario.cpf    = request.form.get('cpf')
-        usuario.email  = request.form.get('email')
-        usuario.genero = request.form.get('genero')
+
+        # 3. ATUALIZA OS DADOS DE TEXTO PADRÃO
+        if request.form.get('nome'): usuario.nome = request.form.get('nome')
+        if request.form.get('cpf'): usuario.cpf = request.form.get('cpf')
+        if request.form.get('email'): usuario.email = request.form.get('email')
+        if request.form.get('genero'): usuario.genero = request.form.get('genero')
+        
+        # 4. ATUALIZA A DATA DE NASCIMENTO
         if request.form.get('data_nascimento'):
             usuario.data_nascimento = datetime.strptime(request.form.get('data_nascimento'), '%Y-%m-%d').date()
-        usuario.peso   = float(request.form.get('peso')) if request.form.get('peso') else None
-        usuario.altura = int(request.form.get('altura')) if request.form.get('altura') else None
+        
+        # 5. ATUALIZA PESO E ALTURA (Tratando a vírgula do Brasil para evitar crash)
+        peso_str = request.form.get('peso')
+        if peso_str:
+            usuario.peso = float(peso_str.replace(',', '.'))
+            
+        altura_str = request.form.get('altura')
+        if altura_str:
+            usuario.altura = int(float(altura_str))
+
+        # 6. ATUALIZA O OBJETIVO (Tabela Aluno)
         aluno = Aluno.query.filter_by(id_usuario=usuario.id_usuario).first()
-        if aluno and request.form.get('objetivo'):
+        if aluno and request.form.get('objetivo') is not None:
             aluno.objetivo = request.form.get('objetivo')
+
+        # 7. SALVA TUDO NO BANCO DE DADOS
         db.session.commit()
         session['nome'] = usuario.nome
         return jsonify({"sucesso": True, "mensagem": "Perfil atualizado!"})
+        
     except Exception as e:
+        # Se algo explodir, ele desfaz e mostra exatamente ONDE foi o erro.
         db.session.rollback()
-        return jsonify({"sucesso": False, "mensagem": "Erro interno no servidor."}), 500
+        print(f"ERRO CRÍTICO AO ATUALIZAR PERFIL: {e}")
+        return jsonify({"sucesso": False, "mensagem": f"Falha no Banco: {str(e)}"}), 500
 
 @app.route('/api/usuario/excluir', methods=['POST'])
 def excluir_conta():

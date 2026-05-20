@@ -10,16 +10,25 @@ document.addEventListener("DOMContentLoaded", () => {
     "SÁBADO",
   ];
   const dateStr = `// ${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, "0")}.${String(now.getDate()).padStart(2, "0")} — ${days[now.getDay()]}-FEIRA`;
-  if (document.getElementById("log-date"))
+  if (document.getElementById("log-date")) {
     document.getElementById("log-date").textContent = dateStr;
+  }
 
-  if (document.getElementById("perfil-nome")) carregarDadosPerfil();
+  // CHAMA OS DADOS DO UTILIZADOR SE A FOTO DO CABEÇALHO EXISTIR (Em todas as páginas)
+  if (document.getElementById("header-profile-img")) {
+      carregarDadosPerfil();
+  }
+
   if (document.getElementById("grid-alunos")) {
     carregarAlunosDoProfessor();
     carregarAdminConexoes();
   }
-  if (document.getElementById("logbook-tbody")) switchLogTab("push");
+  
+  if (document.getElementById("logbook-tbody")) {
+      switchLogTab("push");
+  }
 
+  // FECHAR DROPDOWN AO CLICAR FORA
   document.addEventListener("click", (e) => {
     const dropdown = document.getElementById("user-dropdown");
     const profileDisplay = document.getElementById("user-profile-display");
@@ -39,6 +48,7 @@ function toggleMenu() {
   nav.classList.toggle("active");
   if (ovl) ovl.classList.toggle("active");
 }
+
 function closeMenu() {
   document.getElementById("hamburger").classList.remove("open");
   const nav = document.getElementById("navDrawer");
@@ -52,8 +62,7 @@ function closeMenu() {
 function toggleDropdown() {
   const dropdown = document.getElementById("user-dropdown");
   if (!dropdown) return;
-  dropdown.style.display =
-    dropdown.style.display === "block" ? "none" : "block";
+  dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
 }
 
 // ─── MODAL CUSTOMIZADO (substitui confirm/alert) ───
@@ -114,11 +123,10 @@ function showSection(sectionId) {
     const el = document.getElementById(id);
     if (el) el.style.display = "none";
   });
-  document
-    .querySelectorAll(".nav-item")
-    .forEach((n) => n.classList.remove("active"));
+  document.querySelectorAll(".nav-item").forEach((n) => n.classList.remove("active"));
   const ativo = document.getElementById(sectionId);
   if (ativo) ativo.style.display = "block";
+  
   if (sectionId === "perfil") carregarDadosPerfil();
   if (sectionId === "painel-professor") {
     carregarAlunosDoProfessor();
@@ -144,26 +152,44 @@ async function carregarDadosPerfil() {
         genero: "genero",
         data: "data_nascimento",
       };
+      
+      // Preenche os campos normais se existirem na tela
       Object.entries(mapa).forEach(([id, chave]) => {
         const el = document.getElementById(`perfil-${id}`);
         if (el) el.value = data[chave] ?? "";
       });
-      const fotoUrl =
-        data.foto_url || "/static/uploads/perfil/default_avatar.png";
+
+      // GARANTE QUE O NÚMERO DA SORTE É CARREGADO (DA TUA PROVA)
+      const sorteEl = document.getElementById('perfil-sorte');
+      if (sorteEl) {
+          sorteEl.value = data.numero_da_sorte !== null && data.numero_da_sorte !== undefined ? data.numero_da_sorte : '';
+      }
+
+      // TRATAMENTO DA FOTO DE PERFIL E DO BONECO SVG
+      const fotoUrl = data.foto_url || "/static/uploads/perfil/default_avatar.png";
+      
       const perfilImg = document.getElementById("perfil-img-display");
-      const headerImg = document.getElementById("header-profile-img");
       if (perfilImg) perfilImg.src = fotoUrl;
-      if (headerImg) headerImg.src = fotoUrl;
+
+      const headerImg = document.getElementById("header-profile-img");
+      if (headerImg) {
+          headerImg.src = fotoUrl;
+          headerImg.style.display = "block"; // Força a imagem real a aparecer
+          
+          // Se o bonequinho de SVG (o elemento logo a seguir à imagem) existir, esconde-o
+          if (headerImg.nextElementSibling) {
+              headerImg.nextElementSibling.style.display = "none";
+          }
+      }
     }
   } catch (e) {
-    mostrarAviso("// ERRO NA CONEXÃO NEURAL.", true);
+    console.log("Erro silencioso ao carregar o perfil.", e);
   }
 }
 
 async function salvarPerfil() {
   const senha = document.getElementById("perfil-senha-confirma").value;
-  if (!senha)
-    return mostrarAviso("// SEGURANÇA: DIGITE SUA SENHA PARA CONFIRMAR.", true);
+  if (!senha) return mostrarAviso("// SEGURANÇA: DIGITE SUA SENHA PARA CONFIRMAR.", true);
 
   const formData = new FormData();
   ["nome", "cpf", "email", "genero", "peso", "altura", "objetivo"].forEach(
@@ -175,6 +201,7 @@ async function salvarPerfil() {
   const dataEl = document.getElementById("perfil-data");
   if (dataEl) formData.append("data_nascimento", dataEl.value);
   formData.append("senha_confirmacao", senha);
+  
   const foto = document.getElementById("perfil-foto-input");
   if (foto && foto.files[0]) formData.append("foto", foto.files[0]);
 
@@ -202,7 +229,7 @@ function previewFoto(input) {
 
 function deletarConta() {
   cyberConfirm(
-    "⚠️ TEM CERTEZA? SEU REGISTRO SERÁ APAGADO PERMANENTEMENTE DA CYBERFORCE.",
+    "⚠️ TEM CERTEZA? O TEU REGISTO SERÁ APAGADO PERMANENTEMENTE DA CYBERFORCE.",
     () => {
       fetch("/api/usuario/excluir", { method: "POST" }).then(
         () => (window.location.href = "/"),
@@ -213,9 +240,7 @@ function deletarConta() {
 
 // ─── LOGBOOK ───
 function switchLogTab(cat) {
-  document
-    .querySelectorAll(".log-tab")
-    .forEach((t) => t.classList.remove("active"));
+  document.querySelectorAll(".log-tab").forEach((t) => t.classList.remove("active"));
   const tab = document.querySelector(`.log-tab.${cat}`);
   if (tab) tab.classList.add("active");
   carregarLogbook(cat);
@@ -225,15 +250,17 @@ async function carregarLogbook(categoria) {
   const tbody = document.getElementById("logbook-tbody");
   const badge = document.getElementById("categoria-badge");
   if (!tbody) return;
-  tbody.innerHTML =
-    '<tr><td colspan="4" style="text-align:center">// SINCRONIZANDO...</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="4" style="text-align:center">// A SINCRONIZAR...</td></tr>';
+  
   if (badge) {
     badge.textContent = categoria.toUpperCase();
     badge.className = `log-category-badge badge-${categoria}`;
   }
+  
   const res = await fetch(`/api/aluno/meu_treino/${categoria}`);
   const data = await res.json();
   tbody.innerHTML = "";
+  
   if (res.ok) {
     data.exercicios.forEach((ex) => {
       tbody.innerHTML += `<tr>
@@ -263,7 +290,7 @@ let alunoSelecionadoId = null;
 async function carregarAlunosDoProfessor() {
   const grid = document.getElementById("grid-alunos");
   if (!grid) return;
-  grid.innerHTML = '<p class="log-date">// ACESSANDO BANCO DE DADOS...</p>';
+  grid.innerHTML = '<p class="log-date">// A ACEDER À BASE DE DADOS...</p>';
   const res = await fetch("/api/professor/meus_alunos");
   listaAlunosLocal = await res.json();
   renderizarListaAlunos(listaAlunosLocal);
@@ -274,8 +301,7 @@ function renderizarListaAlunos(lista) {
   if (!grid) return;
   grid.innerHTML = "";
   if (lista.length === 0) {
-    grid.innerHTML =
-      '<p class="field-label" style="color:var(--text-dim);grid-column:1/-1">// NENHUM ALUNO VINCULADO. USE + RECRUTAR ALUNO.</p>';
+    grid.innerHTML = '<p class="field-label" style="color:var(--text-dim);grid-column:1/-1">// NENHUM ALUNO VINCULADO. USA + RECRUTAR ALUNO.</p>';
     return;
   }
   lista.forEach((a) => {
@@ -292,32 +318,33 @@ function renderizarListaAlunos(lista) {
 
 function filtrarAlunosLocal(termo) {
   renderizarListaAlunos(
-    listaAlunosLocal.filter((a) =>
-      a.nome.toLowerCase().includes(termo.toLowerCase()),
-    ),
+    listaAlunosLocal.filter((a) => a.nome.toLowerCase().includes(termo.toLowerCase()))
   );
 }
+
 function ordenarAlunosAz() {
   renderizarListaAlunos(
-    [...listaAlunosLocal].sort((a, b) => a.nome.localeCompare(b.nome)),
+    [...listaAlunosLocal].sort((a, b) => a.nome.localeCompare(b.nome))
   );
 }
 
 async function buscarNovoAluno() {
   const termo = document.getElementById("busca-aluno-input").value;
   const lista = document.getElementById("resultado-busca");
-  if (termo.length < 2)
-    return mostrarAviso("// DIGITE AO MENOS 2 CARACTERES", true);
+  if (termo.length < 2) return mostrarAviso("// DIGITA PELO MENOS 2 CARACTERES", true);
+  
   lista.style.display = "block";
-  lista.innerHTML = '<p style="color:var(--cyan);">Buscando...</p>';
+  lista.innerHTML = '<p style="color:var(--cyan);">A procurar...</p>';
+  
   const res = await fetch(`/api/professor/buscar_aluno/${termo}`);
   const alunos = await res.json();
   lista.innerHTML = "";
+  
   if (alunos.length === 0) {
-    lista.innerHTML =
-      '<p style="color:var(--neon-red);">// NENHUM ALUNO ENCONTRADO.</p>';
+    lista.innerHTML = '<p style="color:var(--neon-red);">// NENHUM ALUNO ENCONTRADO.</p>';
     return;
   }
+  
   alunos.forEach((a) => {
     lista.innerHTML += `<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.6);padding:10px;margin-bottom:5px;border-left:3px solid var(--cyan);">
             <span style="color:#fff;">${a.nome} <span style="font-size:0.7rem;">(ID: ${a.id})</span></span>
@@ -329,17 +356,18 @@ async function buscarNovoAluno() {
 async function buscarTodosAlunos() {
   const lista = document.getElementById("resultado-busca");
   lista.style.display = "block";
-  lista.innerHTML =
-    '<p style="color:var(--cyan);">Buscando banco central de alunos...</p>';
+  lista.innerHTML = '<p style="color:var(--cyan);">A procurar na base central de alunos...</p>';
+  
   try {
     const res = await fetch("/api/professor/todos_alunos");
     const alunos = await res.json();
     lista.innerHTML = "";
+    
     if (alunos.length === 0) {
-      lista.innerHTML =
-        '<p style="color:var(--neon-red);">// NENHUM ALUNO CADASTRADO.</p>';
+      lista.innerHTML = '<p style="color:var(--neon-red);">// NENHUM ALUNO CADASTRADO.</p>';
       return;
     }
+    
     alunos.forEach((a) => {
       lista.innerHTML += `<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.6);padding:10px;margin-bottom:5px;border-left:3px solid var(--purple);">
                 <span style="color:#fff;">${a.nome} <span style="font-size:0.7rem;">(ID: ${a.id})</span></span>
@@ -347,8 +375,7 @@ async function buscarTodosAlunos() {
             </div>`;
     });
   } catch (e) {
-    lista.innerHTML =
-      '<p style="color:var(--neon-red);">// ERRO DE CONEXÃO.</p>';
+    lista.innerHTML = '<p style="color:var(--neon-red);">// ERRO DE CONEXÃO.</p>';
   }
 }
 
@@ -363,12 +390,14 @@ async function vincularAluno(id) {
     mostrarAviso(data.mensagem);
     document.getElementById("resultado-busca").style.display = "none";
     carregarAlunosDoProfessor();
-  } else mostrarAviso(`// ERRO: ${data.mensagem}`, true);
+  } else {
+    mostrarAviso(`// ERRO: ${data.mensagem}`, true);
+  }
 }
 
 function desvincularAlunoProfessor(id_aluno) {
   cyberConfirm(
-    "⚠️ Deseja realmente remover este aluno da sua tutela?",
+    "⚠️ Desejas mesmo remover este aluno da tua tutela?",
     async () => {
       const res = await fetch(`/api/professor/desvincular_aluno/${id_aluno}`, {
         method: "DELETE",
@@ -376,7 +405,9 @@ function desvincularAlunoProfessor(id_aluno) {
       if (res.ok) {
         mostrarAviso("// ALUNO REMOVIDO.");
         carregarAlunosDoProfessor();
-      } else mostrarAviso("// ERRO AO DESVINCULAR.", true);
+      } else {
+        mostrarAviso("// ERRO AO DESVINCULAR.", true);
+      }
     },
   );
 }
@@ -385,8 +416,7 @@ function abrirCriadorTreino(id, nome) {
   alunoSelecionadoId = id;
   document.getElementById("lista-alunos-container").style.display = "none";
   document.getElementById("form-treino").style.display = "block";
-  document.getElementById("nome-aluno-selecionado").textContent =
-    `ALUNO: ${nome}`;
+  document.getElementById("nome-aluno-selecionado").textContent = `ALUNO: ${nome}`;
   carregarTreinoProfessor();
 }
 
@@ -399,14 +429,13 @@ function fecharCriadorTreino() {
 async function carregarTreinoProfessor() {
   const cat = document.getElementById("treino-categoria").value;
   const tbody = document.getElementById("corpo-treino-novo");
-  tbody.innerHTML =
-    '<tr><td colspan="5" style="text-align:center;color:var(--cyan)">// EXTRAINDO DADOS...</td></tr>';
+  tbody.innerHTML = '<tr><td colspan=\"5\" style=\"text-align:center;color:var(--cyan)\">// A EXTRAIR DADOS...</td></tr>';
+  
   try {
-    const res = await fetch(
-      `/api/professor/ver_treino/${alunoSelecionadoId}/${cat}`,
-    );
+    const res = await fetch(`/api/professor/ver_treino/${alunoSelecionadoId}/${cat}`);
     const data = await res.json();
     tbody.innerHTML = "";
+    
     if (data.exercicios && data.exercicios.length > 0) {
       data.exercicios.forEach((ex) => {
         tbody.innerHTML += `<tr>
@@ -417,7 +446,9 @@ async function carregarTreinoProfessor() {
                     <td><button onclick="this.parentElement.parentElement.remove()" style="background:none;border:none;color:var(--neon-red);cursor:pointer;font-size:1rem;">✕</button></td>
                 </tr>`;
       });
-    } else adicionarLinhaExercicio();
+    } else {
+        adicionarLinhaExercicio();
+    }
   } catch (e) {
     tbody.innerHTML = "";
     adicionarLinhaExercicio();
@@ -438,15 +469,15 @@ function adicionarLinhaExercicio() {
 }
 
 async function salvarTreinoCompleto() {
-  const exercicios = Array.from(
-    document.querySelectorAll("#corpo-treino-novo tr"),
-  ).map((linha) => ({
+  const exercicios = Array.from(document.querySelectorAll("#corpo-treino-novo tr")).map((linha) => ({
     nome: linha.querySelector(".ex-nome-input").value,
     series: linha.querySelector(".ex-series").value,
     reps: linha.querySelector(".ex-reps").value,
     carga: linha.querySelector(".ex-carga").value,
   }));
-  mostrarAviso("// SINCRONIZANDO PROTOCOLO...");
+  
+  mostrarAviso("// A SINCRONIZAR PROTOCOLO...");
+  
   try {
     const res = await fetch("/api/professor/salvar_treino", {
       method: "POST",
@@ -462,9 +493,11 @@ async function salvarTreinoCompleto() {
       mostrarAviso(data.mensagem);
       fecharCriadorTreino();
       carregarAlunosDoProfessor();
-    } else mostrarAviso(`// ERRO: ${data.mensagem}`, true);
+    } else {
+        mostrarAviso(`// ERRO: ${data.mensagem}`, true);
+    }
   } catch (e) {
-    mostrarAviso("// ERRO CRÍTICO. Tente novamente.", true);
+    mostrarAviso("// ERRO CRÍTICO. Tenta novamente.", true);
     fecharCriadorTreino();
   }
 }
@@ -473,12 +506,15 @@ async function salvarTreinoCompleto() {
 async function carregarAdminConexoes() {
   const res = await fetch("/api/admin/conexoes");
   if (res.status === 403) return;
+  
   const divAdmin = document.getElementById("admin-conexoes");
   if (divAdmin) divAdmin.style.display = "block";
+  
   const conexoes = await res.json();
   const tbody = document.getElementById("tabela-admin-conexoes");
   if (!tbody) return;
   tbody.innerHTML = "";
+  
   conexoes.forEach((c) => {
     tbody.innerHTML += `<tr>
             <td style="color:#fff">${c.professor}</td>
@@ -497,22 +533,17 @@ function removerConexao(id_vinculo) {
       mostrarAviso("// VÍNCULO DESFEITO.");
       carregarAdminConexoes();
       carregarAlunosDoProfessor();
-    } else mostrarAviso("// ERRO AO DESVINCULAR.", true);
+    } else {
+        mostrarAviso("// ERRO AO DESVINCULAR.", true);
+    }
   });
 }
 
 // ─── LOJA ───
 function filterProducts(cat, btn) {
-  document
-    .querySelectorAll(".filter-btn")
-    .forEach((b) => b.classList.remove("active"));
+  document.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"));
   btn.classList.add("active");
-  document
-    .querySelectorAll(".product-card")
-    .forEach((card) =>
-      card.classList.toggle(
-        "hidden",
-        cat !== "all" && card.dataset.cat !== cat,
-      ),
-    );
+  document.querySelectorAll(".product-card").forEach((card) =>
+      card.classList.toggle("hidden", cat !== "all" && card.dataset.cat !== cat)
+  );
 }
