@@ -25,6 +25,14 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
+# ← decorator aqui, antes de qualquer rota
+def login_obrigatorio(f):
+    @wraps(f)
+    def decorador(*args, **kwargs):
+        if 'usuario_id' not in session:
+            return jsonify({"erro": "Sessão expirada. Faça login novamente."}), 401
+        return f(*args, **kwargs)
+    return decorador
 
 # ─── MODELOS DE BANCO DE DADOS ───
 
@@ -168,13 +176,14 @@ def cadastro():
         )
         db.session.add(novo_usuario)
         db.session.flush()
+        db.session.flush()
 
         novo_aluno = Aluno(id_usuario=novo_usuario.id_usuario)
         db.session.add(novo_aluno)
         
         db.session.commit()
         return jsonify({'sucesso': True})
-        
+
     except ValueError:
         db.session.rollback()
         return jsonify({'sucesso': False, 'mensagem': 'FORMATO_DE_DATA_INVÁLIDO (Use DD/MM/AAAA)'}), 400
@@ -357,6 +366,8 @@ def promover_para_professor(usuario_id):
 # ─── ROTAS DE API: PERFIL E UPLOAD DE IMAGEM ───
 
 @app.route('/api/usuario/perfil', methods=['GET'])
+@login_obrigatorio  # substitui o if manual acima, faz a mesma coisa de forma reutilizável
+
 def buscar_perfil():
     if 'usuario_id' not in session: return jsonify({"erro": "Não autorizado"}), 401
     usuario = Usuario.query.get(session['usuario_id'])
@@ -407,6 +418,7 @@ def atualizar_perfil_completo():
         return jsonify({"sucesso": False, "mensagem": "Erro interno no servidor."}), 500
 
 @app.route('/api/usuario/excluir', methods=['POST'])
+@login_obrigatorio  # substitui o if manual acima
 def excluir_conta():
     if 'usuario_id' not in session: return jsonify({"sucesso": False}), 401
     usuario = Usuario.query.get(session['usuario_id'])
