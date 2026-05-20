@@ -1,92 +1,92 @@
-{% extends 'base.html' %} 
+{% extends 'base.html' %} 
 
 {% block content %}
 <section id="painel-professor" class="active">
-    <div class="logbook-section">
-        <div class="section-header" style="padding:0 0 2rem">
-            <span class="section-tag">// TRAINER_INTERFACE</span>
-            <h2 class="section-title">PAINEL DO PROFESSOR</h2>
-            <div class="section-line"></div>
-        </div>
+    <div class="logbook-section">
+        <div class="section-header" style="padding:0 0 2rem">
+            <span class="section-tag">// TRAINER_INTERFACE</span>
+            <h2 class="section-title">PAINEL DO PROFESSOR</h2>
+            <div class="section-line"></div>
+        </div>
 
-        <section id="admin-conexoes" style="display:none; background: rgba(255,0,0,0.05); padding: 1.5rem; margin-bottom: 2rem; border: 1px dashed var(--neon-red);">
-            <h3 style="color: var(--neon-red); font-family: 'Share Tech Mono'; margin-top:0;">// GESTÃO ADMINISTRATIVA DE VÍNCULOS</h3>
-            <div class="table-wrapper">
-                <table class="exercise-table">
-                    <thead>
-                        <tr><th>PROFESSOR</th><th>ALUNO</th><th>AÇÃO</th></tr>
-                    </thead>
-                    <tbody id="tabela-admin-conexoes"></tbody>
-                </table>
-            </div>
-        </section>
+                <section id="admin-conexoes" style="display:none; padding: 1.5rem; margin-bottom: 2rem; border: 1px dashed var(--neon-red);">
+            <h3 style="color: var(--neon-red); font-family: 'Share Tech Mono'; margin-top:0;">// GESTÃO ADMINISTRATIVA DE VÍNCULOS</h3>
+            <div class="table-wrapper">
+                <table class="exercise-table">
+                    <thead>
+                        <tr><th>PROFESSOR</th><th>ALUNO</th><th>AÇÃO</th></tr>
+                    </thead>
+                    <tbody id="tabela-admin-conexoes"></tbody>
+                </table>
+            </div>
+        </section>
 
-        <div style="background: rgba(0,255,255,0.05); border: 1px dashed var(--cyan); padding: 1.5rem; margin-bottom: 2.5rem; border-radius: 5px;">
-            <label class="field-label" style="color: var(--cyan);">// RECRUTAR NOVO ALUNO (DIGITE O NOME OU ID)</label>
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <input type="text" id="busca-aluno-input" class="field-input" placeholder="Ex: João, Silva, 42..." style="flex: 1; background: #000;">
-                <button onclick="buscarNovoAluno()" class="filter-btn" style="height: 45px; margin: 0; min-width: 120px;">BUSCAR</button>
-                
-                <button onclick="buscarTodosAlunos()" class="filter-btn" style="height: 45px; margin: 0; min-width: 120px; border-color: var(--purple); color: var(--purple);">VER TODOS</button>
-            </div>
-            <div id="resultado-busca" style="margin-top: 15px; display: none; max-height: 250px; overflow-y: auto;"></div>
-        </div>
+        <div style="background: rgba(0,255,255,0.05); border: 1px dashed var(--cyan); padding: 1.5rem; margin-bottom: 2.5rem; border-radius: 5px;">
+            <label class="field-label" style="color: var(--cyan);">// RECRUTAR NOVO ALUNO (DIGITE O NOME OU ID)</label>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                <input type="text" id="busca-aluno-input" class="field-input" placeholder="Ex: João, Silva, 42..." style="flex: 1;">
+                <button onclick="buscarNovoAluno()" class="filter-btn" style="height: 45px; margin: 0; min-width: 120px;">BUSCAR</button>
+                
+                <button onclick="buscarTodosAlunos()" class="filter-btn" style="height: 45px; margin: 0; min-width: 120px; border-color: var(--purple); color: var(--purple);">VER TODOS</button>
+            </div>
+            <div id="resultado-busca" style="margin-top: 15px; display: none; max-height: 250px; overflow-y: auto;"></div>
+        </div>
 
-        <div id="lista-alunos-container">
-            <p class="field-label" style="margin-bottom: 10px;">// SEUS ALUNOS ATIVOS (Clique para prescrever treino)</p>
-            
-            <div style="display: flex; gap: 10px; margin-bottom: 1.5rem; align-items: center;">
-                <input type="text" oninput="filtrarAlunosLocal(this.value)" class="field-input" placeholder="Pesquisar em meus alunos..." style="flex: 1;">
-                <button onclick="ordenarAlunosAz()" class="filter-btn" style="white-space: nowrap;">A-Z</button>
-            </div>
+        <div id="lista-alunos-container">
+            <p class="field-label" style="margin-bottom: 10px;">// SEUS ALUNOS ATIVOS (Clique para prescrever treino)</p>
+            
+            <div style="display: flex; gap: 10px; margin-bottom: 1.5rem; align-items: center;">
+                <input type="text" oninput="filtrarAlunosLocal(this.value)" class="field-input" placeholder="Pesquisar em meus alunos..." style="flex: 1;">
+                <button onclick="ordenarAlunosAz()" class="filter-btn" style="white-space: nowrap;">A-Z</button>
+            </div>
 
-            <div id="grid-alunos" class="equipment-grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
-            </div>
-        </div>
+            <div id="grid-alunos" class="equipment-grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
+            </div>
+        </div>
 
-        <div id="form-treino" style="display: none; margin-top: 3rem; border-top: 1px solid rgba(0,255,255,0.3); padding-top: 2rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
-                <h3 id="nome-aluno-selecionado" style="font-family: 'Michroma'; color: var(--cyan); margin: 0;">ALUNO: ---</h3>
-                <button onclick="fecharCriadorTreino()" class="filter-btn" style="border-color: var(--neon-red); color: var(--neon-red);">CANCELAR / VOLTAR</button>
-            </div>
+        <div id="form-treino" style="display: none; margin-top: 3rem; border-top: 1px solid rgba(0,255,255,0.3); padding-top: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+                <h3 id="nome-aluno-selecionado" style="font-family: 'Michroma'; color: var(--cyan); margin: 0;">ALUNO: ---</h3>
+                <button onclick="fecharCriadorTreino()" class="filter-btn" style="border-color: var(--neon-red); color: var(--neon-red);">CANCELAR / VOLTAR</button>
+            </div>
 
-            <div class="field-group" style="margin-bottom: 2rem;">
-                <label class="field-label">// CATEGORIA DO PROTOCOLO</label>
-                <select id="treino-categoria" class="log-input" style="width: 200px; text-align: left; background: #000;" onchange="carregarTreinoProfessor()">
-                    <option value="PUSH">PUSH</option>
-                    <option value="PULL">PULL</option>
-                    <option value="LEGS">LEGS</option>
-                </select>
-            </div>
+            <div class="field-group" style="margin-bottom: 2rem;">
+                <label class="field-label">// CATEGORIA DO PROTOCOLO</label>
+                                <select id="treino-categoria" class="log-input" style="width: 200px; text-align: left;" onchange="carregarTreinoProfessor()">
+                    <option value="PUSH">PUSH</option>
+                    <option value="PULL">PULL</option>
+                    <option value="LEGS">LEGS</option>
+                </select>
+            </div>
 
-            <div class="table-wrapper">
-                <table class="exercise-table" id="tabela-criacao-treino">
-                    <thead>
-                        <tr>
-                            <th>EXERCÍCIO</th>
-                            <th>SÉRIES</th>
-                            <th>REPS</th>
-                            <th>CARGA (kg)</th>
-                            <th>AÇÃO</th>
-                        </tr>
-                    </thead>
-                    <tbody id="corpo-treino-novo"></tbody>
-                </table>
-            </div>
-            
-            <button class="add-exercise-btn" onclick="adicionarLinhaExercicio()" style="margin-top: 1rem;">+ ADICIONAR EXERCÍCIO</button>
-            <br>
-            <button class="cta-btn" onclick="salvarTreinoCompleto()" style="width: 100%; margin-top: 3rem;">CONFIRMAR PROTOCOLO DE TREINO</button>
-        </div>
-    </div>
+            <div class="table-wrapper">
+                <table class="exercise-table" id="tabela-criacao-treino">
+                    <thead>
+                        <tr>
+                            <th>EXERCÍCIO</th>
+                            <th>SÉRIES</th>
+                            <th>REPS</th>
+                            <th>CARGA (kg)</th>
+                            <th>AÇÃO</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpo-treino-novo"></tbody>
+                table>
+            </div>
+            
+            <button class="add-exercise-btn" onclick="adicionarLinhaExercicio()" style="margin-top: 1rem;">+ ADICIONAR EXERCÍCIO</button>
+            <br>
+            <button class="cta-btn" onclick="salvarTreinoCompleto()" style="width: 100%; margin-top: 3rem;">CONFIRMAR PROTOCOLO DE TREINO</button>
+        </div>
+    </div>
 </section>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    carregarAlunosDoProfessor();
-    if(document.getElementById('tabela-admin-conexoes')) {
-        carregarAdminConexoes();
-    }
-  });
+  document.addEventListener('DOMContentLoaded', () => {
+    carregarAlunosDoProfessor();
+    if(document.getElementById('tabela-admin-conexoes')) {
+        carregarAdminConexoes();
+    }
+  });
 </script>
 {% endblock %}

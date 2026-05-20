@@ -1,4 +1,25 @@
+// ─── TEMA CLARO / ESCURO ───
+function toggleTheme() {
+  const isLight = document.body.classList.toggle("light-mode");
+  localStorage.setItem("cyberforce_theme", isLight ? "light" : "dark");
+  atualizarBotaoTema(isLight);
+}
+
+function atualizarBotaoTema(isLight) {
+  const btn = document.getElementById("theme-toggle-btn");
+  if (btn) {
+    btn.textContent = isLight ? "MODO ESCURO" : "MODO CLARO";
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  // Inicialização de Tema
+  const savedTheme = localStorage.getItem("cyberforce_theme");
+  if (savedTheme === "light") {
+    document.body.classList.add("light-mode");
+    atualizarBotaoTema(true);
+  }
+
   const now = new Date();
   const days = [
     "DOMINGO",
@@ -547,3 +568,43 @@ function filterProducts(cat, btn) {
       card.classList.toggle("hidden", cat !== "all" && card.dataset.cat !== cat)
   );
 }
+
+// ─── MODO DE TESTE: TIMEOUT EM 5 SEGUNDOS ───
+let tempoInativo = 0;
+const LIMITE_MINUTOS = 15;
+let usuarioAtivoNesteSegundo = false;
+
+function marcarComoAtivo() {
+  tempoInativo = 0;
+  usuarioAtivoNesteSegundo = true;
+}
+
+function iniciarMonitoramentoInatividade() {
+  if (!document.getElementById("user-dropdown")) return;
+
+  setInterval(() => {
+    tempoInativo++;
+
+    if (tempoInativo >= LIMITE_MINUTOS) {
+      const toast = document.getElementById("cyber-toast");
+      if (toast) mostrarAviso("// SESSÃO ENCERRADA POR INATIVIDADE.", true);
+
+      setTimeout(() => {
+        window.location.href = "/logout";
+      }, 2000);
+      return;
+    }
+
+    if (usuarioAtivoNesteSegundo) {
+      fetch("/api/renovar-sessao", { method: "POST" }).catch(() => {});
+      usuarioAtivoNesteSegundo = false;
+    }
+  }, 60000); // IMPORTANTE: Agora roda a cada 1.000 milissegundos (1 segundo)
+
+  window.addEventListener("mousemove", marcarComoAtivo);
+  window.addEventListener("click", marcarComoAtivo);
+  window.addEventListener("keydown", marcarComoAtivo);
+  window.addEventListener("scroll", marcarComoAtivo);
+}
+
+document.addEventListener("DOMContentLoaded", iniciarMonitoramentoInatividade);
