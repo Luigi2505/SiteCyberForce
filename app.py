@@ -14,7 +14,7 @@ app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'cyberforce_2026_key')
 
 # ─── SESSÃO ───
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=8)
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=15)
 
 # Configurações de Upload
 UPLOAD_FOLDER = os.path.join('static', 'uploads', 'perfil')
@@ -357,15 +357,52 @@ def remover_conexao(id_vinculo):
         return jsonify({"sucesso": True})
     return jsonify({"erro": "Sem permissão"}), 403
 
-@app.route('/admin/promover/<int:usuario_id>', methods=['POST'])
-def promover_para_professor(usuario_id):
-    if session.get('perfil') != 'admin': return "Acesso negado", 403
-    usuario = Usuario.query.get(usuario_id)
-    if usuario:
-        usuario.perfil = 'treinador'
+# --- NOVAS ROTAS DO PAINEL GERAL DE ADMIN ---
+
+@app.route('/admin_painel')
+def admin_painel():
+    if session.get('perfil') != 'admin':
+        return redirect(url_for('index'))
+    return render_template('admin.html')
+
+@app.route('/api/admin/usuarios', methods=['GET'])
+def admin_listar_usuarios():
+    if session.get('perfil') != 'admin': 
+        return jsonify([]), 403
+    
+    usuarios = Usuario.query.all()
+    lista = [{
+        'id': u.id_usuario, 
+        'nome': u.nome, 
+        'email': u.email, 
+        'perfil': u.perfil,
+        'is_self': u.id_usuario == session.get('usuario_id')
+    } for u in usuarios]
+    
+    return jsonify(lista)
+
+@app.route('/api/admin/alterar_perfil', methods=['POST'])
+def admin_alterar_perfil():
+    if session.get('perfil') != 'admin': 
+        return jsonify({"sucesso": False, "mensagem": "Acesso Negado"}), 403
+    
+    dados = request.json
+    usuario = Usuario.query.get(dados.get('id_usuario'))
+    novo_perfil = dados.get('novo_perfil')
+    
+    if not usuario: 
+        return jsonify({"sucesso": False, "mensagem": "Usuário não encontrado"}), 404
+
+    # Trava de segurança: impede o admin de rebaixar a si mesmo
+    if usuario.id_usuario == session.get('usuario_id') and novo_perfil != 'admin':
+        return jsonify({"sucesso": False, "mensagem": "Segurança: Você não pode remover seu próprio acesso de Admin."}), 400
+
+    if novo_perfil in ['aluno', 'treinador', 'admin']:
+        usuario.perfil = novo_perfil
         db.session.commit()
-        return f"Usuário {usuario.nome} agora é Professor!"
-    return "Usuário não encontrado", 404
+        return jsonify({"sucesso": True, "mensagem": f"Perfil de {usuario.nome} atualizado."})
+    
+    return jsonify({"sucesso": False, "mensagem": "Perfil inválido"}), 400
 
 
 # ─── PERFIL ───

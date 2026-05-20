@@ -1,0 +1,133 @@
+{% extends 'base.html' %} {% block content %}
+<section id="admin-painel" class="active">
+  <div class="logbook-section">
+    <div class="section-header" style="padding: 0 0 2rem">
+      <span class="section-tag">// ROOT_ACCESS_GRANTED</span>
+      <h2 class="section-title">ADMINISTRAÇÃO DO SISTEMA</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div
+      style="
+        background: rgba(86, 0, 120, 0.05);
+        border: 1px dashed var(--neon-purple);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+      "
+    >
+      <h3
+        style="
+          color: var(--cyan);
+          font-family: &quot;Share Tech Mono&quot;;
+          margin-top: 0;
+        "
+      >
+        // DIRETÓRIO GLOBAL DE USUÁRIOS
+      </h3>
+      <p
+        style="font-size: 0.7rem; color: var(--text-dim); margin-bottom: 1.5rem"
+      >
+        Alterações de nível de acesso entram em vigor imediatamente.
+      </p>
+
+      <div class="table-wrapper">
+        <table class="exercise-table" style="min-width: 600px">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>NOME</th>
+              <th>EMAIL</th>
+              <th>NÍVEL DE ACESSO</th>
+              <th>AÇÃO</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-usuarios-admin">
+            <tr>
+              <td colspan="5" style="text-align: center; color: var(--cyan)">
+                // CARREGANDO DIRETÓRIO...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", carregarUsuariosAdmin);
+
+  async function carregarUsuariosAdmin() {
+    try {
+      const res = await fetch("/api/admin/usuarios");
+      if (!res.ok) throw new Error("Acesso negado");
+
+      const usuarios = await res.json();
+      const tbody = document.getElementById("tabela-usuarios-admin");
+      tbody.innerHTML = "";
+
+      usuarios.forEach((u) => {
+        // Bloqueia a edição do próprio admin para segurança visual
+        const selectDisabled = u.is_self
+          ? 'disabled title="Você não pode alterar seu próprio nível"'
+          : "";
+        const rowStyle = u.is_self
+          ? "background: rgba(0, 212, 255, 0.05);"
+          : "";
+
+        tbody.innerHTML += `
+        <tr style="${rowStyle}">
+          <td style="color: var(--text-dim);">${u.id}</td>
+          <td style="color: #fff; font-weight: bold;">${u.nome} ${u.is_self ? '<span style="color:var(--cyan);font-size:0.6rem;">(VOCÊ)</span>' : ""}</td>
+          <td style="color: var(--text-dim);">${u.email}</td>
+          <td>
+            <select id="perfil-${u.id}" class="log-input" style="width: 140px; text-align: left;" ${selectDisabled}>
+              <option value="aluno" ${u.perfil === "aluno" ? "selected" : ""}>ALUNO</option>
+              <option value="treinador" ${u.perfil === "treinador" ? "selected" : ""}>TREINADOR</option>
+              <option value="admin" ${u.perfil === "admin" ? "selected" : ""}>ADMIN</option>
+            </select>
+          </td>
+          <td>
+            <button onclick="alterarPerfil(${u.id})" class="filter-btn" style="padding: 4px 10px; font-size: 0.6rem;" ${selectDisabled}>
+              SALVAR
+            </button>
+          </td>
+        </tr>
+      `;
+      });
+    } catch (e) {
+      mostrarAviso("// FALHA AO CARREGAR DIRETÓRIO.", true);
+    }
+  }
+
+  function alterarPerfil(id_usuario) {
+    const novoPerfil = document.getElementById(`perfil-${id_usuario}`).value;
+
+    cyberConfirm(
+      `Alterar o nível de acesso deste usuário para ${novoPerfil.toUpperCase()}?`,
+      async () => {
+        try {
+          const res = await fetch("/api/admin/alterar_perfil", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              id_usuario: id_usuario,
+              novo_perfil: novoPerfil,
+            }),
+          });
+          const data = await res.json();
+
+          if (data.sucesso) {
+            mostrarAviso(data.mensagem);
+          } else {
+            mostrarAviso("// ERRO: " + data.mensagem, true);
+            carregarUsuariosAdmin(); // Recarrega para voltar o select ao estado original
+          }
+        } catch (e) {
+          mostrarAviso("// FALHA DE CONEXÃO.", true);
+        }
+      },
+    );
+  }
+</script>
+{% endblock %}

@@ -1,5 +1,4 @@
 :root {
-  /* ALTO CONTRASTE PARA A PROFESSORA LER - Fundo levemente clareado */
   --black: #0f0f14;
   --dark: #16161e;
   --dark2: #1c1c26;
@@ -12,7 +11,6 @@
   --neon-green: #00ff88;
   --neon-red: #ff2244;
 
-  /* TEXTOS MAIS CLAROS E BRILHANTES */
   --text: #ffffff;
   --text-dim: #d0d0e0;
 
@@ -25,27 +23,28 @@
   --header-h: 15vh;
 }
 
-/* ─── MODO CLARO (Sobrescrita de Variáveis) ─── */
+/* ─── MODO CLARO (Cyberpunk Daylight) ─── */
 body.light-mode {
-  --black: #f0f0f5;
+  --black: #f0f2f5;
   --dark: #ffffff;
   --dark2: #e4e4eb;
 
-  /* Texto escuro para leitura no fundo claro */
-  --text: #1a1a24;
-  --text-dim: #4a4a5a;
+  /* Texto muito escuro para máxima legibilidade */
+  --text: #0d0d12;
+  --text-dim: #3a3a4a;
 
-  /* Cores de acento adaptadas (mais escuras para ter contraste) */
-  --cyan: #006688;
-  --neon-purple: #6a00a0;
-  --neon-green: #007744;
-  --neon-red: #aa0011;
+  /* Cores escuras e hiper-saturadas para dar contraste */
+  --cyan: #007799;
+  --neon-purple: #7a00cc;
+  --neon-green: #008855;
+  --neon-red: #c4001d;
 
-  /* Desativa os brilhos para não manchar o fundo branco */
-  --glow-purple: none;
-  --glow-blue: none;
-  --glow-cyan: none;
-  --glow-mix: none;
+  /* Brilho neon vira uma sombra sólida e colorida */
+  --glow-purple: 0 4px 10px rgba(122, 0, 204, 0.3);
+  --glow-blue: 0 4px 10px rgba(20, 111, 181, 0.3);
+  --glow-cyan: 0 4px 10px rgba(0, 119, 153, 0.3);
+  --glow-mix:
+    0 4px 15px rgba(122, 0, 204, 0.2), 0 4px 15px rgba(0, 119, 153, 0.2);
 }
 
 *,
@@ -111,7 +110,7 @@ header {
 }
 
 body.light-mode header {
-  background: rgba(240, 240, 245, 0.95);
+  background: rgba(240, 242, 245, 0.95);
 }
 
 .header-line {
@@ -148,23 +147,6 @@ body.light-mode header {
       0 0 40px var(--cyan),
       0 0 80px var(--neon-purple);
   }
-}
-
-/* ─── BOTÃO TOGGLE DE TEMA ─── */
-.theme-toggle {
-  background: transparent;
-  border: 1px solid var(--cyan);
-  color: var(--cyan);
-  padding: 0.4rem 0.8rem;
-  font-family: "Share Tech Mono", monospace;
-  font-size: 0.7rem;
-  cursor: pointer;
-  margin-right: 1.5rem;
-  transition: all 0.3s;
-}
-.theme-toggle:hover {
-  background: var(--cyan);
-  color: var(--black);
 }
 
 /* Hamburger */
@@ -224,7 +206,11 @@ body.light-mode header {
     drop-shadow(0 0 35px rgba(0, 212, 255, 0.9));
 }
 
-/* User icon & Profile Pic Eric */
+body.light-mode .logo {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+/* User icon */
 .user-icon {
   width: 38px;
   height: 38px;
@@ -287,6 +273,13 @@ body.light-mode header {
   background: rgba(0, 212, 255, 0.05);
   text-shadow: 0 0 10px var(--cyan);
 }
+
+body.light-mode .nav-item:hover,
+body.light-mode .nav-item.active {
+  background: rgba(0, 119, 153, 0.1);
+  text-shadow: none;
+}
+
 .nav-item:hover::before,
 .nav-item.active::before {
   transform: scaleY(1);
@@ -297,6 +290,27 @@ body.light-mode header {
   letter-spacing: 0.2em;
   margin-bottom: 1rem;
   font-family: "Share Tech Mono", monospace;
+}
+
+/* ─── BOTÃO TOGGLE DE TEMA (AGORA NO MENU) ─── */
+.theme-toggle {
+  background: transparent;
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+  padding: 0.8rem;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  width: 100%;
+  margin-top: auto;
+  margin-bottom: 2rem;
+  transition: all 0.3s;
+  text-align: center;
+}
+.theme-toggle:hover {
+  background: var(--cyan);
+  color: var(--dark);
 }
 
 /* ─── MAIN CONTENT ─── */
@@ -368,6 +382,10 @@ section.active {
   opacity: 0;
   animation: revealUp 0.8s ease 0.2s forwards;
 }
+body.light-mode .hero-tag {
+  text-shadow: none;
+}
+
 .hero-title {
   font-family: "Michroma", sans-serif;
   font-size: clamp(2.8rem, 10vw, 7rem);
@@ -383,6 +401,10 @@ section.active {
   opacity: 0;
   animation: revealUp 0.8s ease 0.4s forwards;
 }
+body.light-mode .hero-title {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
 .hero-sub {
   font-size: clamp(0.9rem, 2vw, 1.2rem);
   color: var(--text-dim);
@@ -444,6 +466,12 @@ section.active {
   -webkit-text-fill-color: var(--black);
 }
 
+body.light-mode .cta-btn {
+  text-shadow: none;
+  animation: revealUp 0.8s ease 0.8s both; /* Remove pulso neon no claro */
+  box-shadow: var(--glow-mix); /* Sombra sólida da variável */
+}
+
 /* Stats bar */
 .stats-bar {
   display: grid;
@@ -471,6 +499,10 @@ section.active {
   display: block;
   filter: drop-shadow(0 0 8px rgba(86, 0, 120, 0.8));
 }
+body.light-mode .stat-num {
+  filter: none;
+}
+
 .stat-label {
   font-size: 0.65rem;
   letter-spacing: 0.3em;
@@ -498,6 +530,10 @@ section.active {
   background-clip: text;
   filter: drop-shadow(0 0 8px rgba(86, 0, 120, 0.7));
 }
+body.light-mode .section-title {
+  filter: none;
+}
+
 .section-line {
   flex: 1;
   height: 1px;
@@ -554,6 +590,9 @@ section.active {
     0 0 30px rgba(86, 0, 120, 0.4),
     0 0 60px rgba(20, 111, 181, 0.2);
 }
+body.light-mode .eq-card:hover {
+  box-shadow: var(--glow-mix); /* Sombra nítida no claro */
+}
 .eq-card:hover::before,
 .eq-card:hover::after,
 .eq-card:hover .eq-border {
@@ -589,6 +628,11 @@ section.active {
   margin-bottom: 0.5rem;
   text-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
 }
+body.light-mode .eq-name {
+  text-shadow: none;
+  font-weight: 700;
+}
+
 .eq-spec {
   font-family: "Share Tech Mono", monospace;
   font-size: 0.7rem;
@@ -606,6 +650,10 @@ section.active {
   color: var(--neon-purple);
   text-shadow: 0 0 8px var(--neon-purple);
 }
+body.light-mode .eq-tag {
+  text-shadow: none;
+  font-weight: 700;
+}
 
 /* ─── AJUSTES MODO CLARO COMPONENTES ─── */
 body.light-mode .eq-card,
@@ -621,14 +669,32 @@ body.light-mode .field-input,
 body.light-mode .log-input,
 body.light-mode .admin-input {
   background: #ffffff;
-  border: 1px solid #aaa;
+  border: 1px solid #ccc;
   color: var(--text);
   -webkit-text-fill-color: var(--text);
 }
 
 body.light-mode .nav-drawer {
-  background-color: #f0f0f5;
+  background-color: #f0f2f5;
   border-right-color: var(--cyan);
+}
+
+body.light-mode .log-tab {
+  color: var(--text-dim);
+}
+body.light-mode .log-tab.active,
+body.light-mode .log-tab:hover {
+  text-shadow: none;
+}
+body.light-mode .add-exercise-btn {
+  color: var(--text-dim);
+  border-color: var(--text-dim);
+}
+body.light-mode .add-exercise-btn:hover {
+  color: var(--cyan);
+  border-color: var(--cyan);
+  text-shadow: none;
+  box-shadow: none;
 }
 
 /* About */
@@ -672,6 +738,10 @@ body.light-mode .nav-drawer {
   font-size: 4rem;
   position: relative;
 }
+body.light-mode .about-circle {
+  box-shadow: var(--glow-mix);
+}
+
 @keyframes rotateBorder {
   from {
     filter: hue-rotate(0deg);
@@ -688,6 +758,10 @@ body.light-mode .nav-drawer {
   border: 1px dashed rgba(0, 212, 255, 0.2);
   animation: spin 20s linear infinite;
 }
+body.light-mode .about-ring {
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
 .about-ring2 {
   width: 280px;
   height: 280px;
@@ -695,6 +769,10 @@ body.light-mode .nav-drawer {
   animation-duration: 30s;
   animation-direction: reverse;
 }
+body.light-mode .about-ring2 {
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -709,6 +787,11 @@ body.light-mode .nav-drawer {
   margin-bottom: 1.5rem;
   display: block;
 }
+body.light-mode .about-text .label {
+  text-shadow: none;
+  font-weight: 700;
+}
+
 .about-text h2 {
   font-family: "Michroma", sans-serif;
   font-size: clamp(1.2rem, 3vw, 2rem);
@@ -717,6 +800,10 @@ body.light-mode .nav-drawer {
   color: var(--text);
   filter: drop-shadow(0 0 10px rgba(86, 0, 120, 0.5));
 }
+body.light-mode .about-text h2 {
+  filter: none;
+}
+
 .about-text p {
   color: var(--text-dim);
   line-height: 1.9;
@@ -835,6 +922,10 @@ footer span {
   overflow: hidden;
   cursor: pointer;
 }
+body.light-mode .profile-pic-wrapper {
+  box-shadow: var(--glow-cyan);
+}
+
 .profile-pic-wrapper img {
   width: 100%;
   height: 100%;
@@ -862,6 +953,8 @@ footer span {
    GARANTIA DO MENU HAMBÚRGUER (ERIC)
    ========================================== */
 .nav-drawer {
+  display: flex;
+  flex-direction: column;
   position: fixed;
   top: 0;
   left: -300px;
@@ -873,15 +966,17 @@ footer span {
   transition: left 0.4s ease-in-out;
   z-index: 999999;
   padding-top: 60px;
-
-  /* Configurações internas do drawer */
   display: flex;
   flex-direction: column;
   padding-left: 2rem;
   padding-right: 2rem;
 }
 
-/* Classe de ativação (suporta tanto o .active do Eric quanto o .open) */
+body.light-mode .nav-drawer {
+  background-color: rgba(240, 242, 245, 0.98);
+  box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+}
+
 .nav-drawer.active,
 .nav-drawer.open {
   left: 0 !important;
@@ -938,7 +1033,6 @@ footer span {
     gap: 1rem;
   }
 
-  /* Ajustes adicionais de Menu do Eric */
   .nav-drawer {
     width: 85vw !important;
     padding: 60px 1rem 2rem 1rem !important;
