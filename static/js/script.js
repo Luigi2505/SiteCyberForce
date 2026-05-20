@@ -1,20 +1,17 @@
-<<<<<<< HEAD
 document.addEventListener("DOMContentLoaded", () => {
   const now = new Date();
   const days = [
     "DOMINGO",
     "SEGUNDA",
-    "TERÇA",
+    "TER�A",
     "QUARTA",
     "QUINTA",
     "SEXTA",
-    "SÁBADO",
+    "S�BADO",
   ];
-  const dateStr = `// ${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, "0")}.${String(now.getDate()).padStart(2, "0")} — ${days[now.getDay()]}-FEIRA`;
+  const dateStr = `// ${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, "0")}.${String(now.getDate()).padStart(2, "0")} � ${days[now.getDay()]}-FEIRA`;
   if (document.getElementById("log-date"))
     document.getElementById("log-date").textContent = dateStr;
-
-  // Carrega avatar no header em qualquer página (se estiver logado)
   if (document.getElementById("header-profile-img")) {
     fetch("/api/usuario/perfil")
       .then((r) => (r.ok ? r.json() : null))
@@ -25,28 +22,20 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .catch(() => {});
   }
-=======
-document.addEventListener('DOMContentLoaded', () => {
-    const now = new Date();
-    const days = ['DOMINGO','SEGUNDA','TERÇA','QUARTA','QUINTA','SEXTA','SÁBADO'];
-    const dateStr = `// ${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} — ${days[now.getDay()]}-FEIRA`;
-    if(document.getElementById('log-date')) document.getElementById('log-date').textContent = dateStr;
 
-    if(document.getElementById('perfil-nome')) carregarDadosPerfil();
-    if(document.getElementById('grid-alunos')) { carregarAlunosDoProfessor(); carregarAdminConexoes(); }
-    if(document.getElementById('logbook-tbody')) switchLogTab('push');
+  if (document.getElementById('perfil-nome')) carregarDadosPerfil();
+  if (document.getElementById('grid-alunos')) { carregarAlunosDoProfessor(); carregarAdminConexoes(); }
+  if (document.getElementById('logbook-tbody')) switchLogTab('push');
 
-    document.addEventListener('click', (e) => {
-        const dropdown = document.getElementById('user-dropdown');
-        const profileDisplay = document.getElementById('user-profile-display');
-        if(dropdown && profileDisplay && !profileDisplay.contains(e.target)) {
-            dropdown.style.display = 'none';
-        }
-    });
->>>>>>> c666e2f7152d50bbf73b983c22e9561e318eec22
+  document.addEventListener('click', (e) => {
+    const dropdown = document.getElementById('user-dropdown');
+    const profileDisplay = document.getElementById('user-profile-display');
+    if (dropdown && profileDisplay && !profileDisplay.contains(e.target)) {
+      dropdown.style.display = 'none';
+    }
+  });
 });
-
-// ─── MENU ───
+// --- MENU ---
 function toggleMenu() {
     const ham = document.getElementById('hamburger');
     const nav = document.getElementById('navDrawer');
