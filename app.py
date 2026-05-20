@@ -7,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from sqlalchemy import text
-
+from urllib.parse import quote_plus
 load_dotenv()
 
 app = Flask(__name__)
@@ -29,6 +29,13 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
+
+# ← só depois do app, monta a URL
+password = quote_plus(os.getenv('DB_PASSWORD'))
+app.config['SQLALCHEMY_DATABASE_URI'] = (
+    f"mysql+pymysql://{os.getenv('DB_USER')}:{password}"
+    f"@{os.getenv('DB_HOST')}/{os.getenv('DB_NAME')}"
+)
 
 # ─── RENOVAR SESSÃO A CADA REQUEST ───
 @app.before_request
@@ -52,6 +59,7 @@ class Usuario(db.Model):
     peso            = db.Column(db.Numeric(5, 2))
     altura          = db.Column(db.Integer)
     foto_perfil     = db.Column(db.String(255), default='default_avatar.png')
+    plano_saude     = db.Column(db.String(100), nullable=False)
 
 class Aluno(db.Model):
     __tablename__ = 'Aluno'
@@ -417,7 +425,8 @@ def buscar_perfil():
         "data_nascimento": usuario.data_nascimento.strftime('%Y-%m-%d') if usuario.data_nascimento else "",
         "genero": usuario.genero, "peso": float(usuario.peso) if usuario.peso else 0,
         "altura": usuario.altura, "objetivo": aluno.objetivo if aluno else "",
-        "foto_url": f"/static/uploads/perfil/{usuario.foto_perfil}"
+        "foto_url": f"/static/uploads/perfil/{usuario.foto_perfil}",
+        "plano_saude": usuario.plano_saude if usuario.plano_saude else "",
     })
 
 @app.route('/api/usuario/atualizar_completo', methods=['POST'])
@@ -465,6 +474,8 @@ def atualizar_perfil_completo():
         if aluno and request.form.get('objetivo') is not None:
             aluno.objetivo = request.form.get('objetivo')
 
+
+        usuario.plano_saude = request.form.get('plano_saude')
         # 7. SALVA TUDO NO BANCO DE DADOS
         db.session.commit()
         session['nome'] = usuario.nome
