@@ -110,9 +110,9 @@ def logbook():
         return redirect(url_for('login'))
     return render_template('logbook.html')
 
-@app.route('/professor')
+@app.route('/painel_professor')
 def professor_painel():
-    if session.get('perfil') != 'treinador':
+    if session.get('perfil') not in ['treinador', 'admin']:
         return redirect(url_for('index'))
     return render_template('painel_professor.html')
 
@@ -195,7 +195,7 @@ def cadastro():
 
 @app.route('/api/professor/buscar_aluno/<termo>')
 def buscar_aluno(termo):
-    if session.get('perfil') != 'treinador': return jsonify({'erro': 'Acesso negado'}), 403
+    if session.get('perfil') not in ['treinador', 'admin']: return jsonify({'erro': 'Acesso negado'}), 403
     query = f"%{termo}%"
     alunos = Usuario.query.filter(
         Usuario.perfil == 'aluno',
@@ -205,7 +205,7 @@ def buscar_aluno(termo):
 
 @app.route('/api/professor/vincular_aluno', methods=['POST'])
 def vincular_aluno():
-    if session.get('perfil') != 'treinador': return jsonify({'erro': 'Acesso negado'}), 403
+    if session.get('perfil') not in ['treinador', 'admin']: return jsonify({'erro': 'Acesso negado'}), 403
     dados = request.json
     try:
         sql = text("INSERT INTO vinculo_professor_aluno (id_professor, id_aluno) VALUES (:prof, :aluno)")
@@ -218,7 +218,7 @@ def vincular_aluno():
 
 @app.route('/api/professor/meus_alunos')
 def meus_alunos():
-    if session.get('perfil') != 'treinador': return jsonify([]), 403
+    if session.get('perfil') not in ['treinador', 'admin']: return jsonify([]), 403
     sql = text("""
         SELECT u.id_usuario as id_aluno, u.nome 
         FROM Usuario u
@@ -230,13 +230,13 @@ def meus_alunos():
 
 @app.route('/api/professor/todos_alunos')
 def todos_alunos():
-    if session.get('perfil') != 'treinador': return jsonify([]), 403
+    if session.get('perfil') not in ['treinador', 'admin']: return jsonify([]), 403
     alunos = Usuario.query.filter_by(perfil='aluno').all()
     return jsonify([{'id': a.id_usuario, 'nome': a.nome, 'email': a.email} for a in alunos])
 
 @app.route('/api/professor/desvincular_aluno/<int:id_aluno>', methods=['DELETE'])
 def prof_desvincular_aluno(id_aluno):
-    if session.get('perfil') != 'treinador': return jsonify({'erro': 'Acesso negado'}), 403
+    if session.get('perfil') not in ['treinador', 'admin']: return jsonify({'erro': 'Acesso negado'}), 403
     prof_id = session.get('usuario_id')
     sql = text("DELETE FROM vinculo_professor_aluno WHERE id_professor = :prof AND id_aluno = :aluno")
     db.session.execute(sql, {"prof": prof_id, "aluno": id_aluno})
@@ -246,7 +246,7 @@ def prof_desvincular_aluno(id_aluno):
 @app.route('/api/professor/ver_treino/<int:id_aluno_user>/<categoria>')
 def prof_ver_treino(id_aluno_user, categoria):
     try:
-        if session.get('perfil') != 'treinador': return jsonify({"erro": "Acesso negado"}), 403
+        if session.get('perfil') not in ['treinador', 'admin']: return jsonify({"erro": "Acesso negado"}), 403
         aluno = Aluno.query.filter_by(id_usuario=id_aluno_user).first()
         if not aluno: return jsonify({"exercicios": []})
         treino = Treino.query.filter_by(id_aluno=aluno.id_aluno, nome_treino=categoria.upper()).first()
@@ -259,7 +259,7 @@ def prof_ver_treino(id_aluno_user, categoria):
 @app.route('/api/professor/salvar_treino', methods=['POST'])
 def salvar_treino():
     try:
-        if session.get('perfil') != 'treinador': return jsonify({"sucesso": False, "mensagem": "Não autorizado"}), 403
+        if session.get('perfil') not in ['treinador', 'admin']: return jsonify({"sucesso": False, "mensagem": "Não autorizado"}), 403
         dados = request.json
         id_aluno_user = dados.get('id_aluno')
         categoria = dados.get('categoria', '').upper()
