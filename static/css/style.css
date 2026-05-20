@@ -1,8 +1,8 @@
 :root {
-  /* ALTO CONTRASTE PARA A PROFESSORA LER */
-  --black: #020203;
-  --dark: #050508;
-  --dark2: #0a0a0f;
+  /* ALTO CONTRASTE PARA A PROFESSORA LER - Fundo levemente clareado */
+  --black: #0f0f14;
+  --dark: #16161e;
+  --dark2: #1c1c26;
 
   --purple: #560078;
   --blue: #146fb5;
@@ -25,6 +25,29 @@
   --header-h: 15vh;
 }
 
+/* ─── MODO CLARO (Sobrescrita de Variáveis) ─── */
+body.light-mode {
+  --black: #f0f0f5;
+  --dark: #ffffff;
+  --dark2: #e4e4eb;
+
+  /* Texto escuro para leitura no fundo claro */
+  --text: #1a1a24;
+  --text-dim: #4a4a5a;
+
+  /* Cores de acento adaptadas (mais escuras para ter contraste) */
+  --cyan: #006688;
+  --neon-purple: #6a00a0;
+  --neon-green: #007744;
+  --neon-red: #aa0011;
+
+  /* Desativa os brilhos para não manchar o fundo branco */
+  --glow-purple: none;
+  --glow-blue: none;
+  --glow-cyan: none;
+  --glow-mix: none;
+}
+
 *,
 *::before,
 *::after {
@@ -41,7 +64,7 @@ body {
   background: var(--black);
   color: var(--text);
   font-family: "Rajdhani", sans-serif;
-  font-weight: 500; /* Deixa a fonte levemente mais grossa para leitura */
+  font-weight: 500;
   font-size: 16px;
   overflow-x: hidden;
   cursor: crosshair;
@@ -77,7 +100,7 @@ header {
   left: 0;
   right: 0;
   height: var(--header-h);
-  background: rgba(2, 2, 3, 0.95); /* Fundo mais escuro no cabeçalho */
+  background: rgba(2, 2, 3, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   display: flex;
@@ -85,6 +108,10 @@ header {
   justify-content: space-between;
   padding: 0 4vw;
   z-index: 1000;
+}
+
+body.light-mode header {
+  background: rgba(240, 240, 245, 0.95);
 }
 
 .header-line {
@@ -121,6 +148,23 @@ header {
       0 0 40px var(--cyan),
       0 0 80px var(--neon-purple);
   }
+}
+
+/* ─── BOTÃO TOGGLE DE TEMA ─── */
+.theme-toggle {
+  background: transparent;
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+  padding: 0.4rem 0.8rem;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.7rem;
+  cursor: pointer;
+  margin-right: 1.5rem;
+  transition: all 0.3s;
+}
+.theme-toggle:hover {
+  background: var(--cyan);
+  color: var(--black);
 }
 
 /* Hamburger */
@@ -474,7 +518,7 @@ section.active {
 }
 .eq-card {
   position: relative;
-  background: rgba(10, 10, 15, 0.95); /* Aumentado a opacidade p/ contraste */
+  background: rgba(10, 10, 15, 0.95);
   border: 1px solid rgba(86, 0, 120, 0.4);
   padding: 2rem;
   cursor: pointer;
@@ -563,6 +607,30 @@ section.active {
   text-shadow: 0 0 8px var(--neon-purple);
 }
 
+/* ─── AJUSTES MODO CLARO COMPONENTES ─── */
+body.light-mode .eq-card,
+body.light-mode .admin-panel,
+body.light-mode .login-box,
+body.light-mode .product-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+body.light-mode .field-input,
+body.light-mode .log-input,
+body.light-mode .admin-input {
+  background: #ffffff;
+  border: 1px solid #aaa;
+  color: var(--text);
+  -webkit-text-fill-color: var(--text);
+}
+
+body.light-mode .nav-drawer {
+  background-color: #f0f0f5;
+  border-right-color: var(--cyan);
+}
+
 /* About */
 .about-section {
   padding: 5rem 4vw;
@@ -646,7 +714,7 @@ section.active {
   font-size: clamp(1.2rem, 3vw, 2rem);
   letter-spacing: 0.1em;
   margin-bottom: 1.5rem;
-  color: #fff;
+  color: var(--text);
   filter: drop-shadow(0 0 10px rgba(86, 0, 120, 0.5));
 }
 .about-text p {

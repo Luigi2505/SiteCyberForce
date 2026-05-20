@@ -1,4 +1,25 @@
+// ─── TEMA CLARO / ESCURO ───
+function toggleTheme() {
+  const isLight = document.body.classList.toggle("light-mode");
+  localStorage.setItem("cyberforce_theme", isLight ? "light" : "dark");
+  atualizarBotaoTema(isLight);
+}
+
+function atualizarBotaoTema(isLight) {
+  const btn = document.getElementById("theme-toggle-btn");
+  if (btn) {
+    btn.textContent = isLight ? "ESCURECER" : "CLAREAR";
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  // Inicialização de Tema
+  const savedTheme = localStorage.getItem("cyberforce_theme");
+  if (savedTheme === "light") {
+    document.body.classList.add("light-mode");
+    atualizarBotaoTema(true);
+  }
+
   const now = new Date();
   const days = [
     "DOMINGO",
