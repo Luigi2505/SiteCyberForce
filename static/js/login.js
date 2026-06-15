@@ -1,3 +1,12 @@
+// ─── VERIFICAÇÃO DE TEMA (MODO CLARO/ESCURO) ───
+// Lê a memória do navegador assim que a página de login abre
+document.addEventListener("DOMContentLoaded", () => {
+  const savedTheme = localStorage.getItem("cyberforce_theme");
+  if (savedTheme === "light") {
+    document.body.classList.add("light-mode");
+  }
+});
+
 // ─── ALTERNAR ABAS LOGIN/CADASTRO ───
 function switchTab(tab) {
   const loginPanel = document.getElementById("panel-login");
@@ -41,21 +50,17 @@ function mascaraData(valor) {
 }
 
 // ─── FUNÇÕES DE VALIDAÇÃO ───
-
-// 1. Validar Nome (Só letras e espaços, com acentos)
 function validarNome(nome) {
   const regex = /^[a-zA-ZÀ-ÿ\s]+$/;
-  // O nome precisa passar no teste de letras E ter tamanho 3 ou maior
   return regex.test(nome) && nome.trim().length >= 3;
 }
 
-// 2. Validar Data (Não pode ser no futuro)
 function validarDataNascimento(dataTexto) {
   const partes = dataTexto.split("/");
   if (partes.length !== 3) return false;
 
   const dia = parseInt(partes[0], 10);
-  const mes = parseInt(partes[1], 10) - 1; // Meses no JS começam em 0
+  const mes = parseInt(partes[1], 10) - 1; 
   const ano = parseInt(partes[2], 10);
 
   const dataInserida = new Date(ano, mes, dia);
@@ -67,7 +72,6 @@ function validarDataNascimento(dataTexto) {
   return true;
 }
 
-// 3. Validar Senha (Mínimo 8 caracteres, Maiúscula, Número e Caractere Especial)
 function validarSenha(senha) {
   const temTamanhoSuficiente = senha.length >= 8;
   const temMaiuscula = /[A-Z]/.test(senha);
@@ -77,13 +81,11 @@ function validarSenha(senha) {
   return temTamanhoSuficiente && temMaiuscula && temNumero && temEspecial;
 }
 
-// 4. Validar Email
 function validarEmail(email) {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return regex.test(email);
 }
 
-// 5. Validar CPF Matemático
 function validarCPF(cpf) {
   cpf = cpf.replace(/[^\d]+/g, "");
   if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
@@ -125,13 +127,8 @@ async function fazerCadastro() {
   const peso = parseFloat(document.getElementById("cad-peso").value);
   const altura = parseInt(document.getElementById("cad-altura").value);
 
-  // 1. Verificação de campos vazios
   if (!nome || !cpf || !data_nascimento || !email || !senha || !senhaConfirma) {
-    mostrarMensagem(
-      "// ERRO: TODOS OS CAMPOS DEVEM SER PREENCHIDOS",
-      "error",
-      false,
-    );
+    mostrarMensagem("// ERRO: TODOS OS CAMPOS DEVEM SER PREENCHIDOS", "error", false);
     return;
   }
 
@@ -146,20 +143,12 @@ async function fazerCadastro() {
   }
 
   if (!validarDataNascimento(data_nascimento)) {
-    mostrarMensagem(
-      "// ERRO: DATA DE NASCIMENTO INVÁLIDA OU NO FUTURO",
-      "error",
-      false,
-    );
+    mostrarMensagem("// ERRO: DATA DE NASCIMENTO INVÁLIDA OU NO FUTURO", "error", false);
     return;
   }
 
   if (!validarSenha(senha)) {
-    mostrarMensagem(
-      "// ERRO: SENHA DEVE TER NO MÍNIMO 8 CARACTERES, 1 MAIÚSCULA, 1 NÚMERO E 1 SÍMBOLO",
-      "error",
-      false,
-    );
+    mostrarMensagem("// ERRO: SENHA DEVE TER NO MÍNIMO 8 CARACTERES, 1 MAIÚSCULA, 1 NÚMERO E 1 SÍMBOLO", "error", false);
     return;
   }
 
@@ -179,24 +168,15 @@ async function fazerCadastro() {
   }
 
   if (isNaN(peso) || peso < 30 || peso > 300) {
-    mostrarMensagem(
-      "// ERRO: PESO INVÁLIDO. DEVE SER ENTRE 30KG E 300KG",
-      "error",
-      false,
-    );
+    mostrarMensagem("// ERRO: PESO INVÁLIDO. DEVE SER ENTRE 30KG E 300KG", "error", false);
     return;
   }
 
   if (isNaN(altura) || altura < 100 || altura > 250) {
-    mostrarMensagem(
-      "// ERRO: ALTURA INVÁLIDA. DEVE SER ENTRE 100CM E 250CM",
-      "error",
-      false,
-    );
+    mostrarMensagem("// ERRO: ALTURA INVÁLIDA. DEVE SER ENTRE 100CM E 250CM", "error", false);
     return;
   }
 
-  // Se tudo passar, monta o pacote e envia
   const payload = {
     nome: nome,
     cpf: cpf,
@@ -219,7 +199,6 @@ async function fazerCadastro() {
 
     if (result.sucesso) {
       mostrarMensagem("// ACESSO_GERADO_COM_SUCESSO", "success", false);
-      // Aguarda 2 segundos e manda pra aba de login
       setTimeout(() => switchTab("login"), 2000);
     } else {
       mostrarMensagem("// ERRO_SISTEMA: " + result.mensagem, "error", false);
@@ -252,12 +231,9 @@ async function fazerLogin() {
     const result = await response.json();
 
     if (result.sucesso) {
-      // Salva as informações de apoio (o Flask já salvou a sessão segura no servidor)
       localStorage.setItem("cyberforce_user_type", result.perfil);
       localStorage.setItem("cyberforce_user_name", result.nome);
       localStorage.setItem("cyberforce_user_email", result.email);
-
-      // Redireciona para a página principal
       window.location.href = "/";
     } else {
       mostrarMensagem("// ACESSO NEGADO: " + result.mensagem, "error", true);
@@ -275,10 +251,10 @@ function toggleSenha(inputId, spanElement) {
   if (input.type === "password") {
     input.type = "text";
     spanElement.innerText = "OCULTAR";
-    spanElement.style.color = "var(--neon-red)"; // Cor de alerta quando a senha está visível
+    spanElement.style.color = "var(--neon-red)";
   } else {
     input.type = "password";
     spanElement.innerText = "EXIBIR";
-    spanElement.style.color = "var(--cyan)"; // Cor normal
+    spanElement.style.color = "var(--cyan)"; 
   }
 }

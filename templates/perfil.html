@@ -1,485 +1,98 @@
-{% extends 'base.html' %}  {% block content %}
-<section id="perfil" class="active">
-   
-  <div class="logbook-section">
-       
-    <div class="section-header" style="padding: 0 0 2rem">
-            <span class="section-tag">// USER_DATA_CORE</span>      
-      <h2 class="section-title">MEU PERFIL</h2>
-           
-      <div class="section-line"></div>
-         
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+  .perfil-form-area { padding: 3rem; max-width: 800px; margin: 0 auto; background: rgba(10, 10, 20, 0.85); border: 1px solid var(--cyan); box-shadow: 0 0 20px rgba(0, 212, 255, 0.1); border-radius: 8px;}
+  .p-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+  .p-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+  .p-full { grid-column: 1 / -1; margin-bottom: 1.5rem; }
+  .header-actions { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0, 212, 255, 0.2); padding-bottom: 1.5rem; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem; }
+  .header-ident { display: flex; align-items: center; gap: 1.5rem; }
+  
+  @media (max-width: 768px) {
+    .perfil-form-area { padding: 1.5rem; border: none; box-shadow: none; background: transparent; }
+    .p-grid, .p-grid-3 { grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .p-full { margin-bottom: 1rem; }
+    .header-actions { flex-direction: column; text-align: center; justify-content: center; padding-bottom: 1rem; margin-bottom: 1.5rem; }
+    .header-ident { flex-direction: column; gap: 1rem; }
+    .fechar-btn { width: 100%; margin-top: 1rem; padding: 0.8rem; }
+  }
+</style>
+
+<section id="perfil" class="active" style="padding-top: 2rem; padding-bottom: 4rem;">
+  <div class="section-header" style="padding: 0 0 2rem; text-align: center;">
+    <span class="section-tag">// USER_DATA_CORE</span>
+    <h2 class="section-title">MEU PERFIL</h2>
+    <div class="section-line" style="margin: 0 auto;"></div>
+  </div>
+
+  <div class="perfil-form-area">
+    <div class="header-actions">
+      <div class="header-ident">
+        <div style="position: relative; width: 85px; height: 85px; border-radius: 50%; border: 2px solid var(--cyan); box-shadow: 0 0 15px rgba(0, 255, 255, 0.3); overflow: hidden; cursor: pointer;" onclick="document.getElementById('perfil-foto-input').click()" title="Clique para alterar foto">
+          <img id="perfil-img-display" src="/static/uploads/perfil/default_avatar.png" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;" />
+          <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.8); color: var(--cyan); font-size: 0.6rem; text-align: center; padding: 4px 0; font-family: 'Share Tech Mono', monospace; opacity: 0; transition: 0.3s;" onmouseover="this.style.opacity = 1" onmouseout="this.style.opacity = 0">ALTERAR</div>
+        </div>
+        <input type="file" id="perfil-foto-input" accept="image/*" style="display: none;" onchange="previewFoto(this)" />
+        <h2 style="color: var(--cyan); font-family: 'Michroma', sans-serif; font-size: 1.2rem; margin: 0; letter-spacing: 2px;">// IDENTIFICAÇÃO NEURAL</h2>
+      </div>
+      <button class="fechar-btn" onclick="window.location.href = '/'" style="background: rgba(255,34,68,0.05); border: 1px solid var(--neon-pink); color: var(--neon-pink); padding: 0.5rem 1rem; font-family: 'Share Tech Mono', monospace; cursor: pointer; transition: 0.3s;" onmouseover="this.style.background='var(--neon-pink)'; this.style.color='#000';" onmouseout="this.style.background='rgba(255,34,68,0.05)'; this.style.color='var(--neon-pink)';">✕ FECHAR</button>
     </div>
 
-           
-    <div
-      class="perfil-form-area"
-      style="
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 3rem;
-        border: 1px solid var(--neon-purple);
-        box-shadow: inset 0 0 20px rgba(160, 32, 240, 0.1);
-      "
-    >
-                  
-      <div
-        style="
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 2.5rem;
-          border-bottom: 1px solid rgba(85, 85, 119, 0.3);
-          padding-bottom: 1.5rem;
-          flex-wrap: wrap;
-          gap: 1rem;
-        "
-      >
-                            
-        <div style="display: flex; align-items: center; gap: 1.5rem">
-                       
-          <div
-            style="
-              position: relative;
-              width: 80px;
-              height: 80px;
-              border-radius: 50%;
-              border: 2px solid var(--cyan);
-              box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
-              overflow: hidden;
-              cursor: pointer;
-            "
-            onclick="document.getElementById('perfil-foto-input').click()"
-            title="Clique para alterar foto"
-          >
-                             
-            <img
-              id="perfil-img-display"
-              src="/static/uploads/perfil/default_avatar.png"
-              alt="Avatar"
-              style="width: 100%; height: 100%; object-fit: cover"
-            />
-                             
-            <div
-              style="
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                background: rgba(0, 0, 0, 0.7);
-                color: var(--cyan);
-                font-size: 0.5rem;
-                text-align: center;
-                padding: 2px 0;
-                font-family: &quot;Share Tech Mono&quot;;
-                opacity: 0;
-                transition: 0.3s;
-              "
-              onmouseover="this.style.opacity = 1"
-              onmouseout="this.style.opacity = 0"
-            >
-                                    ALTERAR                  
-            </div>
-                         
-          </div>
-                       
-          <input
-            type="file"
-            id="perfil-foto-input"
-            accept="image/*"
-            style="display: none"
-            onchange="previewFoto(this)"
-          />
-                                      
-          <h2
-            style="
-              color: var(--cyan);
-              font-family: &quot;Michroma&quot;;
-              font-size: 1.2rem;
-              margin: 0;
-              letter-spacing: 2px;
-            "
-          >
-            // IDENTIFICAÇÃO NEURAL
-          </h2>
-                   
-        </div>
-                            
-        <button
-          onclick="window.location.href = '/'"
-          style="
-            background: transparent;
-            border: 1px solid var(--neon-pink);
-            color: var(--neon-pink);
-            padding: 0.3rem 0.8rem;
-            font-family: &quot;Share Tech Mono&quot;;
-            cursor: pointer;
-            transition: 0.3s;
-          "
-          onmouseover="
-            this.style.background = 'var(--neon-pink)';
-            this.style.color = '#000';
-          "
-          onmouseout="
-            this.style.background = 'transparent';
-            this.style.color = 'var(--neon-pink)';
-          "
-        >
-                      X FECHAR          
-        </button>
-             
-      </div>
-
-           
-      <div class="field-row" style="margin-bottom: 1rem">
-               
-        <div>
-                   
-          <label
-            style="
-              font-family: &quot;Share Tech Mono&quot;;
-              font-size: 0.6rem;
-              color: var(--text-dim);
-              display: block;
-              margin-bottom: 0.5rem;
-            "
-            >// NOME COMPLETO</label
-          >
-                             
-          <input
-            type="text"
-            id="perfil-nome"
-            class="field-input"
-            style="
-              width: 100%;
-              border: 1px solid var(--border-glow);
-              color: var(--text-color);
-              padding: 0.8rem;
-            "
-          />
-                 
-        </div>
-               
-        <div>
-                   
-          <label
-            style="
-              font-family: &quot;Share Tech Mono&quot;;
-              font-size: 0.6rem;
-              color: var(--text-dim);
-              display: block;
-              margin-bottom: 0.5rem;
-            "
-            >// DATA DE NASCIMENTO</label
-          >
-                             
-          <input
-            type="date"
-            id="perfil-data"
-            class="field-input"
-            style="
-              width: 100%;
-              border: 1px solid var(--border-glow);
-              color: var(--text-color);
-              padding: 0.8rem;
-              font-family: &quot;Share Tech Mono&quot;;
-            "
-          />
-                 
-        </div>
-             
-      </div>
-
-           
-      <div class="field-row" style="margin-bottom: 1rem">
-               
-        <div>
-                   
-          <label
-            style="
-              font-family: &quot;Share Tech Mono&quot;;
-              font-size: 0.6rem;
-              color: var(--text-dim);
-              display: block;
-              margin-bottom: 0.5rem;
-            "
-            >// CPF</label
-          >
-                             
-          <input
-            type="text"
-            id="perfil-cpf"
-            class="field-input"
-            style="
-              width: 100%;
-              border: 1px solid var(--border-glow);
-              color: var(--text-color);
-              padding: 0.8rem;
-            "
-          />
-                 
-        </div>
-               
-        <div>
-                   
-          <label
-            style="
-              font-family: &quot;Share Tech Mono&quot;;
-              font-size: 0.6rem;
-              color: var(--text-dim);
-              display: block;
-              margin-bottom: 0.5rem;
-            "
-            >// EMAIL</label
-          >
-                             
-          <input
-            type="email"
-            id="perfil-email"
-            class="field-input"
-            style="
-              width: 100%;
-              border: 1px solid var(--border-glow);
-              color: var(--text-color);
-              padding: 0.8rem;
-            "
-          />
-                 
-        </div>
-             
-      </div>
-
-           
-      <div class="field-row" style="margin-bottom: 1rem">
-               
-        <div>
-                   
-          <label
-            style="
-              font-family: &quot;Share Tech Mono&quot;;
-              font-size: 0.6rem;
-              color: var(--text-dim);
-              display: block;
-              margin-bottom: 0.5rem;
-            "
-            >// GÊNERO</label
-          >
-                             
-          <select
-            id="perfil-genero"
-            class="field-input"
-            style="
-              width: 100%;
-              border: 1px solid var(--border-glow);
-              color: var(--text-color);
-              padding: 0.8rem;
-              font-family: &quot;Share Tech Mono&quot;;
-            "
-          >
-                       
-            <option value="M">Homem</option>
-                       
-            <option value="F">Mulher</option>
-                       
-            <option value="N">Prefiro não informar</option>
-                     
-          </select>
-                 
-        </div>
-               
-        <div style="display: flex; gap: 1rem">
-                   
-          <div style="flex: 1">
-                       
-            <label
-              style="
-                font-family: &quot;Share Tech Mono&quot;;
-                font-size: 0.6rem;
-                color: var(--text-dim);
-                display: block;
-                margin-bottom: 0.5rem;
-              "
-              >// PESO (kg)</label
-            >
-                                   
-            <input
-              type="number"
-              step="0.1"
-              id="perfil-peso"
-              class="field-input"
-              style="
-                width: 100%;
-                border: 1px solid var(--border-glow);
-                color: var(--text-color);
-                padding: 0.8rem;
-              "
-            />
-                     
-          </div>
-                   
-          <div style="flex: 1">
-                       
-            <label
-              style="
-                font-family: &quot;Share Tech Mono&quot;;
-                font-size: 0.6rem;
-                color: var(--text-dim);
-                display: block;
-                margin-bottom: 0.5rem;
-              "
-              >// ALTURA (cm)</label
-            >
-                                   
-            <input
-              type="number"
-              id="perfil-altura"
-              class="field-input"
-              style="
-                width: 100%;
-                border: 1px solid var(--border-glow);
-                color: var(--text-color);
-                padding: 0.8rem;
-              "
-            />
-                     
-          </div>
-                 
-        </div>
-             
-      </div>
-
-           
-      <div style="margin-bottom: 3rem">
-               
-        <label
-          style="
-            font-family: &quot;Share Tech Mono&quot;;
-            font-size: 0.6rem;
-            color: var(--text-dim);
-            display: block;
-            margin-bottom: 0.5rem;
-          "
-          >// OBJETIVO DO PROTOCOLO (Ex: Hipertrofia, Força)</label
-        >
-                       
-        <input
-          type="text"
-          id="perfil-objetivo"
-          class="field-input"
-          style="
-            width: 100%;
-            border: 1px solid var(--border-glow);
-            color: var(--text-color);
-            padding: 0.8rem;
-          "
-        />
-             
-      </div>
-
-           
-      <div
-        style="
-          background: rgba(255, 0, 85, 0.05);
-          border: 1px dashed var(--neon-pink);
-          padding: 1.5rem;
-          margin-bottom: 2rem;
-        "
-      >
-               
-        <label
-          style="
-            font-family: &quot;Share Tech Mono&quot;;
-            font-size: 0.7rem;
-            color: var(--neon-pink);
-            display: block;
-            margin-bottom: 0.5rem;
-          "
-          >// AUTORIZAÇÃO NECESSÁRIA</label
-        >
-               
-        <p
-          style="font-size: 0.7rem; color: var(--text-dim); margin-bottom: 1rem"
-        >
-          Para aplicar as alterações em seus dados, insira sua senha atual:
-        </p>
-                       
-        <input
-          type="password"
-          id="perfil-senha-confirma"
-          placeholder="Digite sua senha..."
-          class="field-input"
-          style="
-            width: 100%;
-            border: 1px solid var(--neon-pink);
-            color: var(--text-color);
-            padding: 0.8rem;
-          "
-        />
-             
-      </div>
-
-           
-      <button
-        onclick="salvarPerfil()"
-        class="btn-neon"
-        style="
-          width: 100%;
-          padding: 1rem;
-          cursor: pointer;
-          text-transform: uppercase;
-        "
-      >
-                SALVAR ALTERAÇÕES      
-      </button>
-
-           
-      <div
-        style="
-          border-top: 1px solid rgba(255, 34, 68, 0.3);
-          padding-top: 2rem;
-          text-align: center;
-          margin-top: 2rem;
-        "
-      >
-               
-        <p
-          style="
-            font-family: &quot;Share Tech Mono&quot;;
-            font-size: 0.6rem;
-            color: var(--neon-red);
-            margin-bottom: 1rem;
-          "
-        >
-          ⚠️ AÇÃO IRREVERSÍVEL: APAGAR REGISTRO NEURAL ⚠️
-        </p>
-               
-        <button
-          onclick="deletarConta()"
-          style="
-            padding: 0.8rem 2rem;
-            background: transparent;
-            border: 1px dashed var(--neon-red);
-            color: var(--neon-red);
-            font-family: &quot;Michroma&quot;;
-            font-size: 0.6rem;
-            letter-spacing: 0.1em;
-            cursor: pointer;
-            transition: 0.3s;
-          "
-        >
-                    EXCLUIR CONTA DEFINITIVAMENTE        
-        </button>
-             
-      </div>
-         
+    <div class="p-full">
+      <label style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--text-dim); display: block; margin-bottom: 0.5rem;">// NOME COMPLETO</label>
+      <input type="text" id="perfil-nome" class="field-input" style="width: 100%; box-sizing: border-box; border: 1px solid rgba(0,212,255,0.3); background: rgba(0,0,0,0.6); color: #fff; padding: 0.8rem;" />
     </div>
-     
+
+    <div class="p-grid">
+      <div>
+        <label style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--text-dim); display: block; margin-bottom: 0.5rem;">// CPF</label>
+        <input type="text" id="perfil-cpf" class="field-input" style="width: 100%; box-sizing: border-box; border: 1px solid rgba(0,212,255,0.3); background: rgba(0,0,0,0.6); color: #fff; padding: 0.8rem;" />
+      </div>
+      <div>
+        <label style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--text-dim); display: block; margin-bottom: 0.5rem;">// DATA DE NASCIMENTO</label>
+        <input type="date" id="perfil-data" class="field-input" style="width: 100%; box-sizing: border-box; border: 1px solid rgba(0,212,255,0.3); background: rgba(0,0,0,0.6); color: #fff; padding: 0.8rem; font-family: 'Share Tech Mono', monospace;" />
+      </div>
+      <div>
+        <label style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--text-dim); display: block; margin-bottom: 0.5rem;">// EMAIL CORPORATIVO</label>
+        <input type="email" id="perfil-email" class="field-input" style="width: 100%; box-sizing: border-box; border: 1px solid rgba(0,212,255,0.3); background: rgba(0,0,0,0.6); color: #fff; padding: 0.8rem;" />
+      </div>
+      <div>
+        <label style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--text-dim); display: block; margin-bottom: 0.5rem;">// GÊNERO</label>
+        <select id="perfil-genero" class="field-input" style="width: 100%; box-sizing: border-box; border: 1px solid rgba(0,212,255,0.3); background: rgba(0,0,0,0.6); color: #fff; padding: 0.8rem; font-family: 'Share Tech Mono', monospace;">
+          <option value="M">Homem</option><option value="F">Mulher</option><option value="N">Prefiro não informar</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="p-grid-3">
+      <div>
+        <label style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--text-dim); display: block; margin-bottom: 0.5rem;">// PESO (kg)</label>
+        <input type="number" step="0.1" id="perfil-peso" class="field-input" style="width: 100%; box-sizing: border-box; border: 1px solid rgba(0,212,255,0.3); background: rgba(0,0,0,0.6); color: #fff; padding: 0.8rem;" />
+      </div>
+      <div>
+        <label style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--text-dim); display: block; margin-bottom: 0.5rem;">// ALTURA (cm)</label>
+        <input type="number" id="perfil-altura" class="field-input" style="width: 100%; box-sizing: border-box; border: 1px solid rgba(0,212,255,0.3); background: rgba(0,0,0,0.6); color: #fff; padding: 0.8rem;" />
+      </div>
+    </div>
+
+    <div class="p-full">
+      <label style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--text-dim); display: block; margin-bottom: 0.5rem;">// OBJETIVO DO PROTOCOLO</label>
+      <input type="text" id="perfil-objetivo" class="field-input" style="width: 100%; box-sizing: border-box; border: 1px solid rgba(0,212,255,0.3); background: rgba(0,0,0,0.6); color: #fff; padding: 0.8rem;" />
+    </div>
+
+    <div style="background: rgba(255,34,68,0.05); border: 1px dashed var(--neon-pink); padding: 1.5rem; margin-bottom: 1.5rem; text-align: center; border-radius: 4px;">
+      <label style="font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; color: var(--neon-pink); display: block; margin-bottom: 1rem;">// INSIRA A SUA SENHA</label>
+      <input type="password" id="perfil-senha-confirma" placeholder="••••••••" class="field-input" style="width: 100%; max-width: 300px; box-sizing: border-box; border: 1px solid var(--neon-pink); background: #000; color: #fff; padding: 1rem; text-align: center; font-size: 1.2rem; margin: 0 auto; display: block;" />
+    </div>
+
+    <button onclick="salvarPerfil()" class="btn-neon" style="width: 100%; padding: 1.2rem; cursor: pointer; text-transform: uppercase; font-size: 1rem; letter-spacing: 1px;">
+      ATUALIZAR PROTOCOLO NEURAL
+    </button>
   </div>
 </section>
 
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    carregarDadosPerfil();
-  });
+  document.addEventListener("DOMContentLoaded", () => { carregarDadosPerfil(); });
 </script>
 {% endblock %}

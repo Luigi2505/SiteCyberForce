@@ -4,28 +4,32 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CYBERFORCE — ACESSO</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Michroma&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/style.css') }}"
-    />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/login.css') }}"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}" />
   </head>
   <body>
+    <script>
+      (function() {
+        try {
+          for (var i = 0; i < localStorage.length; i++) {
+            var chave = localStorage.key(i).toLowerCase();
+            var valor = localStorage.getItem(localStorage.key(i)).toLowerCase();
+            if ((chave.includes('theme') || chave.includes('modo') || chave.includes('light')) && 
+                (valor === 'light' || valor === 'claro' || valor === 'true')) {
+              document.documentElement.classList.add('light-mode');
+              document.body.classList.add('light-mode');
+              break;
+            }
+          }
+        } catch (e) { console.error("Erro ao carregar tema local:", e); }
+      })();
+    </script>
+
     <div class="scanline"></div>
 
     <header>
-      <div
-        class="logo glitch"
-        data-text="CYBERFORCE"
-        onclick="window.location.href = '/'"
-      >
+      <div class="logo glitch" data-text="CYBERFORCE" onclick="window.location.href = '/'">
         CYBERFORCE
       </div>
     </header>
@@ -53,39 +57,14 @@
         <div class="auth-panel active" id="panel-login">
           <div class="field-group">
             <label class="field-label">// EMAIL_ID</label>
-            <input
-              type="email"
-              class="field-input"
-              id="login-email"
-              placeholder="usuario@cyberforce.gym"
-            />
+            <input type="email" class="field-input" id="login-email" placeholder="usuario@cyberforce.gym" />
           </div>
 
           <div class="field-group">
             <label class="field-label">// SENHA_HASH</label>
             <div style="position: relative; width: 100%">
-              <input
-                type="password"
-                class="field-input"
-                id="login-senha"
-                placeholder="••••••••"
-                style="width: 100%; padding-right: 70px; box-sizing: border-box"
-              />
-              <span
-                onclick="toggleSenha('login-senha', this)"
-                style="
-                  position: absolute;
-                  right: 15px;
-                  top: 50%;
-                  transform: translateY(-50%);
-                  cursor: pointer;
-                  font-family: &quot;Share Tech Mono&quot;;
-                  font-size: 0.8rem;
-                  color: var(--cyan);
-                  transition: 0.3s;
-                  z-index: 10;
-                "
-              >
+              <input type="password" class="field-input" id="login-senha" placeholder="••••••••" style="width: 100%; padding-right: 70px; box-sizing: border-box" />
+              <span onclick="toggleSenha('login-senha', this)" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; font-family: 'Share Tech Mono'; font-size: 0.8rem; color: var(--cyan); transition: 0.3s; z-index: 10;">
                 EXIBIR
               </span>
             </div>
@@ -110,35 +89,17 @@
               <div class="field-row">
                 <div class="field-group">
                   <label class="field-label">// CPF *</label>
-                  <input
-                    type="text"
-                    class="field-input"
-                    id="cad-cpf"
-                    placeholder="000.000.000-00"
-                    maxlength="14"
-                    oninput="this.value = mascaraCPF(this.value)"
-                  />
+                  <input type="text" class="field-input" id="cad-cpf" placeholder="000.000.000-00" maxlength="14" oninput="this.value = mascaraCPF(this.value)" />
                 </div>
                 <div class="field-group">
                   <label class="field-label">// NASCIMENTO *</label>
-                  <input
-                    type="text"
-                    class="field-input"
-                    id="cad-nasc"
-                    placeholder="DD/MM/AAAA"
-                    maxlength="10"
-                    oninput="this.value = mascaraData(this.value)"
-                  />
+                  <input type="text" class="field-input" id="cad-nasc" placeholder="DD/MM/AAAA" maxlength="10" oninput="this.value = mascaraData(this.value)" />
                 </div>
               </div>
 
               <div class="field-group">
                 <label class="field-label">// GÊNERO *</label>
-                <select
-                  class="field-input"
-                  id="cad-genero"
-                  style="appearance: none; cursor: pointer"
-                >
+                <select class="field-input" id="cad-genero" style="appearance: none; cursor: pointer">
                   <option value="">Selecione uma opção...</option>
                   <option value="M">Masculino</option>
                   <option value="F">Feminino</option>
@@ -149,22 +110,11 @@
               <div class="field-row">
                 <div class="field-group">
                   <label class="field-label">// PESO (kg) *</label>
-                  <input
-                    type="number"
-                    class="field-input"
-                    id="cad-peso"
-                    placeholder="Ex: 75.5"
-                    step="0.1"
-                  />
+                  <input type="number" class="field-input" id="cad-peso" placeholder="Ex: 75.5" step="0.1" />
                 </div>
                 <div class="field-group">
                   <label class="field-label">// ALTURA (cm) *</label>
-                  <input
-                    type="number"
-                    class="field-input"
-                    id="cad-altura"
-                    placeholder="Ex: 175"
-                  />
+                  <input type="number" class="field-input" id="cad-altura" placeholder="Ex: 175" />
                 </div>
               </div>
             </div>
@@ -179,41 +129,12 @@
               <div class="field-group">
                 <label class="field-label">// SENHA *</label>
                 <div style="position: relative">
-                  <input
-                    type="password"
-                    class="field-input"
-                    id="cad-senha"
-                    placeholder="Mínimo 8 caracteres"
-                    required
-                    style="padding-right: 70px"
-                  />
-                  <span
-                    onclick="toggleSenha('cad-senha', this)"
-                    style="
-                      position: absolute;
-                      right: 15px;
-                      top: 50%;
-                      transform: translateY(-50%);
-                      cursor: pointer;
-                      font-family: &quot;Share Tech Mono&quot;;
-                      font-size: 0.8rem;
-                      color: var(--cyan);
-                      transition: 0.3s;
-                      z-index: 10;
-                    "
-                  >
+                  <input type="password" class="field-input" id="cad-senha" placeholder="Mínimo 8 caracteres" required style="padding-right: 70px" />
+                  <span onclick="toggleSenha('cad-senha', this)" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; font-family: 'Share Tech Mono'; font-size: 0.8rem; color: var(--cyan); transition: 0.3s; z-index: 10;">
                     EXIBIR
                   </span>
                 </div>
-                <span
-                  style="
-                    font-size: 0.7rem;
-                    font-family: &quot;Share Tech Mono&quot;;
-                    color: var(--text-dim);
-                    margin-top: 5px;
-                    display: block;
-                  "
-                >
+                <span style="font-size: 0.7rem; font-family: 'Share Tech Mono'; color: var(--text-dim); margin-top: 5px; display: block;">
                   Mínimo de 8 caracteres, 1 maiúscula e 1 símbolo.
                 </span>
               </div>
@@ -221,29 +142,8 @@
               <div class="field-group">
                 <label class="field-label">// CONFIRMAR SENHA *</label>
                 <div style="position: relative">
-                  <input
-                    type="password"
-                    class="field-input"
-                    id="cad-senha-confirma"
-                    placeholder="Repita a senha"
-                    required
-                    style="padding-right: 70px"
-                  />
-                  <span
-                    onclick="toggleSenha('cad-senha-confirma', this)"
-                    style="
-                      position: absolute;
-                      right: 15px;
-                      top: 50%;
-                      transform: translateY(-50%);
-                      cursor: pointer;
-                      font-family: &quot;Share Tech Mono&quot;;
-                      font-size: 0.8rem;
-                      color: var(--cyan);
-                      transition: 0.3s;
-                      z-index: 10;
-                    "
-                  >
+                  <input type="password" class="field-input" id="cad-senha-confirma" placeholder="Repita a senha" required style="padding-right: 70px" />
+                  <span onclick="toggleSenha('cad-senha-confirma', this)" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; font-family: 'Share Tech Mono'; font-size: 0.8rem; color: var(--cyan); transition: 0.3s; z-index: 10;">
                     EXIBIR
                   </span>
                 </div>
@@ -251,11 +151,7 @@
             </div>
           </div>
 
-          <button
-            class="btn-cyber"
-            onclick="fazerCadastro()"
-            style="margin-top: 2rem"
-          >
+          <button class="btn-cyber" onclick="fazerCadastro()" style="margin-top: 2rem">
             <span>REGISTRAR</span>
           </button>
           <div class="msg-box" id="msg-cadastro"></div>
@@ -263,6 +159,6 @@
       </div>
     </div>
 
-    <script src="{{ url_for('static', filename='js/login.js') }}?v=2"></script>
+    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
   </body>
 </html>

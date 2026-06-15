@@ -19,6 +19,7 @@
   position: relative;
   z-index: 1;
   animation: boxAppear 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: max-width 0.4s ease;
 }
 @keyframes boxAppear {
   from {
@@ -206,25 +207,6 @@
   box-shadow: 0 0 8px rgba(0, 255, 136, 0.15);
 }
 
-.field-hint {
-  font-family: "Share Tech Mono", monospace;
-  font-size: 0.55rem;
-  letter-spacing: 0.1em;
-  margin-top: 0.3rem;
-  display: none;
-}
-.field-hint.show {
-  display: block;
-}
-.field-hint.err {
-  color: var(--neon-red);
-  text-shadow: 0 0 6px rgba(255, 34, 68, 0.5);
-}
-.field-hint.ok {
-  color: var(--neon-green);
-  text-shadow: 0 0 6px rgba(0, 255, 136, 0.5);
-}
-
 .btn-cyber {
   width: 100%;
   margin-top: 0.8rem;
@@ -272,10 +254,6 @@
   position: relative;
   z-index: 1;
 }
-.btn-cyber:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
 
 .msg-box {
   display: none;
@@ -302,103 +280,64 @@
   text-shadow: 0 0 8px var(--neon-green);
 }
 
-.login-footer {
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(160, 32, 240, 0.25);
-  text-align: center;
-}
-.login-footer-text {
-  font-family: "Share Tech Mono", monospace;
-  font-size: 0.55rem;
-  letter-spacing: 0.2em;
-  color: rgba(85, 85, 119, 0.7);
-  line-height: 2;
-}
-.login-footer-text span {
-  color: var(--cyan);
-  text-shadow: 0 0 6px rgba(0, 212, 255, 0.4);
-}
-
 #panel-cadastro {
-  max-height: 62vh;
-  overflow-y: auto;
-  padding-right: 4px;
-}
-#panel-cadastro::-webkit-scrollbar {
-  width: 3px;
-}
-#panel-cadastro::-webkit-scrollbar-track {
-  background: transparent;
-}
-#panel-cadastro::-webkit-scrollbar-thumb {
-  background: rgba(160, 32, 240, 0.5);
-  border-radius: 2px;
+  max-height: none;
+  overflow-y: visible;
 }
 
-/* Transição suave para alterar o tamanho da caixa principal */
-.login-box {
-  transition: max-width 0.4s ease;
-}
-
-/* Classe dinâmica ativada via JS (Desktop) */
 .login-box.wide {
   max-width: 800px;
 }
 
-/* Estrutura de grid do cadastro (Desktop) */
 .cadastro-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
 }
 
-/* Remove o scroll interno no desktop */
-#panel-cadastro {
-  max-height: none;
-  overflow-y: visible;
-}
-
-/* ─── CORREÇÃO RESPONSIVIDADE TABLET E MOBILE (ATÉ 768px) ─── */
+/* ─── CORREÇÃO RESPONSIVIDADE (ATÉ 768px) ─── */
 @media (max-width: 768px) {
   .cadastro-grid {
     grid-template-columns: 1fr;
     gap: 0;
   }
-
   .login-box.wide {
-    max-width: 480px; /* Retorna a caixa ao tamanho padrão */
+    max-width: 480px;
   }
-
-  /* Retorna o scroll apenas em telas menores */
   #panel-cadastro {
     max-height: 62vh;
     overflow-y: auto;
     padding-right: 4px;
   }
+  #panel-cadastro::-webkit-scrollbar {
+    width: 3px;
+  }
+  #panel-cadastro::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  #panel-cadastro::-webkit-scrollbar-thumb {
+    background: rgba(160, 32, 240, 0.5);
+    border-radius: 2px;
+  }
 }
 
 /* ─── CORREÇÃO MOBILE LOGIN (ATÉ 480px) ─── */
 @media (max-width: 480px) {
-  /* 1. Reduz as margens grossas da caixa de login */
   .login-box {
     padding: 2rem 1.2rem !important;
     margin: 0 0.5rem !important;
   }
-
-  /* 2. Ajusta a palavra ACESSO para não cortar o 'O' */
   .login-title {
     font-size: 1.5rem !important;
     letter-spacing: 0.15em !important;
   }
-
-  /* 3. Ajusta as abas de Login/Cadastro para não ficarem esmagadas */
   .auth-tab {
     padding: 0.8rem 0.5rem !important;
     font-size: 0.55rem !important;
     letter-spacing: 0.1em !important;
   }
 }
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
@@ -406,4 +345,82 @@ input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 50px #0a0a14 inset !important;
   -webkit-text-fill-color: #00d4ff !important;
   caret-color: #00d4ff !important;
+}
+
+/* ════════ MODO CLARO (LOGIN) ════════ */
+body.light-mode .login-box {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+body.light-mode .login-tag {
+  color: var(--neon-purple);
+  text-shadow: none;
+  font-weight: 700;
+}
+body.light-mode .login-title {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+body.light-mode .login-sub {
+  color: var(--text-dim);
+  border-bottom-color: rgba(0, 0, 0, 0.1);
+}
+body.light-mode .auth-tabs {
+  border-bottom-color: rgba(0, 0, 0, 0.1);
+}
+body.light-mode .auth-tab {
+  color: #888;
+}
+body.light-mode .auth-tab.active {
+  color: var(--cyan);
+  text-shadow: none;
+  font-weight: 700;
+  border-bottom-color: var(--cyan);
+}
+body.light-mode .form-section-label {
+  color: var(--neon-purple);
+  text-shadow: none;
+  font-weight: 700;
+}
+body.light-mode .form-section-label::after {
+  background: linear-gradient(90deg, rgba(0,0,0,0.1), transparent);
+}
+body.light-mode .field-label {
+  color: var(--text-dim);
+  font-weight: 600;
+}
+body.light-mode .field-input {
+  background: #f0f2f5;
+  border: 1px solid #ccc;
+  color: #000;
+  -webkit-text-fill-color: #000;
+}
+body.light-mode .field-input::placeholder {
+  color: #999;
+  -webkit-text-fill-color: #999;
+}
+body.light-mode .field-input:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 8px rgba(0, 119, 153, 0.2);
+}
+body.light-mode .btn-cyber {
+  background: #fff;
+  color: #000;
+  border: 2px solid var(--cyan);
+  text-shadow: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  font-weight: 700;
+}
+body.light-mode .btn-cyber:hover {
+  background: var(--cyan);
+  color: #fff;
+}
+
+body.light-mode input:-webkit-autofill,
+body.light-mode input:-webkit-autofill:hover,
+body.light-mode input:-webkit-autofill:focus,
+body.light-mode input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 50px #ffffff inset !important;
+  -webkit-text-fill-color: #000 !important;
+  caret-color: #000 !important;
 }

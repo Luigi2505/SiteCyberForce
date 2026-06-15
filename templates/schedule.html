@@ -1,19 +1,183 @@
-{% extends 'base.html' %} {% block content %}
-<section id="schedule" class="active">
-  <div class="schedule-section">
-    <div class="section-header" style="padding: 0 0 2rem">
+{% extends 'base.html' %} 
+
+{% block content %}
+<section id="schedule" class="active" style="padding-top: 2rem; padding-bottom: 4rem;">
+  <div class="schedule-section" style="max-width: 1200px; margin: 0 auto;">
+    
+    <div class="section-header" style="padding: 0 0 2rem; text-align: center;">
       <span class="section-tag">// CALENDÁRIO_SEMANAL</span>
-      <h2 class="section-title">PROGRAMAÇÃO</h2>
-      <div class="section-line"></div>
+      <h2 class="section-title">PROGRAMAÇÃO DE AULAS</h2>
+      <div class="section-line" style="margin: 0 auto;"></div>
     </div>
+
     <div class="week-grid">
+      
       <div class="day-col">
         <div class="day-header">SEG</div>
+        
         <div class="class-card">
-          <span class="class-name">BOXE</span
-          ><span class="class-time">06:00</span>
+          <span class="class-time">06:00</span>
+          <span class="class-name">CROSSFORCE</span>
+          <span class="class-instructor">Prof. Alex</span>
+          <span class="class-slots slots-ok">VAGAS: OK</span>
+        </div>
+
+        <div class="class-card">
+          <span class="class-time">18:00</span>
+          <span class="class-name">BOXE</span>
+          <span class="class-instructor">Prof. Marcos</span>
+          <span class="class-slots slots-full">LOTADO</span>
+        </div>
+
+        <div class="class-card">
+          <span class="class-time">20:00</span>
+          <span class="class-name">NEON CYCLING</span>
+          <span class="class-instructor">Prof. Lívia</span>
+          <span class="class-slots slots-ok">VAGAS: OK</span>
         </div>
       </div>
+
+      <div class="day-col">
+        <div class="day-header">TER</div>
+        
+        <div class="class-card">
+          <span class="class-time">07:00</span>
+          <span class="class-name">MUAY THAI</span>
+          <span class="class-instructor">Prof. Marcos</span>
+          <span class="class-slots slots-ok">VAGAS: OK</span>
+        </div>
+
+        <div class="class-card">
+          <span class="class-time">12:00</span>
+          <span class="class-name">CORE & ABS</span>
+          <span class="class-instructor">Prof. Alex</span>
+          <span class="class-slots slots-low">ÚLTIMAS</span>
+        </div>
+
+        <div class="class-card">
+          <span class="class-time">19:00</span>
+          <span class="class-name">ZUMBA BEATS</span>
+          <span class="class-instructor">Prof. Carol</span>
+          <span class="class-slots slots-full">LOTADO</span>
+        </div>
+      </div>
+
+      <div class="day-col">
+        <div class="day-header today">QUA</div> <div class="class-card">
+          <span class="class-time">06:00</span>
+          <span class="class-name">CROSSFORCE</span>
+          <span class="class-instructor">Prof. Alex</span>
+          <span class="class-slots slots-low">ÚLTIMAS</span>
+        </div>
+
+        <div class="class-card">
+          <span class="class-time">10:00</span>
+          <span class="class-name">YOGA NEURAL</span>
+          <span class="class-instructor">Prof. Sarah</span>
+          <span class="class-slots slots-ok">VAGAS: OK</span>
+        </div>
+
+        <div class="class-card">
+          <span class="class-time">18:00</span>
+          <span class="class-name">BOXE</span>
+          <span class="class-instructor">Prof. Marcos</span>
+          <span class="class-slots slots-ok">VAGAS: OK</span>
+        </div>
+      </div>
+
+      <div class="day-col">
+        <div class="day-header">QUI</div>
+        
+        <div class="class-card">
+          <span class="class-time">07:00</span>
+          <span class="class-name">NEON CYCLING</span>
+          <span class="class-instructor">Prof. Lívia</span>
+          <span class="class-slots slots-ok">VAGAS: OK</span>
+        </div>
+
+        <div class="class-card">
+          <span class="class-time">12:00</span>
+          <span class="class-name">YOGA NEURAL</span>
+          <span class="class-instructor">Prof. Sarah</span>
+          <span class="class-slots slots-ok">VAGAS: OK</span>
+        </div>
+
+        <div class="class-card">
+          <span class="class-time">19:00</span>
+          <span class="class-name">ZUMBA BEATS</span>
+          <span class="class-instructor">Prof. Carol</span>
+          <span class="class-slots slots-low">ÚLTIMAS</span>
+        </div>
+      </div>
+
+      <div class="day-col">
+        <div class="day-header">SEX</div>
+        
+        <div class="class-card">
+          <span class="class-time">06:00</span>
+          <span class="class-name">HIIT MATRIX</span>
+          <span class="class-instructor">Prof. Alex</span>
+          <span class="class-slots slots-ok">VAGAS: OK</span>
+        </div>
+
+        <div class="class-card">
+          <span class="class-time">18:00</span>
+          <span class="class-name">MUAY THAI</span>
+          <span class="class-instructor">Prof. Marcos</span>
+          <span class="class-slots slots-ok">VAGAS: OK</span>
+        </div>
+
+        <div class="class-card">
+          <span class="class-time">19:30</span>
+          <span class="class-name">SPARTAN FORCE</span>
+          <span class="class-instructor">Prof. Bruno</span>
+          <span class="class-slots slots-full">LOTADO</span>
+        </div>
+      </div>
+
+      <div class="day-col">
+        <div class="day-header">SÁB</div>
+        
+        <div class="class-card">
+          <span class="class-time">09:00</span>
+          <span class="class-name">CROSSFORCE EXT.</span>
+          <span class="class-instructor">Prof. Alex</span>
+          <span class="class-slots slots-full">LOTADO</span>
+        </div>
+
+        <div class="class-card">
+          <span class="class-time">11:00</span>
+          <span class="class-name">FREESTYLE / HIP HOP</span>
+          <span class="class-instructor">Prof. Carol</span>
+          <span class="class-slots slots-ok">VAGAS: OK</span>
+        </div>
+        
+        <div class="class-card">
+          <span class="class-time">16:00</span>
+          <span class="class-name">MOBILIDADE</span>
+          <span class="class-instructor">Prof. Sarah</span>
+          <span class="class-slots slots-low">ÚLTIMAS</span>
+        </div>
+      </div>
+
+      <div class="day-col">
+        <div class="day-header">DOM</div>
+        
+        <div class="class-card">
+          <span class="class-time">10:00</span>
+          <span class="class-name">OPEN GYM</span>
+          <span class="class-instructor">Treino Livre</span>
+          <span class="class-slots slots-ok">VAGAS: OK</span>
+        </div>
+
+        <div class="class-card">
+          <span class="class-time">11:00</span>
+          <span class="class-name">RECOVERY TÁTICO</span>
+          <span class="class-instructor">Prof. Sarah</span>
+          <span class="class-slots slots-ok">VAGAS: OK</span>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>

@@ -1,4 +1,81 @@
 {% extends 'base.html' %} {% block content %}
+<style>
+  /* ─── CORREÇÃO GLOBAL DO TÍTULO (Para não vazar em monitores médios/tablets) ─── */
+  .hero {
+    width: 100%;
+    overflow: hidden; /* Corta qualquer coisa fantasma que tente vazar */
+    box-sizing: border-box;
+  }
+  
+  .hero-title {
+    /* Reduzimos de 10vw para 7.5vw. Assim as 10 letras ocupam no máximo 75% da tela! */
+    font-size: clamp(1.8rem, 7.5vw, 5.5rem) !important; 
+    letter-spacing: 0.1em !important; /* Espaçamento um pouco menor */
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ─── RESPONSIVIDADE ESPECÍFICA DA HOME (MOBILE < 768px) ─── */
+  @media (max-width: 768px) {
+    .hero { 
+      padding: 4rem 1rem; 
+      min-height: 60vh; 
+      justify-content: center;
+    }
+    .hero-title { 
+      /* No telemóvel, ajustamos o limite para caber perfeitamente */
+      font-size: clamp(1.5rem, 9vw, 2.5rem) !important; 
+      letter-spacing: 0.05em !important; /* Letras mais juntinhas no telemóvel */
+      margin-bottom: 1rem;
+    }
+    .hero-sub { 
+      font-size: 0.9rem; 
+      margin-bottom: 2rem; 
+      padding: 0 10px;
+    }
+    .cta-btn { 
+      padding: 1rem 1.5rem; 
+      font-size: 0.75rem; 
+      width: 100%; 
+      max-width: 320px; 
+    }
+    
+    /* Transformar a Barra de Stats em Grelha de 4 Quadrados */
+    .stats-bar { 
+      grid-template-columns: 1fr 1fr !important; 
+      gap: 1rem; 
+      margin: 0 1.5rem 2rem 1.5rem !important; 
+      border: none !important; 
+    }
+    .stat-item { 
+      padding: 1.5rem 0.5rem !important; 
+      border: 1px solid rgba(0, 212, 255, 0.2) !important; 
+      border-radius: 8px; 
+      background: rgba(10, 10, 20, 0.6);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    .stat-num { 
+      font-size: 2rem !important; 
+    }
+    .stat-label {
+      font-size: 0.55rem !important;
+    }
+    
+    /* Cabeçalhos de Secção (Ex: Equipamentos) */
+    .section-header { 
+      padding: 3rem 1.5rem 1.5rem !important; 
+      flex-direction: column; 
+      text-align: center; 
+      gap: 0.8rem !important; 
+    }
+    .section-line { 
+      width: 100%; 
+      height: 1px; 
+      background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.5), transparent) !important;
+    }
+  }
+</style>
 <section id="home" class="active">
   <div class="hero">
     <div class="hero-bg"></div>
